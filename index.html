@@ -1642,14 +1642,12 @@ function authSuccess(email, name) {
     if (bgMusic) {
         bgMusic.volume = 0.35;
         bgMusic.play().catch(() => {
-            // If autoplay blocked, start on first user interaction
+            // If autoplay blocked, start on first click
             const startMusic = () => {
                 bgMusic.play().catch(() => {});
                 document.removeEventListener('click', startMusic);
-                document.removeEventListener('keydown', startMusic);
             };
             document.addEventListener('click', startMusic, { once: true });
-            document.addEventListener('keydown', startMusic, { once: true });
         });
     }
 }
@@ -1827,37 +1825,372 @@ window.addEventListener('load', () => {
 // ==========================================
 //   WEB AUDIO
 // ==========================================
-let audioCtx = null, soundMuted = false;
-function initAudio() { if (!audioCtx && !soundMuted) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-function playTone(type, vol = 0.22) {
-    if (soundMuted) return;
-    try {
-        initAudio();
-        if (!audioCtx) return;
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        gain.gain.setValueAtTime(vol, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
-        if (type === 'success')  { osc.frequency.value = 880; osc.type = 'sine'; }
-        else if (type === 'fail') { osc.frequency.value = 220; osc.type = 'sawtooth'; }
-        else if (type === 'coin') { osc.frequency.value = 1200; osc.type = 'triangle'; osc.frequency.exponentialRampToValueAtTime(600, now + 0.15); }
-        else if (type === 'upgrade') { osc.frequency.value = 523.25; osc.type = 'sine'; osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.2); }
-        else return;
-        osc.start(); osc.stop(now + 0.45);
-    } catch (e) {}
-}
+let bgMusicMuted = false;
+function initAudio() {}
+function playTone(type, vol = 0.22) { /* UI sounds disabled */ }
 function toggleSoundMute() {
-    soundMuted = !soundMuted;
+    bgMusicMuted = !bgMusicMuted;
     const btn = document.getElementById('toggleSoundBtn');
-    btn.innerHTML = soundMuted ? '<i class="material-icons">volume_off</i>' : '<i class="material-icons">volume_up</i>';
+    btn.innerHTML = bgMusicMuted ? '<i class="material-icons">volume_off</i>' : '<i class="material-icons">volume_up</i>';
     const bgMusic = document.getElementById('bg-music');
     if (bgMusic) {
-        if (soundMuted) bgMusic.pause();
+        if (bgMusicMuted) bgMusic.pause();
         else bgMusic.play().catch(() => {});
     }
-    if (!soundMuted && audioCtx) audioCtx.resume();
+}
+
+// ==========================================
+//   OOP — BASE ENTITY CLASS
+// ==========================================
+class Entity {
+    constructor({ name = 'Unknown', hp = 100, maxHp = 100 } = {}) {
+        this.name   = name;
+        this.hp     = hp;
+        this.maxHp  = maxHp;
+    }
+
+    isAlive()       { return this.hp > 0; }
+    getHpPercent()  { return (this.hp / this.maxHp) * 100; }
+
+    takeDamage(amount) {
+        this.hp = Math.max(0, this.hp - amount);
+        return this;
+    }
+
+    heal(amount) {
+        this.hp = Math.min(this.maxHp, this.hp + amount);
+        return this;
+    }
+}
+
+// ==========================================
+//   OOP — ITEM BASE CLASS
+// ==========================================
+class Item {
+    constructor({ id, name, price = 0, desc = '', color = '#8e8e93' } = {}) {
+        this.id    = id;
+        this.name  = name;
+        this.price = price;
+        this.desc  = desc;
+        this.color = color;
+    }
+
+    getSellPrice(ratio = 0.5) { return Math.floor(this.price * ratio); }
+    toJSON() { return { ...this }; }
+}
+
+// ==========================================
+//   OOP — WEAPON CLASS  (extends Item)
+// ==========================================
+class Weapon extends Item {
+    constructor({ id, name, price, desc, color, crimeBonus = 0, hpProtect = 0, reqRank = null }) {
+        super({ id, name, price, desc, color });
+        this.crimeBonus = crimeBonus;
+        this.hpProtect  = hpProtect;
+        this.reqRank    = reqRank;
+    }
+
+    getCrimeBonusPct() { return Math.round(this.crimeBonus * 100); }
+}
+
+// ==========================================
+//   OOP — ARMOR CLASS  (extends Item)
+// ==========================================
+class Armor extends Item {
+    constructor({ id, name, price, desc, color, hpProtect = 0, reqRank = null }) {
+        super({ id, name, price, desc, color });
+        this.hpProtect = hpProtect;
+        this.reqRank   = reqRank;
+    }
+}
+
+// ==========================================
+//   OOP — CAR CLASS  (extends Item)
+// ==========================================
+class Car extends Item {
+    constructor({ id, name, title, price, condition = 100, imgUrl = '', isNew = false, type = '' } = {}) {
+        super({ id: id || ('car_' + Date.now() + Math.random()), name: name || title || 'Unknown', price, color: '#0a84ff' });
+        this.condition = condition;
+        this.imgUrl    = imgUrl;
+        this.isNew     = isNew;
+        this.type      = type;
+    }
+
+    depreciate(amount = 5) {
+        this.condition  = Math.max(0, this.condition - amount);
+        this.price      = Math.floor(this.price * (this.condition / 100));
+        return this;
+    }
+}
+
+// ==========================================
+//   OOP — REAL ESTATE CLASS  (extends Item)
+// ==========================================
+class RealEstate extends Item {
+    constructor({ id, type, title, name, desc, price, rentInc = 0, imgIcon = 'home', isRented = false } = {}) {
+        super({ id, name: title || name, price, desc, color: '#32d74b' });
+        this.type     = type;
+        this.imgIcon  = imgIcon;
+        this.rentInc  = rentInc;
+        this.isRented = isRented;
+        // keep alias for backward compat with existing HTML renders
+        this.title = this.name;
+    }
+
+    toggleRent()         { this.isRented = !this.isRented; return this; }
+    getMonthlyIncome()   { return this.isRented ? this.rentInc : 0; }
+}
+
+// ==========================================
+//   OOP — NPC FAMILY CLASS
+// ==========================================
+class NPCFamily {
+    constructor({ name, boss, territory, power, members, color }) {
+        this.name      = name;
+        this.boss      = boss;
+        this.territory = territory;
+        this.power     = power;
+        this.members   = members;
+        this.color     = color;
+    }
+
+    getPowerRating() { return Math.floor(this.power * 0.7 + this.members * 0.3); }
+
+    toCard() {
+        return `<div class="card" style="border-left:4px solid ${this.color};">
+            <h3 style="color:${this.color};"><i class="material-icons">groups</i> ${this.name} Ընտ.</h3>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Բosս:</b> ${this.boss}</p>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Տ-ք:</b> ${this.territory}</p>
+            <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;">
+                <div style="text-align:center;">
+                    <div style="font-size:20px;font-weight:800;color:${this.color};">${this.power}</div>
+                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ուժ</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:20px;font-weight:800;color:var(--text-l);">${this.members}</div>
+                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Անdamner</div>
+                </div>
+            </div>
+        </div>`;
+    }
+}
+
+// ==========================================
+//   OOP — PLAYER'S OWN FAMILY
+// ==========================================
+class PlayerFamily {
+    constructor({ name = '', members = 5, power = 15 } = {}) {
+        this.name    = name;
+        this.members = members;
+        this.power   = power;
+    }
+
+    upgradePower(cost) {
+        if (!window.player || !window.player.canAfford(cost)) return false;
+        window.player.spendMoney(cost);
+        this.power += 10;
+        return true;
+    }
+
+    recruitMember(cost) {
+        if (!window.player || !window.player.canAfford(cost)) return false;
+        window.player.spendMoney(cost);
+        this.members += 1;
+        return true;
+    }
+
+    toJSON() { return { name: this.name, members: this.members, power: this.power }; }
+}
+
+// ==========================================
+//   OOP — PLAYER CLASS  (extends Entity)
+// ==========================================
+const DEFAULT_LEADERBOARDS = [
+    {name:"Vito Corleone", cash:1500000},
+    {name:"Tony Montana",  cash:850000 },
+    {name:"Al Capone",     cash:400000 },
+    {name:"Սksnake",       cash:100    }
+];
+
+class Player extends Entity {
+    constructor(data = {}) {
+        super({ name: data.name || 'Unnamed', hp: data.hp ?? 100, maxHp: data.maxHp ?? 100 });
+
+        // ── Financial ──────────────────────────────────────────
+        this.money        = data.money        ?? 100;
+        this.bank         = data.bank         ?? 0;
+        this.bankAccount  = data.bankAccount  || generatedBankAcc;
+        this.loan         = data.loan         ?? 0;
+        this.stash        = data.stash        ?? 0;
+        this.dirtyMoney   = data.dirtyMoney   ?? 0;
+
+        // ── Vitals ─────────────────────────────────────────────
+        this.energy       = data.energy       ?? 100;
+        this.maxEnergy    = data.maxEnergy    ?? 100;
+
+        // ── Progression ────────────────────────────────────────
+        this.exp          = data.exp          ?? 0;
+        this.rank         = data.rank         ?? 'Դatarcapорт';
+        this.reputation   = data.reputation   ?? 50;
+
+        // ── Game state ─────────────────────────────────────────
+        this.inPrison              = data.inPrison              ?? false;
+        this.prisonTime            = data.prisonTime            ?? 0;
+        this.dayTime               = data.dayTime               ?? 12;
+        this.bizSlots              = data.bizSlots              ?? 5;
+        this.garageLimit           = data.garageLimit           ?? 10;
+        this.activeCrimeCarIndex   = data.activeCrimeCarIndex   ?? -1;
+
+        // ── Collections (typed) ────────────────────────────────
+        this.garage      = (data.garage      || []).map(c => c instanceof Car        ? c : new Car(c));
+        this.realEstate  = (data.realEstate  || []).map(e => e instanceof RealEstate ? e : new RealEstate(e));
+        this.businesses  = data.businesses || [];
+
+        // ── Inventory ──────────────────────────────────────────
+        this.inventory = {
+            ownedWeaponIds:   (data.inventory?.ownedWeaponIds  ) || [],
+            equippedWeaponId: (data.inventory?.equippedWeaponId) || null,
+            ownedArmorIds:    (data.inventory?.ownedArmorIds   ) || [],
+            equippedArmorId:  (data.inventory?.equippedArmorId ) || null,
+        };
+
+        // ── Crypto ─────────────────────────────────────────────
+        this.cryptoBalances = data.cryptoBalances || {};
+
+        // ── Family ─────────────────────────────────────────────
+        this.family = data.family ? (data.family instanceof PlayerFamily ? data.family : new PlayerFamily(data.family)) : null;
+
+        // ── Statistics ─────────────────────────────────────────
+        this.stats = {
+            crimes:   data.stats?.crimes   ?? 0,
+            cars:     data.stats?.cars     ?? 0,
+            earnings: data.stats?.earnings ?? 0,
+            minutes:  data.stats?.minutes  ?? 0,
+        };
+
+        this.quests       = data.quests       || [];
+        this.leaderboards = data.leaderboards || [...DEFAULT_LEADERBOARDS];
+    }
+
+    // ── XP & Rank ────────────────────────────────────────────
+    gainXp(amount) {
+        this.exp += amount;
+        this.checkRank();
+        return this;
+    }
+
+    checkRank() {
+        let newRank = this.rank;
+        for (let i = ranks.length - 1; i >= 0; i--) {
+            if (this.exp >= ranks[i].exp) { newRank = ranks[i].name; break; }
+        }
+        if (newRank !== this.rank) {
+            this.rank = newRank;
+            showNotification(`⭐ Նոր կochum: ${this.rank}`, true);
+        }
+        return this;
+    }
+
+    getNextRankInfo() {
+        for (let i = 0; i < ranks.length; i++) {
+            if (this.exp < ranks[i].exp) return ranks[i];
+        }
+        return null;
+    }
+
+    getXpPercent() {
+        const next = this.getNextRankInfo();
+        return next ? Math.min(100, (this.exp / next.exp) * 100) : 100;
+    }
+
+    hasRank(reqRank) {
+        if (!reqRank) return true;
+        const names = ranks.map(r => r.name);
+        const myIdx  = names.indexOf(this.rank);
+        const reqIdx = names.indexOf(reqRank);
+        return reqIdx === -1 || myIdx >= reqIdx;
+    }
+
+    // ── Financial helpers ────────────────────────────────────
+    canAfford(amount)     { return this.money >= amount; }
+    addMoney(amount)      { this.money += amount; if (amount > 0) this.stats.earnings += amount; return this; }
+    spendMoney(amount)    { if (!this.canAfford(amount)) return false; this.money -= amount; return true; }
+
+    // ── Energy helpers ───────────────────────────────────────
+    spendEnergy(amount)   { if (this.energy < amount) return false; this.energy -= amount; return true; }
+    regenEnergy(amount = 0.5) { this.energy = Math.min(this.maxEnergy, this.energy + amount); return this; }
+
+    // ── Inventory helpers ─────────────────────────────────────
+    getEquippedWeapon()   { return weaponsData.find(w => w.id === this.inventory.equippedWeaponId) || null; }
+    getEquippedArmor()    { return armorData.find(a  => a.id === this.inventory.equippedArmorId)   || null; }
+
+    getCrimeBonus() {
+        const w = this.getEquippedWeapon();
+        return w ? w.crimeBonus : 0;
+    }
+
+    getHpProtection() {
+        const w = this.getEquippedWeapon();
+        const a = this.getEquippedArmor();
+        return (w ? w.hpProtect : 0) + (a ? a.hpProtect : 0);
+    }
+
+    // ── Prison ───────────────────────────────────────────────
+    sendToPrison(seconds) {
+        this.inPrison   = true;
+        this.prisonTime = seconds;
+        return this;
+    }
+
+    // ── Net worth ────────────────────────────────────────────
+    getNetWorth() {
+        let crypto = 0;
+        if (typeof cryptosData !== 'undefined' && typeof cryptoPrices !== 'undefined') {
+            cryptosData.forEach(c => crypto += (this.cryptoBalances[c.id] || 0) * cryptoPrices[c.id]);
+        }
+        const estateVal = this.realEstate.reduce((s, e) => s + e.price, 0);
+        const carsVal   = this.garage.reduce((s, c) => s + c.price, 0);
+        let nw = this.money + this.bank + this.stash + crypto + estateVal + carsVal - this.loan;
+        this.businesses.forEach(b => { if (b.type === 'bank' && b.storedMoney) nw += b.storedMoney; });
+        return Math.floor(nw);
+    }
+
+    // ── Serialization ─────────────────────────────────────────
+    toJSON() {
+        return {
+            name:              this.name,
+            hp:                this.hp,
+            maxHp:             this.maxHp,
+            money:             this.money,
+            bank:              this.bank,
+            bankAccount:       this.bankAccount,
+            loan:              this.loan,
+            stash:             this.stash,
+            dirtyMoney:        this.dirtyMoney,
+            energy:            this.energy,
+            maxEnergy:         this.maxEnergy,
+            exp:               this.exp,
+            rank:              this.rank,
+            reputation:        this.reputation,
+            inPrison:          this.inPrison,
+            prisonTime:        this.prisonTime,
+            dayTime:           this.dayTime,
+            bizSlots:          this.bizSlots,
+            garageLimit:       this.garageLimit,
+            activeCrimeCarIndex: this.activeCrimeCarIndex,
+            garage:            this.garage.map(c => c.toJSON()),
+            realEstate:        this.realEstate.map(e => e.toJSON()),
+            businesses:        this.businesses,
+            inventory:         this.inventory,
+            cryptoBalances:    this.cryptoBalances,
+            family:            this.family ? this.family.toJSON() : null,
+            stats:             this.stats,
+            quests:            this.quests,
+            leaderboards:      this.leaderboards,
+        };
+    }
+
+    static fromJSON(data) { return new Player(data); }
 }
 
 // ==========================================
@@ -1930,25 +2263,17 @@ const expensiveCars = [
 //   PLAYER & DEFAULT STATE
 // ==========================================
 const generatedBankAcc = "AM" + Math.floor(Math.random()*900000+100000);
+
+// getDefaultPlayerState kept for backward compat with loadGame merge
 function getDefaultPlayerState() {
-    let p = {
-        money: 100, // Harder start
-        bank: 0, bankAccount: generatedBankAcc,
-        realEstate: [], energy: 100, maxEnergy: 100, hp: 100, maxHp: 100, exp: 0, rank: "Դատարկապորտ",
-        inPrison: false, prisonTime: 0, garage: [], garageLimit: 10,
-        activeCrimeCarIndex: -1, loan: 0, businesses: [], bizSlots: 5,
-        cryptoBalances: {}, stash: 0, dirtyMoney: 0, reputation: 50, dayTime: 12, quests: [], family: null,
-        inventory: { ownedWeaponIds: [], equippedWeaponId: null, ownedArmorIds: [], equippedArmorId: null },
-        stats: { crimes: 0, cars: 0, earnings: 0, minutes: 0 },
-        leaderboards: [
-            {name: "Vito Corleone", cash: 1500000}, {name: "Tony Montana", cash: 850000},
-            {name: "Al Capone", cash: 400000}, {name: "Սկսնակ", cash: 100}
-        ]
-    };
+    let p = new Player({});
     cryptosData.forEach(c => p.cryptoBalances[c.id] = 0.0);
     return p;
 }
-let player = getDefaultPlayerState();
+
+// Global player instance — now a typed Player class
+let player = new Player({});
+cryptosData.forEach(c => player.cryptoBalances[c.id] = 0.0);
 
 const ranks = [
     {exp:0,    name:"Դատարկապորտ"},
@@ -2137,10 +2462,10 @@ function updateUI() {
     if (hpBar) hpBar.style.width = Math.min(100, (player.hp / player.maxHp) * 100) + '%';
     if (nrgBar) nrgBar.style.width = Math.min(100, (player.energy / player.maxEnergy) * 100) + '%';
 
-    // XP bar
-    let nextExpVal = null;
-    for (let i = 0; i < ranks.length; i++) { if (player.exp < ranks[i].exp) { nextExpVal = ranks[i].exp; break; } }
-    const xpPct = nextExpVal ? Math.min(100, (player.exp / nextExpVal) * 100) : 100;
+    // XP bar — uses Player.getNextRankInfo() / getXpPercent()
+    const _nextRank = player.getNextRankInfo();
+    const nextExpVal = _nextRank ? _nextRank.exp : null;
+    const xpPct = player.getXpPercent();
     const xpBar = document.getElementById('sidebar-xp-bar');
     if (xpBar) xpBar.style.width = xpPct + '%';
     safe('sidebar-xp-text', `${player.exp} / ${nextExpVal || 'MAX'}`);
@@ -2152,13 +2477,8 @@ function updateUI() {
     const titleEl = document.getElementById('active-crypto-title');
     if (titleEl && activeCoin) titleEl.innerHTML = `<i class="material-icons" style="color:${activeCoin.color};">${activeCoin.icon}</i> ${activeCoin.name} (${activeCryptoId})`;
 
-    // Networth
-    let totalCryptoFiat = 0;
-    cryptosData.forEach(c => totalCryptoFiat += player.cryptoBalances[c.id] * cryptoPrices[c.id]);
-    let estateVal = player.realEstate.reduce((s, x) => s + x.price, 0);
-    let carsVal = player.garage.reduce((s, c) => s + c.price, 0);
-    let netWorth = player.money + player.bank + player.stash + totalCryptoFiat + estateVal + carsVal - player.loan;
-    player.businesses.forEach(b => { if (b.type === 'bank' && b.storedMoney) netWorth += b.storedMoney; });
+    // Networth — delegates to Player.getNetWorth()
+    let netWorth = player.getNetWorth();
 
     safe('main-networth', Math.floor(netWorth).toLocaleString());
     safe('main-exp', player.exp);
@@ -2234,11 +2554,8 @@ function showNotification(msg, ok = true) {
 //   CHECK RANK
 // ==========================================
 function checkRank() {
-    let newRank = player.rank;
-    for (let i = ranks.length - 1; i >= 0; i--) {
-        if (player.exp >= ranks[i].exp) { newRank = ranks[i].name; break; }
-    }
-    if (newRank !== player.rank) { player.rank = newRank; showNotification(`⭐ Նոր կոչում: ${player.rank}`, true); }
+    // Delegates to Player.checkRank() — see OOP Player class above
+    player.checkRank();
 }
 
 // ==========================================
@@ -2327,7 +2644,7 @@ function attemptCarTheft(type, cost, chance) {
         let carList = type === 'cheap' ? cheapCars : expensiveCars;
         let car = carList[Math.floor(Math.random() * carList.length)];
         let price = Math.floor(car.basePrice * (0.8 + Math.random() * 0.4));
-        player.garage.push({ name: car.name, price, imgUrl: car.imgUrl });
+        player.garage.push(new Car({ name: car.name, price, imgUrl: car.imgUrl }));
         player.exp += cost;
         player.stats.cars++;
         showNotification(`🚗 Գողացվել է ${car.name} (+${cost} XP)`, true);
@@ -2496,11 +2813,11 @@ function bankLoanAction(type) {
 // ==========================================
 //   PRISON
 // ==========================================
-function goToPrison(time) {
-    player.inPrison=true; player.prisonTime=time;
-    showNotification("🚔 Բռնվեցիք!", false);
-    const el = document.querySelector('.menu a[onclick*="prison"]');
-    switchTab('prison', el);
+function goToPrison(t) {
+    // Delegates to Player.sendToPrison()
+    player.sendToPrison(t);
+    showNotification("🚔 Բantel", false);
+    playTone('fail', .3);
     updateUI();
 }
 function payBribe() {
@@ -2665,11 +2982,11 @@ function launderAll() {
 //   FAMILIES
 // ==========================================
 const mafiaFamilies = [
-    { name:"Bambino",   boss:"Don Carmine Bambino",  territory:"Հյուսիս Թաղ",    power:85, members:42, color:"#ff9f0a" },
-    { name:"Banano",    boss:"Don Luigi Banano",     territory:"Հարավ Թաղ",      power:72, members:35, color:"#0a84ff" },
-    { name:"Gambino",   boss:"Don Carlo Gambino",    territory:"Կենտրոն",         power:95, members:58, color:"#ff3b30" },
-    { name:"Chenovese", boss:"Don Vito Chenovese",   territory:"Արևելյան Թաղ",   power:78, members:40, color:"#32d74b" },
-    { name:"Colombo",   boss:"Don Joe Colombo",      territory:"Արևմտյան Թաղ",   power:68, members:31, color:"#bf5af2" }
+    new NPCFamily({ name:"Bambino",   boss:"Don Carmine Bambino",  territory:"Հյուսիս Թաղ",    power:85, members:42, color:"#ff9f0a" }),
+    new NPCFamily({ name:"Banano",    boss:"Don Luigi Banano",     territory:"Հարավ Թաղ",      power:72, members:35, color:"#0a84ff" }),
+    new NPCFamily({ name:"Gambino",   boss:"Don Carlo Gambino",    territory:"Կենտրոն",         power:95, members:58, color:"#ff3b30" }),
+    new NPCFamily({ name:"Chenovese", boss:"Don Vito Chenovese",   territory:"Արևելյան Թաղ",   power:78, members:40, color:"#32d74b" }),
+    new NPCFamily({ name:"Colombo",   boss:"Don Joe Colombo",      territory:"Արևمتյான Թaghk",   power:68, members:31, color:"#bf5af2" }),
 ];
 
 function renderFamilies() {
@@ -2677,23 +2994,8 @@ function renderFamilies() {
     if (!npcList) return;
 
     let html = '';
-    mafiaFamilies.forEach(f => {
-        html += `<div class="card" style="border-left:4px solid ${f.color};">
-            <h3 style="color:${f.color};"><i class="material-icons">groups</i> ${f.name} Ընտ.</h3>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Բոսս:</b> ${f.boss}</p>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Տ-ք:</b> ${f.territory}</p>
-            <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;">
-                <div style="text-align:center;">
-                    <div style="font-size:20px;font-weight:800;color:${f.color};">${f.power}</div>
-                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ուժ</div>
-                </div>
-                <div style="text-align:center;">
-                    <div style="font-size:20px;font-weight:800;color:var(--text-l);">${f.members}</div>
-                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Անդամ</div>
-                </div>
-            </div>
-        </div>`;
-    });
+        // Uses NPCFamily.toCard() — see NPCFamily class above
+    mafiaFamilies.forEach(f => { html += f.toCard(); });
     npcList.innerHTML = html;
 
     // My family section
@@ -2733,7 +3035,7 @@ function createMyFamily() {
     if (player.money < 250000) return showNotification("$250,000 չկա", false);
     if (mafiaFamilies.find(f=>f.name.toLowerCase()===name.toLowerCase())) return showNotification("Այդ անունն արդ. կա", false);
     player.money -= 250000;
-    player.family = { name, members: 5, power: 15 };
+    player.family = new PlayerFamily({ name, members: 5, power: 15 });
     showNotification(`🏰 ${name} ընտ. հիմնվեց!`, true);
     playTone('upgrade', .35);
     spawnFloatMoney(250000, false);
@@ -2763,47 +3065,38 @@ function recruitFamilyMember() {
 //   WEAPONS & INVENTORY DATA
 // ==========================================
 const weaponsData = [
-    { id:'knife',    name:'🔪 Դանակ',          price:500,    crimeBonus:0.05, hpProtect:0,  desc:'Փողոցային հիմնական զենք։ +5% հաջողություն։',                  color:'#8e8e93' },
-    { id:'pistol',   name:'🔫 Ատրճ. (PM)',      price:2500,   crimeBonus:0.10, hpProtect:5,  desc:'Ստանդ. ատրճ.։ +10% հ., -5 HP կ.',                            color:'#ff9f0a' },
-    { id:'revolver', name:'🔫 Ռևոլվեր',         price:5000,   crimeBonus:0.15, hpProtect:8,  desc:'Ծանր ռևոլ.։ +15% հ., -8 HP կ.',                              color:'#ff9500' },
-    { id:'shotgun',  name:'💥 Ռազ. Հրաձ.',      price:9000,   crimeBonus:0.18, hpProtect:12, desc:'Կարճ հ. ռ. հ.։ +18% հ., -12 HP կ.',                          color:'#ff6b35' },
-    { id:'thomson',  name:'🔫 Թոմսոն (SMG)',     price:18000,  crimeBonus:0.25, hpProtect:18, desc:'Ենթ. հ. ապ.։ +25% հ., -18 HP կ. | Պ. «Կապո»',               color:'var(--accent)', reqRank:'Կապո' },
-    { id:'ak47',     name:'⚙️ AK-47',            price:30000,  crimeBonus:0.32, hpProtect:25, desc:'Ծ. ռ., ծ. հ. ռ.։ +32% հ., -25 HP կ. | Պ. «Դոն»',           color:'var(--ok)',    reqRank:'Դոն' },
+    new Weapon({ id:'knife',    name:'🔪 Դanakk',          price:500,    crimeBonus:0.05, hpProtect:0,  desc:'Fpolocain himnakan zenk. +5% hajolutyun.',   color:'#8e8e93' }),
+    new Weapon({ id:'pistol',   name:'🔫 Atrch. (PM)',      price:2500,   crimeBonus:0.10, hpProtect:5,  desc:'Standart atchanak. +10% h., -5 HP.',         color:'#ff9f0a' }),
+    new Weapon({ id:'revolver', name:'🔫 Revolver',         price:5000,   crimeBonus:0.15, hpProtect:8,  desc:'Tsanak revolver. +15% h., -8 HP.',           color:'#ff9500' }),
+    new Weapon({ id:'shotgun',  name:'💥 Razm.Hrad.',       price:9000,   crimeBonus:0.18, hpProtect:12, desc:'Kark h. razm. +18% h., -12 HP.',             color:'#ff6b35' }),
+    new Weapon({ id:'thomson',  name:'🔫 Thomson (SMG)',     price:18000,  crimeBonus:0.25, hpProtect:18, desc:'Ent. h. aparat. +25% h., -18 HP. | Kapo',   color:'var(--accent)', reqRank:'Կapо' }),
+    new Weapon({ id:'ak47',     name:'⚙️ AK-47',            price:30000,  crimeBonus:0.32, hpProtect:25, desc:'Tsank razm. +32% h., -25 HP. | Don',        color:'var(--ok)',    reqRank:'Դon' }),
 ];
 
 const armorData = [
-    { id:'jacket',   name:'🧥 Կաշ. Բաճ.',       price:800,    hpProtect:8,  desc:'Հիմ. պ. հ.։ -8 HP կ.',                                              color:'#8e8e93' },
-    { id:'vest',     name:'🦺 Հ. Բ.Բ.',          price:6000,   hpProtect:20, desc:'Ս. հ. բ. բ.։ -20 HP կ. | Պ. «Ավ.»',                                color:'#0a84ff', reqRank:'Ավազակ' },
-    { id:'heavyarmor',name:'🛡️ Ծ. Զ.',           price:20000,  hpProtect:35, desc:'Ծ. հ. ռ.։ -35 HP կ. | Պ. «Մ.»',                                   color:'#5e5ce6', reqRank:'Մաֆիոզ' },
+    new Armor({ id:'jacket',    name:'🧥 Kash. Bachk.',      price:800,   hpProtect:8,  desc:'Him. pashtpan. -8 HP.',             color:'#8e8e93' }),
+    new Armor({ id:'vest',      name:'🦺 H. Bzrk. Bak.',     price:6000,  hpProtect:20, desc:'S. h. bzrk. bak. -20 HP. | Avazak', color:'#0a84ff', reqRank:'Avasakk' }),
+    new Armor({ id:'heavyarmor',name:'🛡️ Tsank Zrah.',        price:20000, hpProtect:35, desc:'Tsank h. razm. -35 HP. | Mafioz',   color:'#5e5ce6', reqRank:'Маfioz' }),
 ];
 
 // Full name map for req ranks display
 const rankReqFull = { 'Ավ.':'Ավազակ', 'Մ.':'Մաֆիոզ', 'Կ.':'Կapо' };
 
-function getEquippedWeapon()  { return weaponsData.find(w => w.id === (player.inventory||{}).equippedWeaponId) || null; }
-function getEquippedArmor()   { return armorData.find(a => a.id === (player.inventory||{}).equippedArmorId)   || null; }
+function getEquippedWeapon()  { return player.getEquippedWeapon(); }
+function getEquippedArmor()   { return player.getEquippedArmor();  }
 
 function getInventoryCrimeBonus() {
-    let b = 0;
-    const w = getEquippedWeapon(); if (w) b += w.crimeBonus;
-    return b;
+    // Delegates to Player.getCrimeBonus()
+    return player.getCrimeBonus();
 }
 function getInventoryHpProtect() {
-    let p = 0;
-    const w = getEquippedWeapon(); if (w) p += w.hpProtect;
-    const a = getEquippedArmor();  if (a) p += a.hpProtect;
-    return p;
+    // Delegates to Player.getHpProtection()
+    return player.getHpProtection();
 }
 
 function playerHasRank(reqRank) {
-    if (!reqRank) return true;
-    const order = ['Դատarkcapорт','Դatarcapорт','Դat.','Դ.','Գ.','Ա.','Մ.','Կ.','Դ.','Կ.'];
-    const allRanks = ['Դատarkcapорт','Գрпan.','Ավazak','Մafia','Կapо','Դon','Կnukhayр'];
-    const rankNames = ranks.map(r=>r.name);
-    const myIdx  = rankNames.indexOf(player.rank);
-    const reqIdx = rankNames.indexOf(reqRank);
-    if (reqIdx === -1) return true;
-    return myIdx >= reqIdx;
+    // Delegates to Player.hasRank()
+    return player.hasRank(reqRank);
 }
 
 // ==========================================
@@ -2992,31 +3285,43 @@ function gamble(chosen) {
     if (isSpinning||player.inPrison) return;
     let amt = parseInt(document.getElementById('betAmt').value);
     if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification("Սխ. Գ.", false);
+    // Max bet cap to limit easy winnings
+    const MAX_BET = 5000;
+    if (amt > MAX_BET) return showNotification(`Մաքս. խաղադրույք $${MAX_BET.toLocaleString()}`, false);
     player.money -= amt; updateUI(); isSpinning=true;
     document.getElementById('btn-red').disabled=true;
     document.getElementById('btn-black').disabled=true;
     document.getElementById('roulette-result').innerHTML='';
-    let wNum = Math.floor(Math.random()*37);
+    // American-style double zero (0 and 37 = green) → higher house edge (~10%)
+    let wNum = Math.floor(Math.random()*38);
     let wColor = 'green';
-    if (wNum!==0) {
+    if (wNum!==0 && wNum!==37) {
         if ((wNum>=1&&wNum<=10)||(wNum>=19&&wNum<=28)) wColor = wNum%2!==0?'red':'black';
         else wColor = wNum%2===0?'red':'black';
     }
     let isWin = chosen===wColor;
     let offset = wColor==='red'?[22.5,112.5,202.5,292.5][Math.floor(Math.random()*4)]:wColor==='black'?[67.5,157.5,247.5,337.5][Math.floor(Math.random()*4)]:[0,90,180,270][Math.floor(Math.random()*4)];
-    currentRotation += 1800+(360-offset);
+    // Correct rotation: pointer is fixed at top; rotating R degrees clockwise
+    // puts the sector originally at (360-R)%360 under the pointer.
+    // To land on `offset`, we need R%360 = (360-offset)%360.
+    let targetR = (360 - offset + 360) % 360;
+    let prevMod = currentRotation % 360;
+    let delta = (targetR - prevMod + 360) % 360;
+    if (delta < 45) delta += 360; // ensure visible spin
+    currentRotation += 1440 + delta;
     document.getElementById('roulette-wheel').style.transform=`rotate(${currentRotation}deg)`;
     setTimeout(()=>{
         isSpinning=false;
         document.getElementById('btn-red').disabled=false;
         document.getElementById('btn-black').disabled=false;
         if (isWin) {
-            let win=amt*2; player.money+=win; player.stats.earnings+=win-amt;
-            showNotification(`🎉 +$${win}`, true); playTone('success',.35);
+            // Payout 1.9x instead of 2x — house edge
+            let win=Math.floor(amt*1.9); player.money+=win; player.stats.earnings+=win-amt;
+            showNotification(`🎉 +$${win}`, true);
             spawnFloatMoney(win, true);
             document.getElementById('roulette-result').innerHTML=`<span style="color:var(--ok)">+$${win} | ${wColor}</span>`;
         } else {
-            showNotification(`💀 ${wColor}`, false); playTone('fail',.3);
+            showNotification(`💀 ${wColor}`, false);
             document.getElementById('roulette-result').innerHTML=`<span style="color:var(--accent)">-$${amt} | ${wColor}</span>`;
         }
         updateUI();
@@ -3144,7 +3449,7 @@ function closeEstateModal() { document.getElementById('estate-modal').style.disp
 function buyEstate(id) {
     let i=estateMarketData.findIndex(e=>e.id===id); if(i===-1)return;
     let x=estateMarketData[i];
-    if(player.money>=x.price){player.money-=x.price;player.realEstate.push({...x,isRented:false});estateMarketData.splice(i,1);showNotification(`🏠 ${x.title}`,true);spawnFloatMoney(x.price,false);playTone('upgrade',.25);closeEstateModal();updateUI();renderEstate();}
+    if(player.money>=x.price){player.money-=x.price;player.realEstate.push(new RealEstate({...x,isRented:false}));estateMarketData.splice(i,1);showNotification(`🏠 ${x.title}`,true);spawnFloatMoney(x.price,false);playTone('upgrade',.25);closeEstateModal();updateUI();renderEstate();}
     else showNotification("Գումարը չի հերիքում",false);
 }
 function toggleRent(i){player.realEstate[i].isRented=!player.realEstate[i].isRented;showNotification(player.realEstate[i].isRented?"Վարձով տրվեց":"Հանվեց",true);playTone('coin',.1);renderEstate();}
@@ -3322,7 +3627,8 @@ function getSaveKey() {
 }
 
 function saveGame() {
-    localStorage.setItem(getSaveKey(), JSON.stringify(player));
+    // Uses Player.toJSON() for clean serialization
+    localStorage.setItem(getSaveKey(), JSON.stringify(player.toJSON()));
     // Auto-save silent - no notification
 }
 
@@ -3331,7 +3637,9 @@ function loadGame(manual = false) {
     if (saved) {
         try {
             let parsed = JSON.parse(saved);
-            player = { ...getDefaultPlayerState(), ...parsed };
+            // Reconstruct typed Player instance from saved JSON (OOP)
+            player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
+            cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
             if (manual) showNotification('📥 Խաղը վերականգնվեց', true);
             updateUI();
             renderGarage();
