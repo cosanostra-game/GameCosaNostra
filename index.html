@@ -1959,7 +1959,7 @@ class NPCFamily {
     toCard() {
         return `<div class="card" style="border-left:4px solid ${this.color};">
             <h3 style="color:${this.color};"><i class="material-icons">groups</i> ${this.name} Ընտ.</h3>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Բosս:</b> ${this.boss}</p>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Բոսս:</b> ${this.boss}</p>
             <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Տ-ք:</b> ${this.territory}</p>
             <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;">
                 <div style="text-align:center;">
@@ -1968,7 +1968,7 @@ class NPCFamily {
                 </div>
                 <div style="text-align:center;">
                     <div style="font-size:20px;font-weight:800;color:var(--text-l);">${this.members}</div>
-                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Անdamner</div>
+                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Անդամներ</div>
                 </div>
             </div>
         </div>`;
@@ -2982,8 +2982,8 @@ function launderAll() {
 //   FAMILIES
 // ==========================================
 const mafiaFamilies = [
-    new NPCFamily({ name:"Bambino",   boss:"Don Carmine Bambino",  territory:"Հյուսիսային Թաղ",    power:85, members:42, color:"#ff9f0a" }),
-    new NPCFamily({ name:"Banano",    boss:"Don Luigi Banano",     territory:"Հարավային Թաղ",      power:72, members:35, color:"#0a84ff" }),
+    new NPCFamily({ name:"Bambino",   boss:"Don Carmine Bambino",  territory:"Հյուսիս Թաղ",    power:85, members:42, color:"#ff9f0a" }),
+    new NPCFamily({ name:"Banano",    boss:"Don Luigi Banano",     territory:"Հարավ Թաղ",      power:72, members:35, color:"#0a84ff" }),
     new NPCFamily({ name:"Gambino",   boss:"Don Carlo Gambino",    territory:"Կենտրոն",         power:95, members:58, color:"#ff3b30" }),
     new NPCFamily({ name:"Chenovese", boss:"Don Vito Chenovese",   territory:"Արևելյան Թաղ",   power:78, members:40, color:"#32d74b" }),
     new NPCFamily({ name:"Colombo",   boss:"Don Joe Colombo",      territory:"Արևմտյան Թաղ",   power:68, members:31, color:"#bf5af2" }),
