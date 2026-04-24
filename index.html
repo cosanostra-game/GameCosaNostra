@@ -1267,7 +1267,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <section id="page-families" class="page">
         <h1><i class="material-icons">groups</i> Ընտանիքներ</h1>
-        <p style="color:var(--text);margin-bottom:20px;">Քաղաքի 5 հայտնի մաֆիոզ ընտանիքները, որոնք կիսել են տարածքը։ Հասիր <b style="color:var(--accent);">Կապո</b> կոչումին և ունեցիր <b style="color:var(--ok);">$250,000</b> — ստեղծիր 6-րդ ընտանիքը։</p>
+        <p style="color:var(--text);margin-bottom:20px;">Քաղաքի 5 հայտնի մաֆիոզ ընտանիքները, որոնք կիսել են տարածքը։ Հասիր <b style="color:var(--accent);">Մաֆիոզ</b> կոչումին և ունեցիր <b style="color:var(--ok);">$250,000</b> — ստեղծիր 6-րդ ընտանիքը։</p>
         <div id="families-npc-list" class="cards-grid"></div>
         <div id="my-family-section" style="margin-top:24px;"></div>
     </section>
@@ -3030,8 +3030,8 @@ function createMyFamily() {
     let name = (document.getElementById('familyNameInput')||{}).value;
     if (!name || !name.trim()) return showNotification("Գրեք ընտ. անուն", false);
     name = name.trim();
-    const canCreate = player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
-    if (!canCreate) return showNotification("Կոչումը բավ. չէ (Կ. Կապո)", false);
+    const canCreate = player.rank === 'Մաֆիոզ' || player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
+    if (!canCreate) return showNotification("Կոչումը բավ. չէ (Կ. Մաֆիոզ)", false);
     if (player.money < 250000) return showNotification("$250,000 չկա", false);
     if (mafiaFamilies.find(f=>f.name.toLowerCase()===name.toLowerCase())) return showNotification("Այդ անունն արդ. կա", false);
     player.money -= 250000;
