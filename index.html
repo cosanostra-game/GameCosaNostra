@@ -3002,12 +3002,12 @@ function renderFamilies() {
     const mySection = document.getElementById('my-family-section');
     if (!mySection) return;
 
-    const canCreate = player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
+    const canCreate = player.rank === 'Մաֆիոզ' || player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
     if (!player.family) {
         mySection.innerHTML = `<div class="card" style="border:1px solid ${canCreate?'var(--ok)':'var(--border)'}; text-align:center;">
             <i class="material-icons" style="font-size:42px;margin-bottom:16px;color:${canCreate?'var(--ok)':'var(--text)'};">add_business</i>
             <h3 style="justify-content:center; color:${canCreate?'var(--ok)':'var(--text)'};">Ստեղծիր 6-րդ Ընտանիքը</h3>
-            <p style="margin-bottom:16px;">Պահանջվում է կոչում <b style="color:var(--accent);">Կապո</b> + <b style="color:var(--ok);">$250,000</b></p>
+            <p style="margin-bottom:16px;">Պահանջվում է կոչում <b style="color:var(--accent);">Մաֆիոզ</b> + <b style="color:var(--ok);">$250,000</b></p>
             ${canCreate ? `<input type="text" id="familyNameInput" placeholder="Ընտ. անուն (հայ./անգ.)..." style="max-width:240px;margin-bottom:14px;">
             <br><button style="background:var(--ok);width:auto;padding:14px 32px;" onclick="createMyFamily()">🏰 Հիմնել Ընտ.</button>` 
             : `<p style="color:var(--accent);font-weight:700;">Ներկայիս կոչում: ${player.rank}</p>`}
