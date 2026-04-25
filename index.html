@@ -561,8 +561,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </div>
 </div>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
+<!-- AUTH SCREEN — disabled, auth handled in landing.html -->
+<div id="auth-screen" style="display:none!important;">
     <div class="auth-card">
         <div class="auth-logo">
             <div class="pre-title">COSA <span>NOSTRA</span></div>
@@ -1241,6 +1241,13 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <img class="bg-thumb" src="photo_2026-04-19_20-42-52.jpg" onclick="changeBackground(this)" alt="Noir Street">
                 <img class="bg-thumb" src="mercedes-benz-w140500sel.jpg" onclick="changeBackground(this)" alt="Mercedes W140">
                 <img class="bg-thumb" src="irgendein-schönes-mercedes-stehen-folge-auf-dem-parken-44793349.webp" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="morskie-oko-tatry.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai.jpg" onclick="changeBackground(this)" alt="Mercedes W140">
+                <img class="bg-thumb" src="beautiful-mountain-lake-background-remix.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="mountains-fullmoon.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="13330452_Scene-7.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="old-rusty-fishing-boat-slope-along-shore-lake.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
+                <img class="bg-thumb" src="20928412_2107.w026.n002.637B.p1.637.jpg" onclick="changeBackground(this)" alt="Mercedes Parking">
             </div>
         </div>
         <div class="cards-grid">
@@ -1381,11 +1388,13 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <button class="close-btn" onclick="closeDealerModal()"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
-            <div style="text-align:center;height:200px;margin-bottom:20px;overflow:hidden;border-radius:16px;" id="dealer-modal-icon"></div>
-            <div style="font-size:28px;font-weight:800;color:var(--text-l);margin-bottom:16px;" id="dealer-modal-price"></div>
-            <div style="margin-bottom:8px;color:var(--text);"><strong>Տեսակ:</strong> <span id="dealer-modal-type" style="color:var(--text-l);"></span></div>
-            <div style="margin-bottom:16px;color:var(--text);"><strong>Վիճակ:</strong> <span id="dealer-modal-cond" style="color:#0a84ff;"></span></div>
-            <p style="font-size:15px;line-height:1.6;color:var(--text-l);" id="dealer-modal-desc"></p>
+            <div style="text-align:center;height:210px;margin-bottom:20px;overflow:hidden;border-radius:16px;position:relative;" id="dealer-modal-icon"></div>
+            <div style="font-size:28px;font-weight:800;color:var(--ok);margin-bottom:12px;" id="dealer-modal-price"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+                <span style="background:rgba(10,132,255,0.15);color:#0a84ff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;" id="dealer-modal-type"></span>
+                <span style="background:rgba(50,215,75,0.15);color:var(--ok);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;">⚙️ Վիճ. <span id="dealer-modal-cond"></span></span>
+            </div>
+            <p style="font-size:14px;line-height:1.8;color:var(--text-l);background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;border:1px solid var(--border);" id="dealer-modal-desc"></p>
         </div>
         <div class="modal-footer">
             <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeDealerModal()">Փակել</button>
@@ -1662,36 +1671,32 @@ function authCheckAutoLogin() {
     return false;
 }
 
-function showAuthScreen() { document.getElementById('auth-screen').classList.add('show'); }
+function showAuthScreen() {
+    // Auth is handled entirely in landing.html — redirect there
+    window.location.href = 'landing.html';
+}
 
 // ── Logout ───────────────────────────────────
 function authLogout() {
-    if (!confirm('Ուզո՞ւմ եք ելնել պրոֆիլից։')) return;
+    if (!confirm('Ուzо՞ُm eք елnel пrофilicic։')) return;
     if (currentUserEmail) saveGame();
     localStorage.removeItem(AUTH_KEY);
     currentUserEmail = null;
-    // Reset player state
-    if (typeof getDefaultPlayerState === 'function') {
-        window.player = { ...getDefaultPlayerState() };
-        updateUI();
-    }
-    showAuthScreen();
-    // Reset avatar in sidebar
-    const sb = document.getElementById('sb-avatar-el');
-    if (sb) { sb.style.background = 'var(--accent)'; const s=sb.querySelector('span'); if(s) s.textContent='Ա'; const img=sb.querySelector('img'); if(img) img.style.display='none'; }
+    // Redirect to landing page for re-login
+    window.location.href = 'landing.html';
 }
 
 // ── Delete profile ────────────────────────────
 function deleteCurrentProfile() {
     if (!currentUserEmail) return;
-    if (!confirm('⚠️ Ջնջե՞լ ձեր ողջ պրոֆիլն ու խաղային առաջընthaccountը։ Սա ետ չի կարող դառնա։')) return;
+    if (!confirm('⚠️ Ջнջe՞l ձeр ողج пrофilн ու хаmелаин аrаjınthaccountə։ Са et chи каroм дarna։')) return;
     const users = getUsers();
     delete users[currentUserEmail];
     saveUsers(users);
     localStorage.removeItem(getSaveKey());
     localStorage.removeItem(AUTH_KEY);
     currentUserEmail = null;
-    location.reload();
+    window.location.href = 'landing.html';
 }
 
 // ── Edit Profile Modal ────────────────────────
@@ -2219,44 +2224,223 @@ for (let i = 1; i <= 10; i++) {
 estateMarketData.sort(() => Math.random() - 0.5);
 
 // ==========================================
-//   CAR MARKET DATA (WITH REALISTIC IMAGES)
+//   CAR MARKET DATA (REAL CARS & REAL IMAGES)
 // ==========================================
-const carMakes = ['BMW','Mercedes-Benz','Toyota','Honda','Ford','Audi'];
-const carTypesList = ['Սեդան','Ամենագնաց','Սպորտային'];
-let newCarsMarket = [], usedCarsMarket = [], carIdCounter = 1;
+let newCarsMarket = [], usedCarsMarket = [];
 
-// Helper to get dummy placeholder image resembling a car
-function getCarImg(make, type) {
-    let q = encodeURIComponent(make + ' ' + type + ' car');
-    // Using a reliable placeholder service for cars. 
-    // Notice: Due to no API keys, we use source.unsplash or loremflickr.
-    return `https://loremflickr.com/400/240/${q}?lock=${Math.floor(Math.random()*1000)}`;
-}
+// ── NEW CARS (Ավտոսալոն) ──────────────────────────────────────────────
+const newCarsData = [
+    {
+        id: 'NBMWM2', type: 'Սպորտային',
+        title: 'BMW M2 Coupé 2024',
+        desc: '🏎 460 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 4.1 վ | Վ.արագ.՝ 285 կմ/ժ | 6-փ. ավտ. | M xDrive | Ֆ. արտ. լ.',
+        price: 68500, condition: 100,
+        imgUrl: 'images.jfif', isNew: true
+    },
+    {
+        id: 'NBMWM3', type: 'Սեդան',
+        title: 'BMW M3 Competition 2026',
+        desc: '🏎 530 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.5 վ | Վ.արագ.՝ 290 կմ/ժ | M xDrive | Carbon հատ. | 0 կմ',
+        price: 89900, condition: 100,
+        imgUrl: '2026-bmw-m3-front-angle-view-ak.webp', isNew: true
+    },
+    {
+        id: 'NBMWM4', type: 'Սպորտային',
+        title: 'BMW M4 Competition 2024',
+        desc: '🏎 510 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.9 վ | Վ.արագ.՝ 290 կմ/ժ | M Adaptive Susp. | 0 կմ',
+        price: 109900, condition: 100,
+        imgUrl: 'opener-w-CreditDrewPhillips5.webp', isNew: true
+    },
+    {
+        id: 'NBMWM5', type: 'Սեդան',
+        title: 'BMW M5 Competition 2022',
+        desc: '🏎 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | Վ.արագ.՝ 305 կմ/ժ | M xDrive | 8-փ. ավտ. | 0 կմ',
+        price: 119900, condition: 100,
+        imgUrl: 'banner-1.webp', isNew: true
+    },
+    {
+        id: 'NBMWM8', type: 'Սպորտային',
+        title: 'BMW M8 Gran Coupé Competition 2020',
+        desc: '🏎 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | Վ.արագ.՝ 305 կմ/ժ | M xDrive | Burgundy Red',
+        price: 185000, condition: 100,
+        imgUrl: '2020-bmw-m8-gran-coupe-competition.webp', isNew: true
+    },
+    {
+        id: 'NBMWX5', type: 'Ամենագնաց',
+        title: 'BMW X5 xDrive40i 2024',
+        desc: '🚙 340 ձ.ու. | V6 3.0L Turbo | 0–100 կմ/ժ՝ 5.5 վ | xDrive AWD | Panorama | 7 տեղ | 0 կմ | Navy Blue',
+        price: 74900, condition: 100,
+        imgUrl: 'BMW-X5-xDrive40i-MY24-Stills-12-scaled.jpg', isNew: true
+    },
+    {
+        id: 'NAMC63', type: 'Սեդան',
+        title: 'Mercedes-AMG C63 S 2020',
+        desc: '🏎 510 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 3.9 վ | Վ.արագ.՝ 290 կմ/ժ | AMG Night Pkg | 0 կմ',
+        price: 92000, condition: 100,
+        imgUrl: 'Mercedes-AMG-C63-2020 (6).jpg', isNew: true
+    },
+    {
+        id: 'NAМЕ63', type: 'Սեդան',
+        title: 'Mercedes-AMG E63 S 2022',
+        desc: '🏎 612 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 3.4 վ | Վ.արագ.՝ 300 կմ/ժ | 4MATIC+ | AMG Dynamics | 0 կմ',
+        price: 115000, condition: 100,
+        imgUrl: 'Mercedes-Benz-E63_S_AMG-2021-Front_Three-Quarter.c453cb68.jpg', isNew: true
+    },
+    {
+        id: 'NAMG63', type: 'Ամենագնաց',
+        title: 'Mercedes-AMG G63 2023',
+        desc: '🚙 585 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 4.5 վ | 3 Diff Lock | AMG Magno Black | Designo | 0 կմ',
+        price: 179000, condition: 100,
+        imgUrl: 'mercedes-benz-g-klasse-w463-g63-2023-magno.webp', isNew: true
+    },
+    {
+        id: 'NAMCLS', type: 'Սպորտային',
+        title: 'Mercedes-AMG CLS 63 S 2016',
+        desc: '🏎 585 ձ.ու. | V8 5.5L Biturbo | 0–100 կմ/ժ՝ 3.6 վ | Վ.արագ.՝ 300 կմ/ժ | AMG Sportpaket | 0 կմ',
+        price: 58000, condition: 100,
+        imgUrl: 'cattouchretcr.webp', isNew: true
+    },
+    {
+        id: 'NBMWM4B', type: 'Սպորտային',
+        title: 'BMW M4 CSL 2024',
+        desc: '🏎 550 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.7 վ | Վ.արագ.՝ 307 կմ/ժ | Carbon Roof | Limited Edition | 0 կմ',
+        price: 145000, condition: 100,
+        imgUrl: 'How-the-BMW-M4-Stands-Out-in--1440x810.avif', isNew: true
+    },
+];
 
-carMakes.forEach((make, i) => {
-    for (let j = 1; j <= 3; j++) {
-        let type = carTypesList[Math.floor(Math.random() * carTypesList.length)];
-        let basePrice = (i + 1) * 6000 + j * 4000;
-        let cId = 'CAR' + carIdCounter++;
-        let imgUrl = getCarImg(make, type);
-        newCarsMarket.push({ id:'N'+cId, type, title:`${make} Model ${j}`, desc:`Լրիվ նոր ${make}։ 0 կմ վազք։`, price:basePrice, condition:100, imgUrl, isNew:true });
-        let usedCond = Math.floor(Math.random()*40)+50;
-        usedCarsMarket.push({ id:'U'+cId, type, title:`${make} Model ${j}`, desc:`Օգտագործված ${make}։ Վիճ. ${usedCond}%։`, price:Math.floor(basePrice*(usedCond/100)*(0.8+Math.random()*.2)), condition:usedCond, imgUrl, isNew:false });
-    }
-});
-newCarsMarket.sort(() => Math.random()-.5);
-usedCarsMarket.sort(() => Math.random()-.5);
+// ── USED CARS (Օկ. Ավտ.) ─────────────────────────────────────────────
+const usedCarsData = [
+    {
+        id: 'UNIVAU', type: 'Ամենագնաց',
+        title: 'Lada Niva Urban',
+        desc: '🏎 89 ձ.ու. | 1.7 | 0–100 կմ/ժ՝ 12.5 վ | Վ.արագ.՝ 170 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
+        price: 10000, condition: 68,
+        imgUrl: 'images (2).jfif', isNew: false
+    },
+    {
+        id: 'UNIVA', type: 'Ամենագնաց',
+        title: 'Lada Niva Legend',
+        desc: '🏎 89 ձ.ու. | 1.7 | 0–100 կմ/ժ՝ 12.5 վ | Վ.արագ.՝ 170 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
+        price: 8000, condition: 68,
+        imgUrl: '97098357.webp', isNew: false
+    },
+    {
+        id: 'UOPELG', type: 'Սեդան',
+        title: 'Օpel Astra G',
+        desc: '🏎 109 ձ.ու. | EcoTec 1.6 | 0–100 կմ/ժ՝ 8.5 վ | Վ.արագ.՝ 230 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
+        price: 6000, condition: 68,
+        imgUrl: 'opel-astra-g.jpg', isNew: false
+    },
+    {
+        id: 'UOPELG', type: 'Սեդան',
+        title: 'Օpel Astra G Caravan',
+        desc: '🏎 109 ձ.ու. | EcoTec 1.6 | 0–100 կմ/ժ՝ 8.5 վ | Վ.արագ.՝ 230 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
+        price: 6000, condition: 70,
+        imgUrl: 'opel-astra-g-caravan.jpg', isNew: false
+    },
+    {
+        id: 'UOPELOPC', type: 'Սեդան',
+        title: 'Օpel Astra G OPC',
+        desc: '🏎 214 ձ.ու. | EcoTec 2.0 Turbo | 0–100 կմ/ժ՝ 6.5 վ | Վ.արագ.՝ 285 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
+        price: 10000, condition: 80,
+        imgUrl: '8b8294ac0c4d153f35cbf5db3512058413eb9b24.jpeg', isNew: false
+    },
+    {
+        id: 'UBMWM3', type: 'Սեդան',
+        title: 'BMW M3 Competition 2023',
+        desc: '🔧 510 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.9 վ | 28,400 կմ | Մ.Ս.: 79% | Dark Green | Carfax ✓',
+        price: 64500, condition: 79,
+        imgUrl: '2026-bmw-m3-front-angle-view-ak.webp', isNew: false
+    },
+    {
+        id: 'UBMWM5', type: 'Սեդան',
+        title: 'BMW M5 CS 2021',
+        desc: '🔧 627 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.1 վ | 41,200 կմ | Մ.Ս.: 72% | Frozen Grey',
+        price: 82000, condition: 72,
+        imgUrl: 'banner-1.webp', isNew: false
+    },
+    {
+        id: 'UBMWM8', type: 'Սպորտային',
+        title: 'BMW M8 Gran Coupé 2020',
+        desc: '🔧 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | 52,800 կմ | Մ.Ս.: 68% | Burgundy Red',
+        price: 118000, condition: 68,
+        imgUrl: '2020-bmw-m8-gran-coupe-competition.webp', isNew: false
+    },
+    {
+        id: 'UBMWM4', type: 'Սպորտային',
+        title: 'BMW M4 Competition 2022',
+        desc: '🔧 510 ձ.ու. | V6 Biturbo | 35,600 կմ | Մ.Ս.: 74% | Sapphire Black | M xDrive',
+        price: 77000, condition: 74,
+        imgUrl: 'opener-w-CreditDrewPhillips5.webp', isNew: false
+    },
+    {
+        id: 'UBMWM2', type: 'Սպորտային',
+        title: 'BMW M2 Coupé 2022',
+        desc: '🔧 460 ձ.ու. | V6 Biturbo | 22,100 կմ | Մ.Ս.: 85% | Brooklyn Grey | M Differential',
+        price: 49500, condition: 85,
+        imgUrl: 'images.jfif', isNew: false
+    },
+    {
+        id: 'UBMWX5', type: 'Ամենագնաց',
+        title: 'BMW X5 M50i 2022',
+        desc: '🔧 523 ձ.ու. | V8 4.4L Biturbo | 48,300 կմ | Մ.Ս.: 70% | Deep Blue | Panorama',
+        price: 54000, condition: 70,
+        imgUrl: 'BMW-X5-xDrive40i-MY24-Stills-12-scaled.jpg', isNew: false
+    },
+    {
+        id: 'UAMC63', type: 'Սեդան',
+        title: 'Mercedes-AMG C63 S 2019',
+        desc: '🔧 510 ձ.ու. | V8 4.0L Biturbo | 61,700 կմ | Մ.Ս.: 65% | Polar White | AMG Night Pkg',
+        price: 52000, condition: 65,
+        imgUrl: 'Mercedes-AMG-C63-2020 (6).jpg', isNew: false
+    },
+    {
+        id: 'UAMG63', type: 'Ամենագնաց',
+        title: 'Mercedes-AMG G63 2021',
+        desc: '🔧 585 ձ.ու. | V8 4.0L Biturbo | 39,200 կմ | Մ.Ս.: 73% | Matte Black | AMG Designo',
+        price: 128000, condition: 73,
+        imgUrl: 'mercedes-benz-g-klasse-w463-g63-2023-magno.webp', isNew: false
+    },
+    {
+        id: 'UAME63', type: 'Սեդան',
+        title: 'Mercedes-AMG E63 S 2020',
+        desc: '🔧 612 ձ.ու. | V8 4.0L Biturbo | 55,400 կմ | Մ.Ս.: 67% | Selenite Grey | Burmester Audio',
+        price: 74000, condition: 67,
+        imgUrl: 'Mercedes-Benz-E63_S_AMG-2021-Front_Three-Quarter.c453cb68.jpg', isNew: false
+    },
+    {
+        id: 'UAMCLS', type: 'Սպորտային',
+        title: 'Mercedes-AMG CLS 63 2015',
+        desc: '🔧 585 ձ.ու. | V8 5.5L Biturbo | 88,500 կմ | Մ.Ս.: 58% | Diamond White | AMG Exhaust',
+        price: 32000, condition: 58,
+        imgUrl: 'cattouchretcr.webp', isNew: false
+    },
+    {
+        id: 'UMERC', type: 'Սեդան',
+        title: 'Mercedes-Benz S600 W140 1999',
+        desc: '🔧 394 ձ.ու. | V12 6.0L | 112,000 կմ | Մ.Ս.: 60% | Classic Obsidian Black | Legendary Don\'s car',
+        price: 28000, condition: 60,
+        imgUrl: 'pexels-vadutskevich-13234648_a0de83c8-dc2f-4a7a-99aa-baed5b4fe259.webp', isNew: false
+    },
+];
+
+newCarsMarket = newCarsData.map(c => ({ ...c }));
+usedCarsMarket = usedCarsData.map(c => ({ ...c }));
 
 // Realistic Cars for stealing
 const cheapCars = [
-    {name:"Lada 2107", basePrice:400, imgUrl: getCarImg("Lada", "classic")},
-    {name:"Opel Astra", basePrice:600, imgUrl: getCarImg("Opel", "sedan")},
-    {name:"Nissan Sunny", basePrice:700, imgUrl: getCarImg("Nissan", "sedan")}
+    { name: "Lada 2107",    basePrice: 400,  imgUrl: "https://loremflickr.com/400/240/lada,sedan?lock=11" },
+    { name: "Opel Astra G", basePrice: 600,  imgUrl: "https://loremflickr.com/400/240/opel,sedan?lock=22" },
+    { name: "Honda Civic",  basePrice: 750,  imgUrl: "https://loremflickr.com/400/240/honda,civic?lock=33" },
+    { name: "Toyota Corolla", basePrice: 800, imgUrl: "https://loremflickr.com/400/240/toyota,corolla?lock=44" }
 ];
 const expensiveCars = [
-    {name:"BMW M5", basePrice:6000, imgUrl: getCarImg("BMW", "sport")},
-    {name:"Porsche 911", basePrice:9500, imgUrl: getCarImg("Porsche", "sport")},
-    {name:"Bentley", basePrice:14000, imgUrl: getCarImg("Bentley", "luxury")}
+    { name: "BMW M5 Competition", basePrice: 6000,  imgUrl: "banner-1.webp" },
+    { name: "Mercedes-AMG G63",   basePrice: 9000,  imgUrl: "mercedes-benz-g-klasse-w463-g63-2023-magno.webp" },
+    { name: "BMW M8 Gran Coupé",  basePrice: 10000, imgUrl: "2020-bmw-m8-gran-coupe-competition.webp" },
+    { name: "Mercedes-AMG E63 S", basePrice: 7500,  imgUrl: "Mercedes-Benz-E63_S_AMG-2021-Front_Three-Quarter.c453cb68.jpg" },
+    { name: "BMW M4 Competition",  basePrice: 8000,  imgUrl: "opener-w-CreditDrewPhillips5.webp" },
 ];
 
 // ==========================================
@@ -2729,13 +2913,19 @@ function renderDealership() {
     else if (sort==='desc') filtered.sort((a,b)=>b.price-a.price);
     let html = filtered.length===0 ? '<p style="color:var(--text);">Ոչ մի մեքենա չգտնվեց</p>' : '';
     filtered.forEach(item => {
+        let condColor = item.condition >= 90 ? 'var(--ok)' : item.condition >= 70 ? 'var(--warn)' : 'var(--accent)';
         html += `<div class="list-am-card" onclick="openDealerModal('${item.id}')">
-            <div class="list-am-img"><img src="${item.imgUrl}" alt="${item.title}"></div>
+            <div class="list-am-img" style="position:relative;overflow:hidden;">
+                <img src="${item.imgUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;">
+                <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">${item.type}</div>
+                ${item.isNew ? `<div style="position:absolute;top:8px;left:8px;background:var(--ok);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;">ՆՈՐ</div>` : ''}
+            </div>
             <div class="list-am-info">
-                <div style="font-size:17px;font-weight:800;margin-bottom:6px;color:var(--text-l);">${item.title}</div>
-                <div style="font-size:19px;color:var(--ok);font-weight:800;margin-bottom:6px;">$${item.price.toLocaleString()}</div>
-                <p style="color:var(--text);font-size:13px;">Վիճ: ${item.condition}% | ${item.type}</p>
-                <button style="background:var(--border);color:var(--text-l);margin-top:12px;" onclick="event.stopPropagation();openDealerModal('${item.id}')">Դիտել</button>
+                <div style="font-size:16px;font-weight:800;margin-bottom:6px;color:var(--text-l);">${item.title}</div>
+                <div style="font-size:20px;color:var(--ok);font-weight:800;margin-bottom:8px;">$${item.price.toLocaleString()}</div>
+                <div style="font-size:12px;color:${condColor};font-weight:700;margin-bottom:6px;">⚙️ Վիճ.՝ ${item.condition}%</div>
+                <p style="color:var(--text);font-size:12px;line-height:1.5;margin-bottom:10px;">${item.desc.split('|').slice(0,2).join('|')}</p>
+                <button style="background:var(--border);color:var(--text-l);margin-top:4px;" onclick="event.stopPropagation();openDealerModal('${item.id}')">Դիտել Ամբ.</button>
             </div>
         </div>`;
     });
@@ -3633,6 +3823,10 @@ function saveGame() {
 }
 
 function loadGame(manual = false) {
+    // Always reset to default first — prevents previous account's data leaking into a new account
+    player = getDefaultPlayerState();
+    cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
+
     const saved = localStorage.getItem(getSaveKey());
     if (saved) {
         try {
@@ -3641,11 +3835,11 @@ function loadGame(manual = false) {
             player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
             cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
             if (manual) showNotification('📥 Խաղը վերականգնվեց', true);
-            updateUI();
-            renderGarage();
-            renderMyBusinesses();
         } catch (e) { console.error("Save load error", e); }
     }
+    updateUI();
+    renderGarage();
+    renderMyBusinesses();
 }
 
 function resetGame() {
