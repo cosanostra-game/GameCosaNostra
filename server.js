@@ -2,14 +2,18 @@
 require('dotenv').config();
 
 const express    = require('express');
+const http       = require('http');
+const { Server } = require('socket.io');
+const jwt        = require('jsonwebtoken');
 const cors       = require('cors');
 const connectDB  = require('./connect');
 
 const authRoutes = require('./auth');
 const gameRoutes = require('./game');
 
-const app  = express();
-const PORT = process.env.PORT || 5000;
+const app        = express();
+const httpServer = http.createServer(app);
+const PORT       = process.env.PORT || 5000;
 
 // ─── Connect to MongoDB ───────────────────────────────────────────
 connectDB();
@@ -85,8 +89,54 @@ app.use((err, _req, res, _next) => {
   });
 });
 
+// ─── Socket.IO ────────────────────────────────────────────────────
+// userId → socketId mapping (in-memory, per-process)
+const userSockets = new Map();
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      if (process.env.NODE_ENV === 'development') return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+  },
+});
+
+// JWT middleware — socket connection-ի ժամանակ token ստուգում
+io.use((socket, next) => {
+  const token = socket.handshake.auth && socket.handshake.auth.token;
+  if (!token) return next(new Error('Չկա token'));
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = String(decoded.id);
+    next();
+  } catch {
+    next(new Error('Անվավեր token'));
+  }
+});
+
+io.on('connection', (socket) => {
+  const uid = socket.userId;
+  userSockets.set(uid, socket.id);
+  console.log(`🔌 Socket connected: user=${uid}`);
+
+  socket.on('disconnect', () => {
+    // Ջնջել միայն եթե նույն socket-ն է (multi-tab safety)
+    if (userSockets.get(uid) === socket.id) {
+      userSockets.delete(uid);
+    }
+    console.log(`🔌 Socket disconnected: user=${uid}`);
+  });
+});
+
+// io & userSockets — route handler-ներին հասանելի են req.app.get()-ով
+app.set('io', io);
+app.set('userSockets', userSockets);
+
 // ─── Start ────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health: http://localhost:${PORT}/api/health`);

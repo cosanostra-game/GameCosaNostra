@@ -532,6 +532,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 .avatar-upload-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); display: none; }
 
 </style>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body data-theme="dark">
 
@@ -1672,6 +1673,7 @@ function authSuccess(user) {
     }
     // Load cloud save (async — UI updates when done)
     loadGame(false);
+    initSocket(); // Real-time socket connection
     refreshAvatarUI(user.name, user.email);
     updateProfilePage();
     if (typeof addActivity === 'function') addActivity('Բарив гаluст Cosa Nostra, ' + user.name + '!', true);
@@ -1707,6 +1709,7 @@ function showAuthScreen() {
 async function authLogout() {
     if (!confirm('Ужо՞м еq елнел профилicic:')) return;
     stopTransferPolling();
+    disconnectSocket(); // Socket andzevum
     if (typeof player !== 'undefined' && currentUser) {
         try { await apiSaveGame(player); } catch(e) {}
     }
@@ -4116,6 +4119,55 @@ setInterval(() => {
 }, 1000);
 
 // ==========================================
+
+// ==========================================
+//   SOCKET.IO — Real-time bancayin mutoqner
+// ==========================================
+let _socket = null;
+
+function initSocket() {
+    const token = getToken();
+    if (!token) return;
+    if (_socket && _socket.connected) return;
+
+    const SOCKET_URL = 'https://cosa-nostra.onrender.com'; // ← server URL
+    _socket = io(SOCKET_URL, {
+        auth: { token },
+        transports: ['websocket', 'polling'],
+    });
+
+    _socket.on('connect', () => {
+        console.log('🔌 Socket connected:', _socket.id);
+    });
+
+    _socket.on('connect_error', (err) => {
+        console.warn('Socket connect error:', err.message);
+    });
+
+    _socket.on('bankTransfer', (data) => {
+        // data = { fromName, fromAccount, amount, newBalance }
+
+        // 1. Player bank balance - anmijapec tharmatsnely
+        if (typeof player !== 'undefined') {
+            player.bank = data.newBalance;
+            if (typeof updateUI === 'function') updateUI();
+        }
+
+        // 2. Tsanucum
+        const msg = `🏦 Bancayin mutoq  +$${Number(data.amount).toLocaleString()}  ←  ${data.fromName} (${data.fromAccount})`;
+        if (typeof showNotification === 'function') {
+            showNotification(msg, true);
+        }
+    });
+}
+
+function disconnectSocket() {
+    if (_socket) {
+        _socket.disconnect();
+        _socket = null;
+    }
+}
+
 //   INIT (DOMContentLoaded)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {

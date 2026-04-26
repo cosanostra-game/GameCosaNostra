@@ -11,7 +11,7 @@ router.get('/save', async (req, res) => {
   try {
     const save = await GameSave.findOne({ user: req.user._id });
     if (!save) {
-      return res.status(404).json({ success: false, message: 'Save գտnvac che' });
+      return res.status(404).json({ success: false, message: 'Save գtнvac che' });
     }
     res.json({
       success:          true,
@@ -106,17 +106,37 @@ router.post('/transfer', async (req, res) => {
     senderSave.markModified('playerData');
     await senderSave.save();
 
-    // Credit recipient + queue notification
+    // Credit recipient
     const recipientData = recipientSave.playerData;
     recipientData.bank  = (recipientData.bank || 0) + amt;
     recipientSave.playerData = recipientData;
     recipientSave.markModified('playerData');
-    recipientSave.pendingTransfers.push({
-      fromName:    senderData.name    || req.user.name || 'Ananun',
-      fromAccount: senderData.bankAccount || '?',
-      amount:      amt,
-      sentAt:      new Date(),
-    });
+
+    // ── Real-time check: արդյոք recipient-ը online է ────────────
+    const io          = req.app.get('io');
+    const userSockets = req.app.get('userSockets');
+    const recipientId = String(recipientSave.user);
+    const socketId    = userSockets && userSockets.get(recipientId);
+
+    if (io && socketId) {
+      // Online է — real-time ծանուցում, pendingTransfers-ին ավելացնել պետք չէ
+      io.to(socketId).emit('bankTransfer', {
+        fromName:    senderData.name    || req.user.name || 'Ananun',
+        fromAccount: senderData.bankAccount || '?',
+        amount:      amt,
+        newBalance:  recipientData.bank,
+      });
+      // pendingTransfers-ը չենք ավելացնում (real-time ստացավ)
+    } else {
+      // Offline է — հերթ դնել, load-ի ժամանակ ցույց կտա
+      recipientSave.pendingTransfers.push({
+        fromName:    senderData.name    || req.user.name || 'Ananun',
+        fromAccount: senderData.bankAccount || '?',
+        amount:      amt,
+        sentAt:      new Date(),
+      });
+    }
+
     await recipientSave.save();
 
     return res.json({
