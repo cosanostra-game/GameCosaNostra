@@ -3,7 +3,7 @@
 // Օգտագործում՝ <script src="api.js"></script>
 // ══════════════════════════════════════════════════════════════════
 
-const API_BASE = 'https://ձեր-server-url.com/api';
+const API_BASE = 'https://ձեր-server.onrender.com/api'; // ← ԱՅՍ ՓՈԽԵՔ
 // Local dev-ի ժամանակ:
 // const API_BASE = 'http://localhost:5000/api';
 

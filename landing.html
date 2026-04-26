@@ -1464,9 +1464,19 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 // ══════════════════════════════════════════
 //   AUTH + PROFILE SYSTEM
 // ══════════════════════════════════════════
-const AUTH_KEY   = 'cosaNostraAuth_V1';
-const USERS_KEY  = 'cosaNostraUsers';
-let currentUserEmail = null;
+// ══════════════════════════════════════════
+//   API CONFIG & AUTH SYSTEM (Cloud-based)
+// ══════════════════════════════════════════
+// 🔧 ԱՅՍ URL-Ն ՓՈԽԵՔ ՁԵՐ SERVER URL-Ի ՎՐԱ
+// Render/Railway: 'https://cosa-nostra.onrender.com'
+// Local:          'http://localhost:5000'
+const API_BASE  = 'https://ձեր-server.onrender.com'; // ← ԱՅՍ ՓՈԽԵՔ ՁԵՐ RENDER URL-Ի ՎՐԱ
+const TOKEN_KEY = 'cosaNostra_JWT';
+
+// ── In-memory current user cache ──────────────
+// { id, name, email, avatarColor, avatarImg, bio, createdAt }
+let currentUser      = null;
+let currentUserEmail = null;   // kept for backward compat
 
 const AVATAR_COLORS = [
     '#ff3b30','#ff453a','#ff6b35','#ff9f0a',
@@ -1475,26 +1485,54 @@ const AVATAR_COLORS = [
     '#ff375f','#ac8e68','#636366','#1c1c1e'
 ];
 
-function authHash(str) {
+// ── Token helpers ──────────────────────────────
+function getToken()   { return localStorage.getItem(TOKEN_KEY); }
+function saveToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+
+// ── API fetch wrapper ──────────────────────────
+async function apiCall(endpoint, method = 'GET', body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = getToken();
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const cfg = { method, headers };
+    if (body) cfg.body = JSON.stringify(body);
+    const res  = await fetch(API_BASE + '/api' + endpoint, cfg);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Սերвери схал');
+    return data;
+}
+
+// ── Backward-compat shims ──────────────────────
+// Old code used getUsers()[email] — now returns from currentUser cache
+function getUsers() {
+    if (!currentUser) return {};
+    return { [currentUser.email]: {
+        name:        currentUser.name,
+        avatarColor: currentUser.avatarColor,
+        avatarImg:   currentUser.avatarImg,
+        bio:         currentUser.bio,
+        createdAt:   currentUser.createdAt
+    }};
+}
+function saveUsers() {} // No-op: user data saved via API
+function authHash(str) { // kept for getSaveKey compat
     let h = 5381;
     for (let i = 0; i < str.length; i++) h = (Math.imul(h, 33) ^ str.charCodeAt(i)) >>> 0;
     return h.toString(36);
 }
 
-function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
-function getSaveKey() { return currentUserEmail ? ('cosaNostraSave_' + authHash(currentUserEmail)) : 'cosaNostraSave_guest'; }
-
-// ── Avatar helpers ───────────────────────────
+// ── Avatar helpers ─────────────────────────────
 function getInitials(name) {
-    const parts = name.trim().split(' ');
-    return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+    const parts = (name || 'Ա').trim().split(' ');
+    return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : (name || 'Ա').slice(0,2).toUpperCase();
 }
 function getUserColor(email) {
-    const users = getUsers();
-    return (users[email] && users[email].avatarColor) || AVATAR_COLORS[authHash(email).charCodeAt(0) % AVATAR_COLORS.length];
+    return (currentUser && currentUser.avatarColor) || AVATAR_COLORS[0];
 }
-function getUserAvatar(email) { const u = getUsers(); return u[email] && u[email].avatarImg || null; }
+function getUserAvatar(email) {
+    return (currentUser && currentUser.avatarImg) || null;
+}
 
 function setAvatarEl(el, initials, color, imgSrc) {
     if (!el) return;
@@ -1503,10 +1541,10 @@ function setAvatarEl(el, initials, color, imgSrc) {
     const img  = el.querySelector('img');
     if (imgSrc) {
         if (span) span.style.display = 'none';
-        if (img) { img.src = imgSrc; img.style.display = 'block'; }
+        if (img)  { img.src = imgSrc; img.style.display = 'block'; }
     } else {
         if (span) { span.textContent = initials; span.style.display = ''; }
-        if (img) img.style.display = 'none';
+        if (img)  img.style.display = 'none';
     }
 }
 
@@ -1515,209 +1553,205 @@ function refreshAvatarUI(name, email) {
     const img      = getUserAvatar(email);
     const initials = getInitials(name);
 
-    // Sidebar small avatar
     setAvatarEl(document.getElementById('sb-avatar-el'), initials, color, img);
-    document.getElementById('sb-profile-name')?.setAttribute('textContent', name);
     const sn = document.getElementById('sb-profile-name'); if (sn) sn.textContent = name;
 
-    // Topbar avatar
     setAvatarEl(document.getElementById('topbar-avatar-el'), initials, color, img);
-
-    // Main page welcome banner avatar
     setAvatarEl(document.getElementById('main-page-avatar-el'), initials, color, img);
     const mwn = document.getElementById('main-welcome-name'); if (mwn) mwn.textContent = name;
-    const mwr = document.getElementById('main-welcome-rank'); if (mwr) mwr.textContent = '⭐ ' + (typeof player !== 'undefined' ? (player.rank || '') : '');
 
-    // Profile page big avatar
     setAvatarEl(document.getElementById('profile-avatar-big'), initials, color, img);
-    const pi = document.getElementById('profile-avatar-initials'); if (pi) pi.textContent = initials;
-    const pai= document.getElementById('profile-avatar-img');
-    if (pai) { pai.src = img||''; pai.style.display = img?'block':'none'; }
+    const pi  = document.getElementById('profile-avatar-initials'); if (pi)  pi.textContent  = initials;
+    const pai = document.getElementById('profile-avatar-img');
+    if (pai) { pai.src = img||''; pai.style.display = img ? 'block' : 'none'; }
 
-    // Profile page text
     const phn = document.getElementById('profile-hero-name'); if (phn) phn.textContent = name;
     const phe = document.getElementById('profile-hero-email');
     if (phe && email) { const parts = email.split('@'); phe.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = player.rank||'Դատարկапорт';
-    const an = document.getElementById('acc-name'); if (an) an.textContent = name;
-    const ae = document.getElementById('acc-email');
+    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = (typeof player !== 'undefined' ? player.rank : '') || 'Դатаркапорт';
+    const an  = document.getElementById('acc-name');  if (an)  an.textContent  = name;
+    const ae  = document.getElementById('acc-email');
     if (ae && email) { const parts = email.split('@'); ae.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const ar = document.getElementById('acc-rank'); if (ar) ar.textContent = player.rank||'Դատаркапорт';
+    const ar  = document.getElementById('acc-rank');  if (ar)  ar.textContent  = (typeof player !== 'undefined' ? player.rank : '') || 'Դатаркапорт';
 
-    // Account stats
-    const users = getUsers();
-    const u = users[email];
-    if (u && u.createdAt) {
-        const d = new Date(u.createdAt).toLocaleDateString('hy-AM');
-        const s = document.getElementById('psc-since'); if (s) s.textContent = d;
-        const as2= document.getElementById('acc-since'); if (as2) as2.textContent = d;
+    if (currentUser && currentUser.createdAt) {
+        const d   = new Date(currentUser.createdAt).toLocaleDateString('hy-AM');
+        const s   = document.getElementById('psc-since');  if (s)   s.textContent  = d;
+        const as2 = document.getElementById('acc-since');  if (as2) as2.textContent = d;
     }
 }
 
 function updateProfilePage() {
-    if (!currentUserEmail) return;
-    const users = getUsers();
-    const u = users[currentUserEmail];
-    if (!u) return;
-    refreshAvatarUI(u.name, currentUserEmail);
+    if (!currentUser) return;
+    refreshAvatarUI(currentUser.name, currentUser.email);
 
-    // Stats
-    const setVal = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-    setVal('psc-money',  '$' + (player.money||0).toLocaleString());
-    setVal('psc-bank',   '$' + (player.bank||0).toLocaleString());
-    setVal('psc-xp',     (player.xp||0).toLocaleString());
-    setVal('psc-crimes', (player.stats && player.stats.crimesTotal||0));
-    setVal('psc-cars',   (player.garage||[]).length);
-    setVal('psc-hp',     player.hp||100);
-    setVal('psc-level',  player.level||1);
-    const sbr = document.getElementById('sb-profile-rank-label'); if (sbr) sbr.textContent = player.rank||'';
-    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = player.rank||'';
-    const ar  = document.getElementById('acc-rank'); if (ar) ar.textContent = player.rank||'';
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setVal('psc-money',  '$' + (player.money || 0).toLocaleString());
+    setVal('psc-bank',   '$' + (player.bank  || 0).toLocaleString());
+    setVal('psc-xp',     (player.exp || 0).toLocaleString());
+    setVal('psc-crimes', player.stats ? (player.stats.crimes || 0) : 0);
+    setVal('psc-cars',   (player.garage || []).length);
+    setVal('psc-hp',     player.hp || 100);
+    setVal('psc-level',  player.level || 1);
+    const sbr = document.getElementById('sb-profile-rank-label'); if (sbr) sbr.textContent = player.rank || '';
+    const phr = document.getElementById('profile-hero-rank');     if (phr) phr.textContent = player.rank || '';
+    const ar  = document.getElementById('acc-rank');              if (ar)  ar.textContent  = player.rank || '';
 }
 
-// ── Auth tab switch ──────────────────────────
+// ── Auth tab switch ────────────────────────────
 function authSwitchTab(tab, el) {
-    document.getElementById('auth-login-form').style.display    = tab==='login'    ? '' : 'none';
-    document.getElementById('auth-register-form').style.display = tab==='register' ? '' : 'none';
+    document.getElementById('auth-login-form').style.display    = tab === 'login'    ? '' : 'none';
+    document.getElementById('auth-register-form').style.display = tab === 'register' ? '' : 'none';
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('auth-msg').textContent = '';
     document.getElementById('auth-msg').className = 'auth-msg';
 }
 
-function authMsg(txt, type='err') {
+function authMsg(txt, type = 'err') {
     const el = document.getElementById('auth-msg');
-    el.textContent = txt; el.className = 'auth-msg ' + type;
+    if (el) { el.textContent = txt; el.className = 'auth-msg ' + type; }
 }
 
-// ── Register ─────────────────────────────────
-function authRegister() {
+// ── Register ───────────────────────────────────
+async function authRegister() {
     const name  = document.getElementById('reg-name').value.trim();
     const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const pass  = document.getElementById('reg-password').value;
     const conf  = document.getElementById('reg-confirm').value;
-    const rem   = document.getElementById('reg-remember').checked;
 
-    if (!name || name.length < 2)       return authMsg('Անունը min 2 նիշ');
-    if (!email.includes('@gmail'))       return authMsg('Մուտքագրեք վավեր Gmail հասցե');
-    if (pass.length < 6)                 return authMsg('Գաղտնաբառը min 6 նիշ');
-    if (pass !== conf)                   return authMsg('Գաղտնաբառերը չեն համընկնում');
+    if (!name || name.length < 2)      return authMsg('Անунը min 2 нших');
+    if (!email.includes('@'))          return authMsg('Нερмаl ел. хасцε мутъqаgrеq');
+    if (pass.length < 6)               return authMsg('Гайтнабары min 6 нших');
+    if (pass !== conf)                 return authMsg('Гайтнабаrerы чен həmənкnum');
 
-    const users = getUsers();
-    if (users[email]) return authMsg('Այս Gmail-ն արդեն գրանցված է');
+    const avatarColor = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+    const btn = document.querySelector('.auth-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Катарвum е...'; }
 
-    users[email] = {
-        name, passwordHash: authHash(pass),
-        avatarColor: AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],
-        avatarImg: null, bio: '', createdAt: Date.now()
-    };
-    saveUsers(users);
-    if (rem) localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name, auto: true }));
-    authMsg('Գրանցումը հաջողվեց! Բարի գալուստ, ' + name + '!', 'ok');
-    setTimeout(() => authSuccess(email, name), 1100);
+    try {
+        const data = await apiCall('/auth/register', 'POST', { name, email, password: pass, avatarColor });
+        saveToken(data.token);
+        authMsg('Грацнумь хаджохвец! Барив галуст, ' + name + '!', 'ok');
+        setTimeout(() => authSuccess(data.user), 900);
+    } catch (err) {
+        authMsg(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Грацнвел ew Хайkаl'; }
+    }
 }
 
-// ── Login ─────────────────────────────────────
-function authLogin() {
+// ── Login ──────────────────────────────────────
+async function authLogin() {
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass  = document.getElementById('login-password').value;
-    const rem   = document.getElementById('login-remember').checked;
 
-    if (!email || !pass) return authMsg('Լրացրեք բոլոր դաշտերը');
+    if (!email || !pass) return authMsg('Лрацрек бolor дашterы');
 
-    const users = getUsers();
-    const user  = users[email];
-    if (!user)                                return authMsg('Gmail-ն գրանցված չէ');
-    if (user.passwordHash !== authHash(pass)) return authMsg('Սխալ գաղտնաբառ');
+    const btn = document.querySelector('.auth-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Ствуцворкс...'; }
 
-    if (rem) localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name: user.name, auto: true }));
-    else localStorage.removeItem(AUTH_KEY);
-
-    authMsg('Բարի գալուստ, ' + user.name + '!', 'ok');
-    setTimeout(() => authSuccess(email, user.name), 900);
+    try {
+        const data = await apiCall('/auth/login', 'POST', { email, password: pass });
+        saveToken(data.token);
+        authMsg('Барив галуст, ' + data.user.name + '!', 'ok');
+        setTimeout(() => authSuccess(data.user), 800);
+    } catch (err) {
+        authMsg(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Мтнел Хайg'; }
+    }
 }
 
-// ── Auth success ──────────────────────────────
-function authSuccess(email, name) {
-    currentUserEmail = email;
+// ── Auth success ───────────────────────────────
+function authSuccess(user) {
+    currentUser      = user;
+    currentUserEmail = user.email;
+
     document.getElementById('auth-screen').classList.remove('show');
+    if (typeof player !== 'undefined') {
+        player.name = user.name;
+    }
+    // Load cloud save (async — UI updates when done)
     loadGame(false);
-    if (typeof player !== 'undefined') { player.name = name; updateUI(); }
-    refreshAvatarUI(name, email);
+    refreshAvatarUI(user.name, user.email);
     updateProfilePage();
-    addActivity('Բարի գալուստ Cosa Nostra, ' + name + '!', true);
-    // Start background music
+    if (typeof addActivity === 'function') addActivity('Բарив гаluст Cosa Nostra, ' + user.name + '!', true);
+
     const bgMusic = document.getElementById('bg-music');
     if (bgMusic) {
         bgMusic.volume = 0.35;
         bgMusic.play().catch(() => {
-            // If autoplay blocked, start on first click
-            const startMusic = () => {
-                bgMusic.play().catch(() => {});
-                document.removeEventListener('click', startMusic);
-            };
-            document.addEventListener('click', startMusic, { once: true });
+            document.addEventListener('click', () => bgMusic.play().catch(() => {}), { once: true });
         });
     }
 }
 
-function authCheckAutoLogin() {
+// ── Auto-login on page load ─────────────────────
+async function authCheckAutoLogin() {
+    const token = getToken();
+    if (!token) return false;
     try {
-        const data = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
-        if (data && data.auto && data.email && data.name) {
-            authSuccess(data.email, data.name); return true;
-        }
-    } catch(e) {}
-    return false;
+        const data = await apiCall('/auth/me');
+        authSuccess(data.user);
+        return true;
+    } catch (err) {
+        clearToken();
+        return false;
+    }
 }
 
 function showAuthScreen() {
-    // Auth is handled entirely in landing.html — redirect there
     window.location.href = 'index.html';
 }
 
-// ── Logout ───────────────────────────────────
-function authLogout() {
-    if (!confirm('Ուzо՞ُm eք елnel пrофilicic։')) return;
-    if (currentUserEmail) saveGame();
-    localStorage.removeItem(AUTH_KEY);
+// ── Logout ─────────────────────────────────────
+async function authLogout() {
+    if (!confirm('Ужо՞м еq елнел профилicic:')) return;
+    if (typeof player !== 'undefined' && currentUser) {
+        try { await apiSaveGame(player); } catch(e) {}
+    }
+    clearToken();
+    currentUser = null;
     currentUserEmail = null;
-    // Redirect to landing page for re-login
     window.location.href = 'index.html';
 }
 
-// ── Delete profile ────────────────────────────
-function deleteCurrentProfile() {
-    if (!currentUserEmail) return;
-    if (!confirm('⚠️ Ջнջe՞l ձeр ողج пrофilн ու хаmелаин аrаjınthaccountə։ Са et chи каroм дarna։')) return;
-    const users = getUsers();
-    delete users[currentUserEmail];
-    saveUsers(users);
-    localStorage.removeItem(getSaveKey());
-    localStorage.removeItem(AUTH_KEY);
-    currentUserEmail = null;
-    window.location.href = 'index.html';
+// ── Delete account ─────────────────────────────
+async function deleteCurrentProfile() {
+    if (!currentUser) return;
+    if (!confirm('⚠️ Ջнджел ձer профилн? Айс чи кармнa дарна:')) return;
+    try {
+        await apiCall('/auth/account', 'DELETE');
+        clearToken();
+        currentUser = null;
+        currentUserEmail = null;
+        window.location.href = 'index.html';
+    } catch (err) {
+        if (typeof showNotification === 'function') showNotification('Ջнджелн схалвец: ' + err.message, false);
+    }
 }
 
 // ── Edit Profile Modal ────────────────────────
 let editSelectedColor = null;
 
 function openEditProfileModal() {
-    const users = getUsers();
-    const u = users[currentUserEmail];
-    if (!u) return;
+    if (!currentUser) return;
+    const u = currentUser;
     document.getElementById('edit-name-input').value = u.name || '';
     document.getElementById('edit-bio-input').value  = u.bio  || '';
     editSelectedColor = u.avatarColor || AVATAR_COLORS[0];
 
-    // preview
     const preview = document.getElementById('edit-avatar-preview');
     setAvatarEl(preview, getInitials(u.name), editSelectedColor, u.avatarImg);
     document.getElementById('edit-avatar-initials').textContent = getInitials(u.name);
-    if (u.avatarImg) { document.getElementById('edit-avatar-img').src=u.avatarImg; document.getElementById('edit-avatar-img').style.display='block'; document.getElementById('edit-avatar-initials').style.display='none'; }
-    else { document.getElementById('edit-avatar-img').style.display='none'; document.getElementById('edit-avatar-initials').style.display=''; }
+    if (u.avatarImg) {
+        document.getElementById('edit-avatar-img').src = u.avatarImg;
+        document.getElementById('edit-avatar-img').style.display = 'block';
+        document.getElementById('edit-avatar-initials').style.display = 'none';
+    } else {
+        document.getElementById('edit-avatar-img').style.display = 'none';
+        document.getElementById('edit-avatar-initials').style.display = '';
+    }
 
-    // build color grid
     const grid = document.getElementById('avatar-color-grid');
     grid.innerHTML = '';
     AVATAR_COLORS.forEach(c => {
@@ -1729,7 +1763,6 @@ function openEditProfileModal() {
             document.querySelectorAll('.avatar-color-swatch').forEach(s => s.classList.remove('active'));
             sw.classList.add('active');
             document.getElementById('edit-avatar-preview').style.background = c;
-            // clear custom image if color chosen
             document.getElementById('edit-avatar-img').style.display = 'none';
             document.getElementById('edit-avatar-initials').style.display = '';
         };
@@ -1759,45 +1792,46 @@ function handleEditAvatarUpload(input) {
 function handleAvatarUpload(input) {
     const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = e => {
-        const users = getUsers();
-        if (!users[currentUserEmail]) return;
-        users[currentUserEmail].avatarImg = e.target.result;
-        saveUsers(users);
-        refreshAvatarUI(users[currentUserEmail].name, currentUserEmail);
-        showNotification('📸 Avatar-ը թարմացվեց', true);
+    reader.onload = async e => {
+        try {
+            const data = await apiCall('/auth/profile', 'PATCH', { avatarImg: e.target.result });
+            currentUser = { ...currentUser, ...data.user };
+            refreshAvatarUI(currentUser.name, currentUser.email);
+            showNotification('📸 Avatar-ь тармацвец', true);
+        } catch (err) {
+            showNotification('Avatar схал: ' + err.message, false);
+        }
     };
     reader.readAsDataURL(file);
 }
 
-function saveEditProfile() {
+async function saveEditProfile() {
     const name = document.getElementById('edit-name-input').value.trim();
     const bio  = document.getElementById('edit-bio-input').value.trim();
-    if (!name || name.length < 2) { alert('Անունը min 2 նիշ'); return; }
+    if (!name || name.length < 2) { alert('Анунь min 2 нших'); return; }
 
-    const users = getUsers();
-    if (!users[currentUserEmail]) return;
-    users[currentUserEmail].name = name;
-    users[currentUserEmail].bio  = bio;
-    if (editSelectedColor) users[currentUserEmail].avatarColor = editSelectedColor;
+    const updates = { name, bio };
+    if (editSelectedColor) updates.avatarColor = editSelectedColor;
 
     const imgEl = document.getElementById('edit-avatar-img');
     if (imgEl && imgEl.style.display !== 'none' && imgEl.src && imgEl.src.startsWith('data:')) {
-        users[currentUserEmail].avatarImg = imgEl.src;
+        updates.avatarImg = imgEl.src;
     } else if (editSelectedColor) {
-        users[currentUserEmail].avatarImg = null;
+        updates.avatarImg = null;
     }
-    saveUsers(users);
 
-    // update session
-    const sess = JSON.parse(localStorage.getItem(AUTH_KEY)||'null');
-    if (sess) { sess.name = name; localStorage.setItem(AUTH_KEY, JSON.stringify(sess)); }
-
-    if (typeof player !== 'undefined') { player.name = name; updateUI(); }
-    refreshAvatarUI(name, currentUserEmail);
-    updateProfilePage();
-    closeEditProfileModal();
-    showNotification('✅ Պրոֆիլը թարমацвец', true);
+    try {
+        const data = await apiCall('/auth/profile', 'PATCH', updates);
+        currentUser      = { ...currentUser, ...data.user };
+        currentUserEmail = currentUser.email;
+        if (typeof player !== 'undefined') { player.name = name; updateUI(); }
+        refreshAvatarUI(name, currentUser.email);
+        updateProfilePage();
+        closeEditProfileModal();
+        showNotification('✅ Профилы тармацвец', true);
+    } catch (err) {
+        showNotification('Схал: ' + err.message, false);
+    }
 }
 
 // ==========================================
@@ -1819,10 +1853,10 @@ window.addEventListener('load', () => {
         pl.style.opacity = '0';
         setTimeout(() => {
             pl.style.display = 'none';
-            // Check auto-login
-            if (!authCheckAutoLogin()) {
-                showAuthScreen();
-            }
+            // Check auto-login (async)
+            authCheckAutoLogin().then(loggedIn => {
+                if (!loggedIn) showAuthScreen();
+            });
         }, 1000);
     }, 4200); // 4.2s visible + 1s fade = ~5.2s total
 });
@@ -3742,7 +3776,6 @@ function claimQuest(idx) {
         player.money += q.reward;
         player.stats.earnings += q.reward;
         q.current = -1;
-        localStorage.setItem(getSaveKey(), JSON.stringify(player));
         showNotification(`📜 Խնդիր կատարվեց! +$${q.reward}`, true);
         spawnFloatMoney(q.reward, true);
         playTone('upgrade', .25);
@@ -3811,40 +3844,74 @@ function triggerRandomEvent() {
     updateUI();
 }
 
-// Save & Load System
+// ══════════════════════════════════════════
+//   CLOUD SAVE & LOAD SYSTEM
+// ══════════════════════════════════════════
+
+// Helper: save current player to API (silent)
+async function apiSaveGame(playerData) {
+    if (!getToken()) return;
+    try {
+        await apiCall('/game/save', 'POST', { playerData: playerData.toJSON ? playerData.toJSON() : playerData });
+    } catch (e) {
+        console.warn('Cloud save failed:', e.message);
+    }
+}
+
 function getSaveKey() {
     return currentUserEmail ? ('cosaNostraSave_' + authHash(currentUserEmail)) : 'cosaNostraSave_guest';
 }
 
+// saveGame — cloud + localStorage fallback
 function saveGame() {
-    // Uses Player.toJSON() for clean serialization
-    localStorage.setItem(getSaveKey(), JSON.stringify(player.toJSON()));
-    // Auto-save silent - no notification
+    const data = player.toJSON ? player.toJSON() : player;
+    // 1) Local backup (instant)
+    localStorage.setItem(getSaveKey(), JSON.stringify(data));
+    // 2) Cloud (async, silent)
+    apiSaveGame(player);
 }
 
-function loadGame(manual = false) {
-    // Always reset to default first — prevents previous account's data leaking into a new account
+// loadGame — tries cloud first, falls back to localStorage
+async function loadGame(manual = false) {
     player = getDefaultPlayerState();
     cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
 
+    if (getToken()) {
+        try {
+            const res = await apiCall('/game/save');
+            if (res.playerData) {
+                player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...res.playerData });
+                cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
+                if (currentUser) player.name = currentUser.name;
+                if (manual) showNotification('☁️ Cloud save բеռнвец', true);
+                updateUI(); renderGarage(); renderMyBusinesses();
+                return;
+            }
+        } catch (e) {
+            console.warn('Cloud load failed, using local:', e.message);
+        }
+    }
+
+    // Fallback: localStorage
     const saved = localStorage.getItem(getSaveKey());
     if (saved) {
         try {
             let parsed = JSON.parse(saved);
-            // Reconstruct typed Player instance from saved JSON (OOP)
             player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
             cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
-            if (manual) showNotification('📥 Խաղը վերականգնվեց', true);
-        } catch (e) { console.error("Save load error", e); }
+            if (currentUser) player.name = currentUser.name;
+            if (manual) showNotification('📥 Тегаyin save бернвец', true);
+        } catch (e) { console.error('Save load error', e); }
     }
-    updateUI();
-    renderGarage();
-    renderMyBusinesses();
+    updateUI(); renderGarage(); renderMyBusinesses();
 }
 
-function resetGame() {
-    if (confirm('🗑️ Համոզվաʽծ եք։ Ամբողջ առաջընthaccountը կջնջվի։')) {
+async function resetGame() {
+    if (confirm('🗑️ Амбожд аркгынтхуцы кджнджви:')) {
         localStorage.removeItem(getSaveKey());
+        if (getToken()) {
+            try { await apiCall('/game/save', 'DELETE'); } catch(e) {}
+        }
         location.reload();
     }
 }
@@ -3973,12 +4040,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // auto-load handled by auth system
 
+// Auto-save every 15 seconds (cloud + local)
 setInterval(() => {
-    if (typeof saveGame === 'function' && currentUserEmail) {
+    if (typeof saveGame === 'function' && (currentUser || currentUserEmail)) {
         saveGame();
     }
     if (typeof updateProfilePage === 'function') updateProfilePage();
-}, 10000); // Auto-save every 10 seconds, silent
+}, 15000);
 </script>
 
 <!-- EDIT PROFILE MODAL -->

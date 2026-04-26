@@ -1499,10 +1499,13 @@ footer {
 
 <script>
 // ================================================================
-//  AUTH CONSTANTS — identical to index.html
+//  API CONFIG
 // ================================================================
-const AUTH_KEY  = 'cosaNostraAuth_V1';
-const USERS_KEY = 'cosaNostraUsers';
+// 🔧 ԱՅՍ URL-Ն ՓՈԽԵՔ ՁԵՐ SERVER URL-Ի ՎՐԱ
+// Render/Railway/VPS: 'https://ձեր-server.onrender.com'
+// Local testing:      'http://localhost:5000'
+const API_BASE  = 'https://ձեր-server.onrender.com'; // ← ԱՅՍ ՓՈԽԵՔ ՁԵՐ RENDER URL-Ի ՎՐԱ
+const TOKEN_KEY = 'cosaNostra_JWT';
 
 const AVATAR_COLORS = [
   '#ff3b30','#ff453a','#ff6b35','#ff9f0a',
@@ -1511,23 +1514,35 @@ const AVATAR_COLORS = [
   '#ff375f','#ac8e68','#636366','#1c1c1e'
 ];
 
-function authHash(str) {
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) h = (Math.imul(h, 33) ^ str.charCodeAt(i)) >>> 0;
-  return h.toString(36);
-}
+// ── Token helpers ────────────────────────────────────────────────
+function getToken()       { return localStorage.getItem(TOKEN_KEY); }
+function saveToken(t)     { localStorage.setItem(TOKEN_KEY, t); }
+function clearToken()     { localStorage.removeItem(TOKEN_KEY); }
 
-function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+// ── API fetch wrapper ────────────────────────────────────────────
+async function apiCall(endpoint, method = 'GET', body = null) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const cfg = { method, headers };
+  if (body) cfg.body = JSON.stringify(body);
+  const res  = await fetch(API_BASE + '/api' + endpoint, cfg);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Սերվերի սխալ');
+  return data;
+}
 
 // ── If already logged in → go straight to game ──────────────────
 (function checkAlreadyLoggedIn() {
-  try {
-    const data = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
-    if (data && data.auto && data.email && data.name) {
+  const token = getToken();
+  if (token) {
+    // Verify token is still valid
+    apiCall('/auth/me').then(() => {
       window.location.href = 'landing.html';
-    }
-  } catch(e) {}
+    }).catch(() => {
+      clearToken(); // Token expired → stay on login page
+    });
+  }
 })();
 
 // ================================================================
@@ -1660,7 +1675,7 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function handleLogin() {
+async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
   const pass  = document.getElementById('loginPassword').value;
   hideError('loginError');
@@ -1674,27 +1689,22 @@ function handleLogin() {
     return;
   }
 
-  const users = getUsers();
-  const user  = users[email];
+  const btn = document.querySelector('#loginModal .form-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Ստուգվում է...'; }
 
-  if (!user) {
-    showError('loginError', '✕ Այս էլ. փոստով հաշիվ գրանցված չէ: Գրանցվեք հիմա:');
-    return;
+  try {
+    const data = await apiCall('/auth/login', 'POST', { email, password: pass });
+    saveToken(data.token);
+    closeModal('loginModal');
+    showToast('✓ Բարի գալուստ, ' + data.user.name + '! Խաղը բեռնվում է...');
+    setTimeout(() => { window.location.href = 'landing.html'; }, 1000);
+  } catch (err) {
+    showError('loginError', '✕ ' + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Մուտք Գործել'; }
   }
-  if (user.passwordHash !== authHash(pass)) {
-    showError('loginError', '✕ Գաղտնաբառը սխալ է:');
-    return;
-  }
-
-  // Write session — same format as index.html AUTH_KEY
-  localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name: user.name, auto: true }));
-
-  closeModal('loginModal');
-  showToast('✓ Բարի գալուստ, ' + user.name + '! Խաղը բեռնվում է...');
-  setTimeout(() => { window.location.href = 'landing.html'; }, 1200);
 }
 
-function handleRegister() {
+async function handleRegister() {
   const name  = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const pass  = document.getElementById('regPassword').value;
@@ -1727,30 +1737,20 @@ function handleRegister() {
     return;
   }
 
-  const users = getUsers();
-  if (users[email]) {
-    showError('registerError', '✕ Այս էլ. փոստով հաշիվ արդեն գոյություն ունի:');
-    return;
-  }
-
-  // Save user in same format as index.html
   const avatarColor = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-  users[email] = {
-    name,
-    passwordHash: authHash(pass),
-    avatarColor,
-    avatarImg: null,
-    bio: '',
-    createdAt: Date.now()
-  };
-  saveUsers(users);
+  const btn = document.querySelector('#registerModal .form-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Ստեղծվում է...'; }
 
-  // Write session
-  localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name, auto: true }));
-
-  closeModal('registerModal');
-  showToast('✓ Բարի գալուստ, ' + name + '! Մուտք եք գործում համակարգ...');
-  setTimeout(() => { window.location.href = 'landing.html'; }, 1200);
+  try {
+    const data = await apiCall('/auth/register', 'POST', { name, email, password: pass, avatarColor });
+    saveToken(data.token);
+    closeModal('registerModal');
+    showToast('✓ Բարի գalուst, ' + data.user.name + '! Մուտք եք գործum...');
+    setTimeout(() => { window.location.href = 'landing.html'; }, 1000);
+  } catch (err) {
+    showError('registerError', '✕ ' + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Գրանցվel ew Sksel ➤'; }
+  }
 }
 </script>
 
