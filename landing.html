@@ -1706,6 +1706,7 @@ function showAuthScreen() {
 // ── Logout ─────────────────────────────────────
 async function authLogout() {
     if (!confirm('Ужо՞м еq елнел профилicic:')) return;
+    stopTransferPolling();
     if (typeof player !== 'undefined' && currentUser) {
         try { await apiSaveGame(player); } catch(e) {}
     }
@@ -3892,6 +3893,42 @@ function triggerRandomEvent() {
 // ══════════════════════════════════════════
 
 // Helper: save current player to API (silent)
+// ── Real-time transfer polling ─────────────────────────────────────
+let _transferPollInterval = null;
+
+function _applyIncomingTransfer(t) {
+  if (typeof player !== 'undefined' && player) {
+    player.bank = (player.bank || 0) + Number(t.amount);
+    updateUI();
+    apiSaveGame(player).catch(() => {});
+  }
+  const msg = `🏦 +$${Number(t.amount).toLocaleString()} ← ${t.fromName} (${t.fromAccount})`;
+  showNotification(msg, true);
+}
+
+function startTransferPolling(intervalMs = 5000) {
+  stopTransferPolling();
+  _transferPollInterval = setInterval(async () => {
+    if (!getToken()) { stopTransferPolling(); return; }
+    try {
+      const res = await apiCall('/game/transfers/pending');
+      if (res.transfers && res.transfers.length > 0) {
+        res.transfers.forEach((t, i) => {
+          // Stagger multiple transfers by 2.5s each
+          setTimeout(() => _applyIncomingTransfer(t), i * 2500);
+        });
+      }
+    } catch (e) { /* Silent — temporary network errors don't stop polling */ }
+  }, intervalMs);
+}
+
+function stopTransferPolling() {
+  if (_transferPollInterval) {
+    clearInterval(_transferPollInterval);
+    _transferPollInterval = null;
+  }
+}
+
 async function apiSaveGame(playerData) {
     if (!getToken()) return;
     try {
@@ -3928,6 +3965,17 @@ async function loadGame(manual = false) {
                 if (currentUser) player.name = currentUser.name;
                 if (manual) showNotification('☁️ Cloud save բеռнвец', true);
                 updateUI(); renderGarage(); renderMyBusinesses();
+
+                // Handle any transfers that arrived before this load
+                if (res.pendingTransfers && res.pendingTransfers.length > 0) {
+                    res.pendingTransfers.forEach((t, i) => {
+                        setTimeout(() => _applyIncomingTransfer(t), 800 + i * 2500);
+                    });
+                    apiCall('/game/transfers/clear', 'POST').catch(() => {});
+                }
+
+                // Start real-time polling for future transfers
+                startTransferPolling(5000);
                 return;
             }
         } catch (e) {
