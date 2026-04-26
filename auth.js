@@ -2,7 +2,6 @@
 const express = require('express');
 const jwt     = require('jsonwebtoken');
 const User    = require('./User');
-const { protect } = require('./auth');
 
 const router = express.Router();
 
@@ -32,118 +31,76 @@ const sendAuthResponse = (res, statusCode, user, message) => {
   });
 };
 
-// ════════════════════════════════════════════════════════════════════
-// POST /api/auth/register — Նոր հաշիվ ստեղծել
-// ════════════════════════════════════════════════════════════════════
-router.post('/register', async (req, res) => {
+// ─── Middleware: Պաշտպանված Route-երի համար ────────────────────────
+const protect = async (req, res, next) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Մուտքը արգելված է' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
+    next();
+  } catch (err) {
+    res.status(401).json({ success: false, message: 'Անվավեր տոկեն' });
+  }
+};
+
+// ─── Controllers: Ֆունկցիաների սահմանում ───────────────────────────
+
+const register = async (req, res) => {
   try {
     const { name, email, password, avatarColor } = req.body;
+    const userExists = await User.findOne({ email });
 
-    // Վավերականություն
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Անունը, էլ. հասցեն և գաղտնաբառը պարտադիր են',
-      });
+    if (userExists) {
+      return res.status(400).json({ success: false, message: 'Այս էլ. հասցեն արդեն զբաղված է' });
     }
 
-    // Արդեն գրանցված?
-    const exists = await User.findOne({ email: email.toLowerCase() });
-    if (exists) {
-      return res.status(409).json({
-        success: false,
-        message: 'Այս էլ. հասցեով հաշիվ արդեն գոյություն ունի',
-      });
-    }
-
-    // Ստեղծել user
-    const user = await User.create({
-      name,
-      email,
-      password,
-      avatarColor: avatarColor || '#ff3b30',
-    });
-
-    sendAuthResponse(res, 201, user, 'Հաշիվը հաջողությամբ ստեղծվեց');
+    const user = await User.create({ name, email, password, avatarColor });
+    sendAuthResponse(res, 201, user, 'Գրանցումը հաջողվեց');
   } catch (err) {
-    // Mongoose validation errors
-    if (err.name === 'ValidationError') {
-      const messages = Object.values(err.errors).map((e) => e.message);
-      return res.status(400).json({ success: false, message: messages.join(', ') });
-    }
-    console.error('Register error:', err);
-    res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
+    res.status(400).json({ success: false, message: err.message });
   }
-});
+};
 
-// ════════════════════════════════════════════════════════════════════
-// POST /api/auth/login — Մուտք գործել
-// ════════════════════════════════════════════════════════════════════
-router.post('/login', async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const user = await User.findOne({ email }).select('+password');
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Էլ. հասցեն և գաղտնաբառը պարտադիր են',
-      });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ success: false, message: 'Սխալ էլ. հասցե կամ գաղտնաբառ' });
     }
 
-    // password field-ը select:false է → explicitly include
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Այս էլ. հասցեով հաշիվ գտնված չէ',
-      });
-    }
-
-    const isMatch = await user.checkPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: 'Գաղտնաբառը սխալ է',
-      });
-    }
-
-    sendAuthResponse(res, 200, user, `Բարի գալուստ, ${user.name}`);
+    sendAuthResponse(res, 200, user, 'Մուտքը հաջողվեց');
   } catch (err) {
-    console.error('Login error:', err);
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.json({ success: true, user });
+  } catch (err) {
     res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
-});
+};
 
-// ════════════════════════════════════════════════════════════════════
-// GET /api/auth/me — Ընթացիկ user-ի տվյալները (protected)
-// ════════════════════════════════════════════════════════════════════
-router.get('/me', protect, async (req, res) => {
-  res.json({
-    success: true,
-    user: {
-      id:          req.user._id,
-      name:        req.user.name,
-      email:       req.user.email,
-      avatarColor: req.user.avatarColor,
-      avatarImg:   req.user.avatarImg,
-      bio:         req.user.bio,
-      createdAt:   req.user.createdAt,
-    },
-  });
-});
-
-// ════════════════════════════════════════════════════════════════════
-// PATCH /api/auth/profile — Պրոֆիլ թարմացնել (protected)
-// ════════════════════════════════════════════════════════════════════
-router.patch('/profile', protect, async (req, res) => {
+const updateProfile = async (req, res) => {
   try {
-    const allowed = ['name', 'bio', 'avatarColor', 'avatarImg'];
+    const { name, avatarColor, avatarImg, bio } = req.body;
     const updates = {};
-
-    allowed.forEach((field) => {
-      if (req.body[field] !== undefined) updates[field] = req.body[field];
-    });
+    if (name) updates.name = name;
+    if (avatarColor) updates.avatarColor = avatarColor;
+    if (avatarImg !== undefined) updates.avatarImg = avatarImg;
+    if (bio !== undefined) updates.bio = bio;
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -171,23 +128,24 @@ router.patch('/profile', protect, async (req, res) => {
     console.error('Profile update error:', err);
     res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
-});
+};
 
-// ════════════════════════════════════════════════════════════════════
-// DELETE /api/auth/account — Հաշիվն ամбольджоврапес ջнджел (protected)
-// ════════════════════════════════════════════════════════════════════
-router.delete('/account', protect, async (req, res) => {
+const deleteAccount = async (req, res) => {
   try {
-    const GameSave = require('../models/GameSave');
-    // Delete game save first
+    const GameSave = require('./GameSave');
     await GameSave.findOneAndDelete({ user: req.user._id });
-    // Delete user
     await User.findByIdAndDelete(req.user._id);
-    res.json({ success: true, message: 'Хашивн джнджвец' });
+    res.json({ success: true, message: 'Հաշիվը ջնջվեց' });
   } catch (err) {
-    console.error('Delete account error:', err);
-    res.status(500).json({ success: false, message: 'Сервери схал' });
+    res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
-});
+};
+
+// ─── Routes: Ճանապարհների գրանցում ────────────────────────────────
+router.post('/register', register);
+router.post('/login', login);
+router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
+router.delete('/account', protect, deleteAccount);
 
 module.exports = router;
