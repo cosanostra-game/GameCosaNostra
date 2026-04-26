@@ -32,6 +32,7 @@ const sendAuthResponse = (res, statusCode, user, message) => {
 };
 
 // ─── Middleware: Պաշտպանված Route-երի համար ────────────────────────
+// FIX: exported separately so game.js can import it
 const protect = async (req, res, next) => {
   try {
     let token;
@@ -45,13 +46,18 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded.id);
+
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Օգտատերը գտնված չէ' });
+    }
+
     next();
   } catch (err) {
     res.status(401).json({ success: false, message: 'Անվավեր տոկեն' });
   }
 };
 
-// ─── Controllers: Ֆունկցիաների սահմանում ───────────────────────────
+// ─── Controllers ────────────────────────────────────────────────────
 
 const register = async (req, res) => {
   try {
@@ -74,7 +80,8 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.matchPassword(password))) {
+    // FIX: matchPassword → checkPassword (matches User.js method name)
+    if (!user || !(await user.checkPassword(password))) {
       return res.status(401).json({ success: false, message: 'Սխալ էլ. հասցե կամ գաղտնաբառ' });
     }
 
@@ -141,11 +148,14 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-// ─── Routes: Ճանապարհների գրանցում ────────────────────────────────
+// ─── Routes ────────────────────────────────────────────────────────
 router.post('/register', register);
 router.post('/login', login);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
+router.patch('/profile', protect, updateProfile); // FIX: api.js uses PATCH
 router.delete('/account', protect, deleteAccount);
 
+// FIX: export both router AND protect so game.js can import protect
 module.exports = router;
+module.exports.protect = protect;
