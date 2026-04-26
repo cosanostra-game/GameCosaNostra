@@ -1,7 +1,7 @@
 // routes/game.js — Խաղի Save / Load
 const express  = require('express');
-const GameSave = require('../models/GameSave');
-const { protect } = require('../middleware/auth');
+const GameSave = require('./GameSave');
+const { protect } = require('./auth');
 
 const router = express.Router();
 
