@@ -531,6 +531,63 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 .avatar-color-swatch.active, .avatar-color-swatch:hover { border-color: #fff; transform: scale(1.15); }
 .avatar-upload-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); display: none; }
 
+
+/* ===== FRIENDS PAGE ===== */
+.friends-search-wrap { display:flex; gap:10px; margin-bottom:20px; }
+.friends-search-wrap input { flex:1; }
+.friend-card {
+    background: var(--panel-solid);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    animation: cardEntrance var(--anim-mid) both;
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+}
+.friend-avatar {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: #fff;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+.friend-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.friend-info { flex:1; min-width:0; }
+.friend-name { font-size:16px; font-weight:700; color:var(--text-l); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.friend-rank { font-size:12px; color:var(--accent); font-weight:600; margin:2px 0; }
+.friend-account { font-size:12px; color:var(--text); font-family:monospace; }
+.friend-status { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; margin-top:4px; }
+.status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.status-dot.online  { background:#32d74b; box-shadow:0 0 6px #32d74b; }
+.status-dot.offline { background:#8e8e93; }
+.friend-actions { display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+.friend-actions button { padding:8px 16px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:.2s; }
+.btn-add-friend  { background:var(--accent); color:#fff; box-shadow:0 4px 12px rgba(255,59,48,.3); }
+.btn-add-friend:hover { filter:brightness(1.1); }
+.btn-add-friend:disabled { background:var(--border); color:var(--text); box-shadow:none; cursor:default; }
+.btn-remove-friend { background:rgba(255,59,48,0.12); color:var(--accent); }
+.btn-remove-friend:hover { background:rgba(255,59,48,0.22); }
+.btn-accept { background:#32d74b; color:#fff; }
+.btn-decline { background:rgba(255,59,48,0.12); color:var(--accent); }
+.friends-section-title {
+    font-size:12px; font-weight:700; text-transform:uppercase;
+    letter-spacing:1px; color:var(--text); margin:20px 0 10px;
+    display:flex; align-items:center; gap:8px;
+}
+.friends-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.friends-empty { text-align:center; color:var(--text); padding:30px; font-size:14px; opacity:.6; }
+.search-result-badge {
+    display:inline-block; background:rgba(255,59,48,.1);
+    color:var(--accent); font-size:11px; font-weight:700;
+    padding:2px 8px; border-radius:20px; margin-left:6px;
+}
+
 </style>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
@@ -665,6 +722,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <li><a onclick="switchTab('training',this)"><i class="material-icons">fitness_center</i><span class="menu-label">Վարժեցում</span></a></li>
         <li><a onclick="switchTab('reputation',this)"><i class="material-icons">handshake</i><span class="menu-label">Համբավ</span></a></li>
         <li><a onclick="switchTab('families',this)"><i class="material-icons">groups</i><span class="menu-label">Ընտանիքներ</span></a></li>
+        <li><a onclick="switchTab('friends',this)" id="friends-menu-link"><i class="material-icons">people</i><span class="menu-label">Ընկերներ</span><span class="new-badge" id="friend-req-badge" style="display:none;">0</span></a></li>
 
         <div class="menu-section-title">Հավելյալ</div>
         <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label">Օրվա Խնդիրներ</span></a></li>
@@ -1673,7 +1731,8 @@ function authSuccess(user) {
     }
     // Load cloud save (async — UI updates when done)
     loadGame(false);
-    initSocket(); // Real-time socket connection
+    initSocket();
+    setTimeout(() => { if (typeof window._friendSocketInit === 'function') window._friendSocketInit(); }, 800); // Real-time socket connection
     refreshAvatarUI(user.name, user.email);
     updateProfilePage();
     if (typeof addActivity === 'function') addActivity('Բарив гаluст Cosa Nostra, ' + user.name + '!', true);
@@ -2803,6 +2862,7 @@ function switchTab(id, el) {
     if (id === 'leaderboard') renderLeaderboard();
     if (id === 'families') renderFamilies();
     if (id === 'main') updateUI();
+    if (id === 'friends') renderFriendsPage();
     playTone('coin', .05);
 }
 
@@ -4181,6 +4241,196 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pg && pg.classList.contains('active')) drawChart();
     });
 });
+
+// ==========================================
+//   FRIENDS SYSTEM
+// ==========================================
+let _friendsSearchTimer = null;
+
+function friendsSearchDebounce() {
+    clearTimeout(_friendsSearchTimer);
+    _friendsSearchTimer = setTimeout(searchFriendsNow, 500);
+}
+
+async function searchFriendsNow() {
+    const q = document.getElementById('friends-search-input').value.trim();
+    const container = document.getElementById('friends-search-results');
+    if (!q || q.length < 2) { container.innerHTML = ''; return; }
+
+    container.innerHTML = '<div class="friends-empty">Որոնվում է...</div>';
+    try {
+        const data = await apiRequest('/game/search?name=' + encodeURIComponent(q));
+        if (!data.results || data.results.length === 0) {
+            container.innerHTML = '<div class="friends-empty">Ոչ ոք չի գտնվել</div>';
+            return;
+        }
+        // Load my friends to know who is already friend
+        const myData = await apiRequest('/game/friend-requests');
+        const myFriendIds = new Set((myData.friends || []).map(f => String(f.userId)));
+        const pendingSentIds = new Set(); // We can't know what requests WE sent, server handles duplicate check
+
+        container.innerHTML = '<div class="friends-section-title"><i class="material-icons" style="font-size:16px;">search</i>Արդյունքներ <span class="search-result-badge">' + data.results.length + '</span></div>' +
+            data.results.map(u => buildFriendCard(u, myFriendIds.has(u.userId) ? 'friend' : 'stranger')).join('');
+    } catch (err) {
+        container.innerHTML = '<div class="friends-empty" style="color:var(--accent);">Սխալ: ' + err.message + '</div>';
+    }
+}
+
+function buildFriendCard(u, relation) {
+    const initials = (u.name || '?').charAt(0).toUpperCase();
+    const avatarHtml = u.avatarImg
+        ? '<img src="' + u.avatarImg + '" alt="">'
+        : '<span>' + initials + '</span>';
+    const onlineHtml = u.online
+        ? '<span class="status-dot online"></span><span style="color:var(--ok);">Օnlajn</span>'
+        : '<span class="status-dot offline"></span><span>Offline</span>';
+
+    let actionHtml = '';
+    if (relation === 'friend') {
+        actionHtml = '<button class="btn-remove-friend" onclick="removeFriend('' + u.userId + '',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
+    } else {
+        actionHtml = '<button class="btn-add-friend" id="add-btn-' + u.userId + '" onclick="sendFriendRequest('' + u.userId + '',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i></button>';
+    }
+
+    return '<div class="friend-card">' +
+        '<div class="friend-avatar" style="background:' + (u.avatarColor || '#ff3b30') + ';">' + avatarHtml + '</div>' +
+        '<div class="friend-info">' +
+            '<div class="friend-name">' + escHtml(u.name) + '</div>' +
+            '<div class="friend-rank">' + escHtml(u.rank) + '</div>' +
+            '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + escHtml(u.bankAccount) + '</div>' +
+            '<div class="friend-status">' + onlineHtml + '</div>' +
+        '</div>' +
+        '<div class="friend-actions">' + actionHtml + '</div>' +
+    '</div>';
+}
+
+function buildRequestCard(r) {
+    const initials = (r.fromName || '?').charAt(0).toUpperCase();
+    return '<div class="friend-card" id="freq-' + r.fromUserId + '">' +
+        '<div class="friend-avatar" style="background:var(--accent);">' + initials + '</div>' +
+        '<div class="friend-info">' +
+            '<div class="friend-name">' + escHtml(r.fromName) + '</div>' +
+            '<div class="friend-rank">' + escHtml(r.fromRank || '') + '</div>' +
+            '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + escHtml(r.fromAccount || '—') + '</div>' +
+        '</div>' +
+        '<div class="friend-actions">' +
+            '<button class="btn-accept" onclick="respondFriendRequest('' + r.fromUserId + '','accept',this)">✓ Ընդունել</button>' +
+            '<button class="btn-decline" onclick="respondFriendRequest('' + r.fromUserId + '','decline',this)">✕ Մերժել</button>' +
+        '</div>' +
+    '</div>';
+}
+
+function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function renderFriendsPage() {
+    try {
+        const data = await apiRequest('/game/friend-requests');
+        // Requests
+        const reqSection = document.getElementById('friends-requests-section');
+        const reqList    = document.getElementById('friends-requests-list');
+        if (data.requests && data.requests.length > 0) {
+            reqSection.style.display = '';
+            reqList.innerHTML = data.requests.map(buildRequestCard).join('');
+            updateFriendBadge(data.requests.length);
+        } else {
+            reqSection.style.display = 'none';
+            updateFriendBadge(0);
+        }
+        // Friends list
+        const fl = document.getElementById('friends-list-container');
+        if (!data.friends || data.friends.length === 0) {
+            fl.innerHTML = '<div class="friends-empty">Ընկերների ցուցակն դատարկ է։ Գտեք ու ավելացրեք ընկերներ!</div>';
+        } else {
+            fl.innerHTML = data.friends.map(f => buildFriendCard(f, 'friend')).join('');
+        }
+    } catch (err) {
+        document.getElementById('friends-list-container').innerHTML = '<div class="friends-empty" style="color:var(--accent);">Բerrнваum e...</div>';
+    }
+}
+
+async function sendFriendRequest(toUserId, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳';
+    try {
+        await apiRequest('/game/friend-request', 'POST', { toUserId });
+        btn.innerHTML = '<i class="material-icons" style="font-size:16px;vertical-align:middle;">check</i>';
+        btn.style.background = 'var(--ok)';
+        showNotification('✅ Ընkertyan haytn ugharkvec', true);
+    } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i>';
+        showNotification('❌ ' + err.message, false);
+    }
+}
+
+async function respondFriendRequest(fromUserId, action, btn) {
+    btn.disabled = true;
+    try {
+        await apiRequest('/game/friend-request/respond', 'POST', { fromUserId, action });
+        const card = document.getElementById('freq-' + fromUserId);
+        if (card) card.remove();
+        if (action === 'accept') {
+            showNotification('✅ Ynker avlacvec!', true);
+            renderFriendsPage();
+        } else {
+            showNotification('Hayty merjvec', true);
+        }
+        // Update badge
+        const remaining = document.getElementById('friends-requests-list').children.length;
+        updateFriendBadge(remaining);
+        if (remaining === 0) document.getElementById('friends-requests-section').style.display = 'none';
+    } catch (err) {
+        btn.disabled = false;
+        showNotification('❌ ' + err.message, false);
+    }
+}
+
+async function removeFriend(userId, btn) {
+    if (!confirm('Ystapat eli hekanacel ynkery?')) return;
+    btn.disabled = true;
+    try {
+        await apiRequest('/game/friends/' + userId, 'DELETE');
+        btn.closest('.friend-card').remove();
+        showNotification('Ynkern jnjvec', true);
+    } catch (err) {
+        btn.disabled = false;
+        showNotification('❌ ' + err.message, false);
+    }
+}
+
+function updateFriendBadge(count) {
+    const badge = document.getElementById('friend-req-badge');
+    if (!badge) return;
+    if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = '';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+// Socket handlers for friend events
+window._friendSocketInit = function() {
+    if (!window._socket) return;
+    _socket.on('friendRequest', (data) => {
+        showNotification('👥 Ynkertyan hayт: ' + (data.fromName || '?'), true);
+        updateFriendBadge(parseInt(document.getElementById('friend-req-badge').textContent || '0') + 1);
+        document.getElementById('friend-req-badge').style.display = '';
+        // If on friends page, refresh
+        if (document.getElementById('page-friends') && document.getElementById('page-friends').classList.contains('active')) {
+            renderFriendsPage();
+        }
+    });
+    _socket.on('friendAccepted', (data) => {
+        showNotification('✅ ' + (data.byName || '?') + ' -y yndunec dzez ynker!', true);
+        if (document.getElementById('page-friends') && document.getElementById('page-friends').classList.contains('active')) {
+            renderFriendsPage();
+        }
+    });
+};
+
 // auto-load handled by auth system
 
 // Auto-save every 15 seconds (cloud + local)
@@ -4191,6 +4441,46 @@ setInterval(() => {
     if (typeof updateProfilePage === 'function') updateProfilePage();
 }, 15000);
 </script>
+
+
+<!-- FRIENDS PAGE -->
+<section id="page-friends" class="page">
+    <div class="card" style="max-width:700px;margin:0 auto;">
+        <h2 style="margin-bottom:18px;font-size:20px;color:var(--text-l);">
+            <i class="material-icons" style="vertical-align:middle;color:var(--accent);">people</i>
+            Ընկերներ
+        </h2>
+
+        <!-- Search -->
+        <div class="friends-search-wrap">
+            <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
+            <button onclick="searchFriendsNow()" style="padding:0 20px;border-radius:14px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;font-size:14px;">
+                <i class="material-icons" style="vertical-align:middle;">search</i>
+            </button>
+        </div>
+
+        <!-- Search results -->
+        <div id="friends-search-results"></div>
+
+        <!-- Pending friend requests -->
+        <div id="friends-requests-section" style="display:none;">
+            <div class="friends-section-title">
+                <i class="material-icons" style="font-size:16px;color:var(--accent);">mark_email_unread</i>
+                Ստացված Հայտեր
+            </div>
+            <div id="friends-requests-list"></div>
+        </div>
+
+        <!-- Friends list -->
+        <div class="friends-section-title">
+            <i class="material-icons" style="font-size:16px;color:var(--ok);">group</i>
+            Ընկերների Ցուցակ
+        </div>
+        <div id="friends-list-container">
+            <div class="friends-empty">Բեռնվում է...</div>
+        </div>
+    </div>
+</section>
 
 <!-- EDIT PROFILE MODAL -->
 <div class="modal-overlay" id="edit-profile-modal" style="z-index:5000;">

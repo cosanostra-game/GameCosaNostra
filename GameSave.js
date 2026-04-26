@@ -27,6 +27,26 @@ const gameSaveSchema = new mongoose.Schema(
         sentAt:      { type: Date, default: Date.now },
       },
     ],
+
+    // Ընկերության հայտեր — ստացված, սպասվող
+    friendRequests: [
+      {
+        fromUserId:  { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        fromName:    { type: String },
+        fromAccount: { type: String },
+        fromRank:    { type: String },
+        sentAt:      { type: Date, default: Date.now },
+      },
+    ],
+
+    // Ընկերների ցուցակ
+    friends: [
+      {
+        userId:  { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        name:    { type: String },
+        account: { type: String },
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -163,4 +163,149 @@ router.post('/transfers/clear', async (req, res) => {
   }
 });
 
+// ─── GET /api/game/search?name=xxx ───────────────────────────────
+router.get('/search', async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ success: false, message: 'Մուտqagreq arnavazn 2 nish' });
+    }
+    const regex = new RegExp(name.trim(), 'i');
+    const saves = await GameSave.find({ 'playerData.name': regex }).limit(8).lean();
+    const userSockets = req.app.get('userSockets');
+    const results = saves
+      .filter(s => String(s.user) !== String(req.user._id))
+      .map(s => {
+        const pd  = s.playerData || {};
+        const uid = String(s.user);
+        return {
+          userId:      uid,
+          name:        pd.name        || 'Ananun',
+          rank:        pd.rank        || 'Datatarkaport',
+          bankAccount: pd.bankAccount || '—',
+          avatarColor: pd.avatarColor || '#ff3b30',
+          avatarImg:   pd.avatarImg   || null,
+          online:      !!(userSockets && userSockets.has(uid)),
+        };
+      });
+    res.json({ success: true, results });
+  } catch (err) {
+    console.error('Search error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── POST /api/game/friend-request ───────────────────────────────
+router.post('/friend-request', async (req, res) => {
+  try {
+    const { toUserId } = req.body;
+    if (!toUserId) return res.status(400).json({ success: false, message: 'toUserId batskaum e' });
+    if (String(toUserId) === String(req.user._id))
+      return res.status(400).json({ success: false, message: 'Inkd kez ynker chi kareli' });
+
+    const senderSave    = await GameSave.findOne({ user: req.user._id });
+    const recipientSave = await GameSave.findOne({ user: toUserId });
+    if (!senderSave)    return res.status(404).json({ success: false, message: 'Dzer save gtnvac che' });
+    if (!recipientSave) return res.status(404).json({ success: false, message: 'Ogtagortse gtnvac che' });
+
+    if ((senderSave.friends || []).some(f => String(f.userId) === String(toUserId)))
+      return res.status(400).json({ success: false, message: 'Ardin ynkernerq eq' });
+    if ((recipientSave.friendRequests || []).some(f => String(f.fromUserId) === String(req.user._id)))
+      return res.status(400).json({ success: false, message: 'Haytn ardin ugharkvac e' });
+
+    const sd = senderSave.playerData || {};
+    recipientSave.friendRequests.push({
+      fromUserId:  req.user._id,
+      fromName:    sd.name        || req.user.name || 'Ananun',
+      fromAccount: sd.bankAccount || '?',
+      fromRank:    sd.rank        || '',
+      sentAt:      new Date(),
+    });
+    await recipientSave.save();
+
+    const io = req.app.get('io');
+    const userSockets = req.app.get('userSockets');
+    const socketId = userSockets && userSockets.get(String(toUserId));
+    if (io && socketId) {
+      io.to(socketId).emit('friendRequest', {
+        fromUserId:  String(req.user._id),
+        fromName:    sd.name        || req.user.name,
+        fromAccount: sd.bankAccount || '?',
+        fromRank:    sd.rank        || '',
+      });
+    }
+    res.json({ success: true, message: 'Ynkerутyan haytn ugharkvec' });
+  } catch (err) {
+    console.error('Friend request error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── GET /api/game/friend-requests ───────────────────────────────
+router.get('/friend-requests', async (req, res) => {
+  try {
+    const save = await GameSave.findOne({ user: req.user._id }).lean();
+    if (!save) return res.json({ success: true, requests: [], friends: [] });
+    const userSockets = req.app.get('userSockets');
+    const friends = (save.friends || []).map(f => ({
+      ...f,
+      online: !!(userSockets && userSockets.has(String(f.userId))),
+    }));
+    res.json({ success: true, requests: save.friendRequests || [], friends });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── POST /api/game/friend-request/respond ───────────────────────
+router.post('/friend-request/respond', async (req, res) => {
+  try {
+    const { fromUserId, action } = req.body;
+    if (!fromUserId || !['accept', 'decline'].includes(action))
+      return res.status(400).json({ success: false, message: 'Ankor params' });
+
+    const mySave = await GameSave.findOne({ user: req.user._id });
+    if (!mySave) return res.status(404).json({ success: false, message: 'Save gtnvac che' });
+
+    const idx = mySave.friendRequests.findIndex(r => String(r.fromUserId) === String(fromUserId));
+    if (idx === -1) return res.status(404).json({ success: false, message: 'Hayty gtnvac che' });
+
+    const reqData = mySave.friendRequests[idx];
+    mySave.friendRequests.splice(idx, 1);
+
+    if (action === 'accept') {
+      const myPd = mySave.playerData || {};
+      mySave.friends.push({ userId: fromUserId, name: reqData.fromName, account: reqData.fromAccount });
+      const theirSave = await GameSave.findOne({ user: fromUserId });
+      if (theirSave) {
+        theirSave.friends.push({ userId: req.user._id, name: myPd.name || req.user.name, account: myPd.bankAccount || '?' });
+        await theirSave.save();
+        const io = req.app.get('io');
+        const userSockets = req.app.get('userSockets');
+        const sid = userSockets && userSockets.get(String(fromUserId));
+        if (io && sid) io.to(sid).emit('friendAccepted', { byName: myPd.name || req.user.name, byAccount: myPd.bankAccount || '?' });
+      }
+    }
+    await mySave.save();
+    res.json({ success: true, message: action === 'accept' ? 'Ynker avlacvec' : 'Hayty merjvec' });
+  } catch (err) {
+    console.error('Respond error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── DELETE /api/game/friends/:userId ────────────────────────────
+router.delete('/friends/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const mySave = await GameSave.findOne({ user: req.user._id });
+    if (mySave) { mySave.friends = mySave.friends.filter(f => String(f.userId) !== userId); await mySave.save(); }
+    const theirSave = await GameSave.findOne({ user: userId });
+    if (theirSave) { theirSave.friends = theirSave.friends.filter(f => String(f.userId) !== String(req.user._id)); await theirSave.save(); }
+    res.json({ success: true, message: 'Ynkern jnjvec' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
 module.exports = router;
