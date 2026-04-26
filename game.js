@@ -74,7 +74,7 @@ router.post('/transfer', async (req, res) => {
     }
     const amt = parseInt(amount, 10);
     if (!amt || amt <= 0) {
-      return res.status(400).json({ success: false, message: 'Ан'кор гумар' });
+    return res.status(400).json({ success: false, message: 'Անվավեր գումար' });
     }
 
     // Load sender

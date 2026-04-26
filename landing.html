@@ -3007,6 +3007,10 @@ function bankAction(type) {
     else showNotification("Անբավ. միջոց", false);
     updateUI();
 }
+// ── API Transfer (using existing apiCall) ──
+async function apiTransferMoney(toAccount, amount) {
+  return apiCall('/game/transfer', 'POST', { toAccount, amount });
+}
 async function bankTransfer() {
     const accInput = document.getElementById('bankTransferAcc');
     const amtInput = document.getElementById('bankTransferAmt');
