@@ -533,9 +533,36 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
 
 /* ===== FRIENDS PAGE ===== */
-.friends-search-wrap { display:flex; gap:10px; margin-bottom:20px; }
-.friends-search-wrap input { flex:1; }
-.friend-card {
+.friends-search-wrap { display:flex; gap:10px; margin-bottom:20px; align-items:center; }
+.friends-search-wrap input { flex:1; min-width:0; }
+.friends-search-btn { width:46px; height:46px; min-width:46px; border-radius:14px; background:var(--accent); color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:.2s; box-shadow:0 4px 12px rgba(255,59,48,.3); }
+.friends-search-btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+.friends-search-btn i { font-size:20px; }
+.friend-card-clickable { cursor:pointer; transition:all .2s; }
+.friend-card-clickable:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.15); border-color:rgba(255,59,48,.3); }
+
+/* Friend Profile Modal */
+.friend-profile-modal-avatar {
+    width:80px; height:80px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:30px; font-weight:800; color:#fff;
+    margin:0 auto 6px; overflow:hidden;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+    border:3px solid var(--accent);
+    position:relative;
+}
+.friend-profile-modal-avatar img { width:100%; height:100%; object-fit:cover; }
+.friend-profile-modal-online { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; }
+.friend-profile-stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
+.fps-card { background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; }
+.fps-val { font-size:18px; font-weight:800; color:var(--text-l); }
+.fps-label { font-size:10px; color:var(--text); text-transform:uppercase; letter-spacing:.8px; margin-top:3px; font-weight:600; }
+.friend-modal-actions { display:flex; gap:10px; margin-top:18px; }
+.friend-modal-actions button { flex:1; padding:12px; border-radius:14px; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.fma-msg { background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(255,59,48,.3); }
+.fma-msg:hover { filter:brightness(1.1); }
+.fma-remove { background:rgba(255,59,48,.1); color:var(--accent); }
+.fma-remove:hover { background:rgba(255,59,48,.2); }
     background: var(--panel-solid);
     border: 1px solid var(--border);
     border-radius: 18px;
@@ -1521,8 +1548,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <!-- Search -->
         <div class="friends-search-wrap">
             <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
-            <button onclick="searchFriendsNow()" style="padding:0 20px;border-radius:14px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;font-size:14px;">
-                <i class="material-icons" style="vertical-align:middle;">search</i>
+            <button class="friends-search-btn" onclick="searchFriendsNow()">
+                <i class="material-icons">search</i>
             </button>
         </div>
 
@@ -4440,19 +4467,24 @@ function buildFriendCard(u, relation) {
         ? '<span class="status-dot online"></span><span style="color:var(--ok);">Օnlajn</span>'
         : '<span class="status-dot offline"></span><span>Offline</span>';
 
+    // account field name differs: search results use bankAccount, friends list uses account
+    const accountDisplay = escHtml(u.bankAccount || u.account || '—');
+
     let actionHtml = '';
     if (relation === 'friend') {
-        actionHtml = '<button class="btn-remove-friend" onclick="removeFriend(\'' + u.userId + '\',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
+        actionHtml = '<button class="btn-remove-friend" onclick="event.stopPropagation();removeFriend(\'' + u.userId + '\',this)" title="Հեռացնել ընկեր"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
     } else {
         actionHtml = '<button class="btn-add-friend" id="add-btn-' + u.userId + '" onclick="sendFriendRequest(\'' + u.userId + '\',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i></button>';
     }
 
-    return '<div class="friend-card">' +
+    const clickable = relation === 'friend' ? ' friend-card-clickable" onclick="openFriendProfile(\'' + u.userId + '\')' : '';
+
+    return '<div class="friend-card' + clickable + '">' +
         '<div class="friend-avatar" style="background:' + (u.avatarColor || '#ff3b30') + ';">' + avatarHtml + '</div>' +
         '<div class="friend-info">' +
             '<div class="friend-name">' + escHtml(u.name) + '</div>' +
-            '<div class="friend-rank">' + escHtml(u.rank) + '</div>' +
-            '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + escHtml(u.bankAccount) + '</div>' +
+            '<div class="friend-rank">' + escHtml(u.rank || '') + '</div>' +
+            '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + accountDisplay + '</div>' +
             '<div class="friend-status">' + onlineHtml + '</div>' +
         '</div>' +
         '<div class="friend-actions">' + actionHtml + '</div>' +
@@ -4564,6 +4596,97 @@ function updateFriendBadge(count) {
     } else {
         badge.style.display = 'none';
     }
+}
+
+// ── Friend Profile Modal ──────────────────────────────────────────
+let _fpActiveFriendId = null;
+
+async function openFriendProfile(userId) {
+    _fpActiveFriendId = userId;
+    const modal = document.getElementById('friend-profile-modal');
+    if (!modal) return;
+
+    // Show loading state
+    document.getElementById('fp-name').textContent = '...';
+    document.getElementById('fp-rank').textContent = '';
+    document.getElementById('fp-account').textContent = '';
+    document.getElementById('fp-status').innerHTML = '';
+    document.getElementById('fp-stats-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text);padding:16px;">Բեռնվում է...</div>';
+    modal.style.display = 'flex';
+
+    try {
+        const data = await apiCall('/game/player/' + userId);
+        const p = data.player;
+
+        // Avatar
+        const avatarEl = document.getElementById('fp-avatar');
+        const initials = (p.name || '?').charAt(0).toUpperCase();
+        avatarEl.style.background = p.avatarColor || '#ff3b30';
+        if (p.avatarImg) {
+            avatarEl.innerHTML = '<img src="' + escHtml(p.avatarImg) + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+        } else {
+            avatarEl.innerHTML = '<span>' + initials + '</span>';
+        }
+
+        // Info
+        document.getElementById('fp-name').textContent = p.name || '—';
+        document.getElementById('fp-rank').textContent = p.rank || '';
+        document.getElementById('fp-account').textContent = p.bankAccount || '—';
+        document.getElementById('fp-status').innerHTML = p.online
+            ? '<span class="status-dot online" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#32d74b;box-shadow:0 0 6px #32d74b;margin-right:5px;"></span><span style="color:var(--ok);font-size:12px;font-weight:700;">Օnlajn</span>'
+            : '<span class="status-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#8e8e93;margin-right:5px;"></span><span style="color:var(--text);font-size:12px;">Offline</span>';
+
+        // Stats grid
+        const stats = [
+            { icon: '⭐', val: (p.exp || 0).toLocaleString(), label: 'XP' },
+            { icon: '🔫', val: (p.crimes || 0).toLocaleString(), label: 'Հանցկ.' },
+            { icon: '🚗', val: (p.garage || 0).toLocaleString(), label: 'Ավտո' },
+            { icon: '🏠', val: (p.realEstate || 0).toLocaleString(), label: 'Կայք.' },
+            { icon: '💼', val: (p.businesses || 0).toLocaleString(), label: 'Բիզ.' },
+            { icon: '🏆', val: (p.level || 1), label: 'Lvl' },
+        ];
+        document.getElementById('fp-stats-grid').innerHTML = stats.map(s =>
+            '<div class="fps-card"><div style="font-size:20px;">' + s.icon + '</div>' +
+            '<div class="fps-val">' + s.val + '</div>' +
+            '<div class="fps-label">' + s.label + '</div></div>'
+        ).join('');
+
+        // Store for message button
+        document.getElementById('fp-msg-btn').onclick = () => {
+            closeFriendProfileModal();
+            openChatWithFriend(userId, p.name);
+        };
+        document.getElementById('fp-remove-btn').onclick = () => {
+            closeFriendProfileModal();
+            const fakeBtn = { disabled: false, closest: () => document.querySelector('.friend-card-clickable[onclick*="' + userId + '"]') };
+            removeFriend(userId, fakeBtn);
+        };
+
+    } catch (err) {
+        document.getElementById('fp-stats-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--accent);padding:16px;">Սkhаl: ' + escHtml(err.message) + '</div>';
+    }
+}
+
+function closeFriendProfileModal() {
+    const modal = document.getElementById('friend-profile-modal');
+    if (modal) modal.style.display = 'none';
+    _fpActiveFriendId = null;
+}
+
+function openChatWithFriend(userId, friendName) {
+    // Switch to messages page and open chat with this friend
+    const pageLinks = document.querySelectorAll('.menu li a');
+    pageLinks.forEach(l => {
+        if (l.getAttribute('onclick') && l.getAttribute('onclick').includes('page-messages')) {
+            l.click();
+        }
+    });
+    // Then open the specific chat after a short delay
+    setTimeout(() => {
+        if (typeof openChat === 'function') {
+            openChat(userId, friendName);
+        }
+    }, 200);
 }
 
 // Socket handlers for friend events
@@ -4882,6 +5005,39 @@ window._chatSocketInit = function() {
         <div class="modal-footer">
             <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeEditProfileModal()">Չեղարկել</button>
             <button style="background:var(--accent);" onclick="saveEditProfile()">Պահպանել</button>
+        </div>
+    </div>
+</div>
+
+<!-- FRIEND PROFILE MODAL -->
+<div class="modal-overlay" id="friend-profile-modal" style="z-index:5100;display:none;" onclick="if(event.target===this)closeFriendProfileModal()">
+    <div class="modal-content" style="max-width:400px;">
+        <div class="modal-header">
+            <h2 style="margin:0;font-size:18px;color:var(--text-l);">👤 Ընkeri Profil</h2>
+            <button class="close-btn" onclick="closeFriendProfileModal()"><i class="material-icons">close</i></button>
+        </div>
+        <div class="modal-body">
+            <!-- Avatar + basic info -->
+            <div style="text-align:center;margin-bottom:16px;">
+                <div class="friend-profile-modal-avatar" id="fp-avatar">
+                    <span>?</span>
+                </div>
+                <div style="font-size:20px;font-weight:800;color:var(--text-l);margin-top:10px;" id="fp-name">—</div>
+                <div style="font-size:13px;color:var(--accent);font-weight:700;margin:3px 0;" id="fp-rank"></div>
+                <div style="font-size:12px;color:var(--text);font-family:monospace;margin:3px 0;"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> <span id="fp-account">—</span></div>
+                <div style="margin-top:6px;" id="fp-status"></div>
+            </div>
+            <!-- Stats -->
+            <div class="friend-profile-stats-grid" id="fp-stats-grid"></div>
+            <!-- Actions -->
+            <div class="friend-modal-actions">
+                <button class="fma-msg" id="fp-msg-btn">
+                    <i class="material-icons" style="font-size:18px;">chat</i> Հաղ. Ուղ.
+                </button>
+                <button class="fma-remove" id="fp-remove-btn">
+                    <i class="material-icons" style="font-size:18px;">person_remove</i> Հեռացնել
+                </button>
+            </div>
         </div>
     </div>
 </div>

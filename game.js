@@ -279,9 +279,30 @@ router.get('/friend-requests', async (req, res) => {
     const save = await GameSave.findOne({ user: req.user._id }).lean();
     if (!save) return res.json({ success: true, requests: [], friends: [] });
     const userSockets = req.app.get('userSockets');
+
+    // Enrich friends with avatarImg/avatarColor from their playerData
+    const friendIds = (save.friends || []).map(f => f.userId);
+    let avatarMap = {};
+    if (friendIds.length > 0) {
+      const friendSaves = await GameSave.find(
+        { user: { $in: friendIds } },
+        { user: 1, 'playerData.avatarImg': 1, 'playerData.avatarColor': 1, 'playerData.rank': 1 }
+      ).lean();
+      friendSaves.forEach(fs => {
+        avatarMap[String(fs.user)] = {
+          avatarImg:   fs.playerData?.avatarImg   || null,
+          avatarColor: fs.playerData?.avatarColor || '#ff3b30',
+          rank:        fs.playerData?.rank        || '',
+        };
+      });
+    }
+
     const friends = (save.friends || []).map(f => ({
       ...f,
-      online: !!(userSockets && userSockets.has(String(f.userId))),
+      online:      !!(userSockets && userSockets.has(String(f.userId))),
+      avatarImg:   avatarMap[String(f.userId)]?.avatarImg   || null,
+      avatarColor: avatarMap[String(f.userId)]?.avatarColor || '#ff3b30',
+      rank:        avatarMap[String(f.userId)]?.rank        || '',
     }));
     res.json({ success: true, requests: save.friendRequests || [], friends });
   } catch (err) {
@@ -441,6 +462,50 @@ router.post('/chat', async (req, res) => {
     });
   } catch (err) {
     console.error('Chat send error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── GET /api/game/player/:userId — public stats for a friend ────
+router.get('/player/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Must be friends
+    const mySave = await GameSave.findOne({ user: req.user._id }).lean();
+    const isFriend = mySave && (mySave.friends || []).some(f => String(f.userId) === String(userId));
+    if (!isFriend) {
+      return res.status(403).json({ success: false, message: 'Duk ynker cheq' });
+    }
+
+    const theirSave = await GameSave.findOne({ user: userId }).lean();
+    if (!theirSave) {
+      return res.status(404).json({ success: false, message: 'Ogtagortse gtnvac che' });
+    }
+
+    const pd = theirSave.playerData || {};
+    const userSockets = req.app.get('userSockets');
+
+    res.json({
+      success: true,
+      player: {
+        name:        pd.name        || 'Ananun',
+        rank:        pd.rank        || '',
+        bankAccount: pd.bankAccount || '—',
+        exp:         pd.exp         || 0,
+        level:       pd.level       || 1,
+        crimes:      pd.stats?.crimes    || 0,
+        cars:        pd.stats?.cars      || 0,
+        garage:      (pd.garage      || []).length,
+        realEstate:  (pd.realEstate  || []).length,
+        businesses:  (pd.businesses  || []).length,
+        avatarImg:   pd.avatarImg   || null,
+        avatarColor: pd.avatarColor || '#ff3b30',
+        online:      !!(userSockets && userSockets.has(String(userId))),
+      },
+    });
+  } catch (err) {
+    console.error('Player stats error:', err);
     res.status(500).json({ success: false, message: 'Servreri skhal' });
   }
 });
