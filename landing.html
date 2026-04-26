@@ -4298,13 +4298,13 @@ async function searchFriendsNow() {
 
     container.innerHTML = '<div class="friends-empty">Որոնվում է...</div>';
     try {
-        const data = await apiRequest('/game/search?name=' + encodeURIComponent(q));
+        const data = await apiCall('/game/search?name=' + encodeURIComponent(q));
         if (!data.results || data.results.length === 0) {
             container.innerHTML = '<div class="friends-empty">Ոչ ոք չի գտնվել</div>';
             return;
         }
         // Load my friends to know who is already friend
-        const myData = await apiRequest('/game/friend-requests');
+        const myData = await apiCall('/game/friend-requests');
         const myFriendIds = new Set((myData.friends || []).map(f => String(f.userId)));
         const pendingSentIds = new Set(); // We can't know what requests WE sent, server handles duplicate check
 
@@ -4365,7 +4365,7 @@ function escHtml(s) {
 
 async function renderFriendsPage() {
     try {
-        const data = await apiRequest('/game/friend-requests');
+        const data = await apiCall('/game/friend-requests');
         // Requests
         const reqSection = document.getElementById('friends-requests-section');
         const reqList    = document.getElementById('friends-requests-list');
@@ -4393,7 +4393,7 @@ async function sendFriendRequest(toUserId, btn) {
     btn.disabled = true;
     btn.innerHTML = '⏳';
     try {
-        await apiRequest('/game/friend-request', 'POST', { toUserId });
+        await apiCall('/game/friend-request', 'POST', { toUserId });
         btn.innerHTML = '<i class="material-icons" style="font-size:16px;vertical-align:middle;">check</i>';
         btn.style.background = 'var(--ok)';
         showNotification('✅ Ընkertyan haytn ugharkvec', true);
@@ -4407,7 +4407,7 @@ async function sendFriendRequest(toUserId, btn) {
 async function respondFriendRequest(fromUserId, action, btn) {
     btn.disabled = true;
     try {
-        await apiRequest('/game/friend-request/respond', 'POST', { fromUserId, action });
+        await apiCall('/game/friend-request/respond', 'POST', { fromUserId, action });
         const card = document.getElementById('freq-' + fromUserId);
         if (card) card.remove();
         if (action === 'accept') {
@@ -4430,7 +4430,7 @@ async function removeFriend(userId, btn) {
     if (!confirm('Ystapat eli hekanacel ynkery?')) return;
     btn.disabled = true;
     try {
-        await apiRequest('/game/friends/' + userId, 'DELETE');
+        await apiCall('/game/friends/' + userId, 'DELETE');
         btn.closest('.friend-card').remove();
         showNotification('Ynkern jnjvec', true);
     } catch (err) {

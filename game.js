@@ -150,6 +150,23 @@ router.post('/transfer', async (req, res) => {
   }
 });
 
+// ─── GET /api/game/transfers/pending ─────────────────────────────
+// Frontend polling-ի համար. Վերադարձնում է pending transfers-ը և ջնջում:
+router.get('/transfers/pending', async (req, res) => {
+  try {
+    const save = await GameSave.findOne({ user: req.user._id });
+    if (!save || !save.pendingTransfers || save.pendingTransfers.length === 0) {
+      return res.json({ success: true, transfers: [] });
+    }
+    const transfers = [...save.pendingTransfers];
+    save.pendingTransfers = [];
+    await save.save();
+    res.json({ success: true, transfers });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
 // ─── POST /api/game/transfers/clear ──────────────────────────────
 router.post('/transfers/clear', async (req, res) => {
   try {
