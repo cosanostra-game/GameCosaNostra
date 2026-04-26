@@ -5,8 +5,8 @@ const express    = require('express');
 const cors       = require('cors');
 const connectDB  = require('./connect');
 
-const authRoutes = require('./routes/auth');
-const gameRoutes = require('./routes/game');
+const authRoutes = require('./auth');
+const gameRoutes = require('./game');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
