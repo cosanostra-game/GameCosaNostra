@@ -77,11 +77,11 @@ router.post('/transfer', async (req, res) => {
 
     // Validation
     if (!toAccount || typeof toAccount !== 'string' || !/^AM\d{6}$/.test(toAccount.trim())) {
-      return res.status(400).json({ success: false, message: 'Hashvehamerə skhale (AM + 6 tsan)' });
+      return res.status(400).json({ success: false, message: 'Հաշվեհամարը սխալ է (AM + 6 թիվ)' });
     }
     const amt = parseInt(amount, 10);
     if (!amt || amt <= 0) {
-      return res.status(400).json({ success: false, message: 'Ankhor gumar' });
+      return res.status(400).json({ success: false, message: 'Անվավեր գումար' });
     }
 
     const acc = toAccount.trim().toUpperCase();
@@ -89,7 +89,7 @@ router.post('/transfer', async (req, res) => {
     // Load sender save
     const senderSave = await GameSave.findOne({ user: req.user._id });
     if (!senderSave) {
-      return res.status(404).json({ success: false, message: 'Dzer save-ə gtnvac che' });
+      return res.status(404).json({ success: false, message: 'Ձեր սեյվը գտնված չէ' });
     }
     const senderData = senderSave.playerData;
 
@@ -102,7 +102,7 @@ router.post('/transfer', async (req, res) => {
     if ((senderData.bank || 0) < amt) {
       return res.status(400).json({
         success: false,
-        message: `Bank-um bavarar gumar chka. Mot e $${(senderData.bank || 0).toLocaleString()}`,
+        message: `Բանկում բավարար գումար չկա։ Մոտ է $${(senderData.bank || 0).toLocaleString()}`,
       });
     }
 
@@ -111,7 +111,7 @@ router.post('/transfer', async (req, res) => {
     if (!recipientSave) {
       return res.status(404).json({
         success: false,
-        message: `«${acc}» hashvehamerov khaghatsogh gtnvac che`,
+        message: `«${acc}» հաշվեհամարով խաղացող չի գտնվել`,
       });
     }
 
@@ -145,7 +145,7 @@ router.post('/transfer', async (req, res) => {
     } else {
       // Offline է — հերթ դնել, load-ի ժամանակ ցույց կտա
       recipientSave.pendingTransfers.push({
-        fromName:    senderData.name    || req.user.name || 'Ananun',
+        fromName:    senderData.name    || req.user.name || 'Անանուն',
         fromAccount: senderData.bankAccount || '?',
         amount:      amt,
         sentAt:      new Date(),
@@ -156,12 +156,12 @@ router.post('/transfer', async (req, res) => {
 
     return res.json({
       success:       true,
-      message:       `$${amt.toLocaleString()} popoxancvec ${acc}-in`,
+      message:       `$${amt.toLocaleString()} փոխանցվեց ${acc}-in`,
       newSenderBank: senderData.bank,
     });
   } catch (err) {
     console.error('Transfer error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -178,7 +178,7 @@ router.get('/transfers/pending', async (req, res) => {
     await save.save();
     res.json({ success: true, transfers });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -191,7 +191,7 @@ router.post('/transfers/clear', async (req, res) => {
     );
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -200,7 +200,7 @@ router.get('/search', async (req, res) => {
   try {
     const { name } = req.query;
     if (!name || name.trim().length < 2) {
-      return res.status(400).json({ success: false, message: 'Մուտqagreq arnavazn 2 nish' });
+      return res.status(400).json({ success: false, message: 'Մուտքագրեք առնվազն 2 նիշ' });
     }
     const regex = new RegExp(name.trim(), 'i');
     const saves = await GameSave.find({ 'playerData.name': regex }).limit(8).lean();
@@ -212,8 +212,8 @@ router.get('/search', async (req, res) => {
         const uid = String(s.user);
         return {
           userId:      uid,
-          name:        pd.name        || 'Ananun',
-          rank:        pd.rank        || 'Datatarkaport',
+          name:        pd.name        || 'Անանուն',
+          rank:        pd.rank        || 'Դատարկապորտ',
           bankAccount: pd.bankAccount || '—',
           avatarColor: pd.avatarColor || '#ff3b30',
           avatarImg:   pd.avatarImg   || null,
@@ -223,7 +223,7 @@ router.get('/search', async (req, res) => {
     res.json({ success: true, results });
   } catch (err) {
     console.error('Search error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -231,24 +231,24 @@ router.get('/search', async (req, res) => {
 router.post('/friend-request', async (req, res) => {
   try {
     const { toUserId } = req.body;
-    if (!toUserId) return res.status(400).json({ success: false, message: 'toUserId batskaum e' });
+    if (!toUserId) return res.status(400).json({ success: false, message: 'UserId բացակայում է' });
     if (String(toUserId) === String(req.user._id))
-      return res.status(400).json({ success: false, message: 'Inkd kez ynker chi kareli' });
+      return res.status(400).json({ success: false, message: 'Ինքդ քեզ չի կարելի' });
 
     const senderSave    = await GameSave.findOne({ user: req.user._id });
     const recipientSave = await GameSave.findOne({ user: toUserId });
-    if (!senderSave)    return res.status(404).json({ success: false, message: 'Dzer save gtnvac che' });
-    if (!recipientSave) return res.status(404).json({ success: false, message: 'Ogtagortse gtnvac che' });
+    if (!senderSave)    return res.status(404).json({ success: false, message: 'Ձեր սեյվը չի գտնվել' });
+    if (!recipientSave) return res.status(404).json({ success: false, message: 'Ձեր սեյվը չի գտնվե' });
 
     if ((senderSave.friends || []).some(f => String(f.userId) === String(toUserId)))
-      return res.status(400).json({ success: false, message: 'Ardin ynkernerq eq' });
+      return res.status(400).json({ success: false, message: 'Արդեն ընկերներ եք' });
     if ((recipientSave.friendRequests || []).some(f => String(f.fromUserId) === String(req.user._id)))
-      return res.status(400).json({ success: false, message: 'Haytn ardin ugharkvac e' });
+      return res.status(400).json({ success: false, message: 'Հայտն արդեն ուղարկված է' });
 
     const sd = senderSave.playerData || {};
     recipientSave.friendRequests.push({
       fromUserId:  req.user._id,
-      fromName:    sd.name        || req.user.name || 'Ananun',
+      fromName:    sd.name        || req.user.name || 'Անանուն',
       fromAccount: sd.bankAccount || '?',
       fromRank:    sd.rank        || '',
       sentAt:      new Date(),
@@ -266,10 +266,10 @@ router.post('/friend-request', async (req, res) => {
         fromRank:    sd.rank        || '',
       });
     }
-    res.json({ success: true, message: 'Ynkerутyan haytn ugharkvec' });
+    res.json({ success: true, message: 'Ընկերության հայտն ուղարկվեց' });
   } catch (err) {
     console.error('Friend request error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -306,7 +306,7 @@ router.get('/friend-requests', async (req, res) => {
     }));
     res.json({ success: true, requests: save.friendRequests || [], friends });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -318,10 +318,10 @@ router.post('/friend-request/respond', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Ankor params' });
 
     const mySave = await GameSave.findOne({ user: req.user._id });
-    if (!mySave) return res.status(404).json({ success: false, message: 'Save gtnvac che' });
+    if (!mySave) return res.status(404).json({ success: false, message: 'Սեյվը գտնված չէ' });
 
     const idx = mySave.friendRequests.findIndex(r => String(r.fromUserId) === String(fromUserId));
-    if (idx === -1) return res.status(404).json({ success: false, message: 'Hayty gtnvac che' });
+    if (idx === -1) return res.status(404).json({ success: false, message: 'Հայտ չկա' });
 
     const reqData = mySave.friendRequests[idx];
     mySave.friendRequests.splice(idx, 1);
@@ -340,10 +340,10 @@ router.post('/friend-request/respond', async (req, res) => {
       }
     }
     await mySave.save();
-    res.json({ success: true, message: action === 'accept' ? 'Ynker avlacvec' : 'Hayty merjvec' });
+    res.json({ success: true, message: action === 'accept' ? 'Դարձավ ընկեր' : 'Ընկերության հայտը մերժվեց' });
   } catch (err) {
     console.error('Respond error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -357,7 +357,7 @@ router.delete('/friends/:userId', async (req, res) => {
     if (theirSave) { theirSave.friends = theirSave.friends.filter(f => String(f.userId) !== String(req.user._id)); await theirSave.save(); }
     res.json({ success: true, message: 'Ynkern jnjvec' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -375,7 +375,7 @@ router.get('/chat/unread', async (req, res) => {
     res.json({ success: true, counts });
   } catch (err) {
     console.error('Unread error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -400,7 +400,7 @@ router.get('/chat/:userId', async (req, res) => {
     res.json({ success: true, messages: msgs });
   } catch (err) {
     console.error('Chat load error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -413,17 +413,17 @@ router.post('/chat', async (req, res) => {
       return res.status(400).json({ success: false, message: 'toUserId ev text patardir en' });
     }
     if (text.trim().length > 2000) {
-      return res.status(400).json({ success: false, message: 'Sarhmanafakum e 2000 nish' });
+      return res.status(400).json({ success: false, message: 'Սահմանափակում 2000 նիշ' });
     }
     if (String(toUserId) === String(req.user._id)) {
-      return res.status(400).json({ success: false, message: 'Inkd kez chi kareli grel' });
+      return res.status(400).json({ success: false, message: 'Ինքդ քեզ չի կարելի գրել' });
     }
 
     // Must be friends
     const mySave = await GameSave.findOne({ user: req.user._id }).lean();
     const isFriend = mySave && (mySave.friends || []).some(f => String(f.userId) === String(toUserId));
     if (!isFriend) {
-      return res.status(403).json({ success: false, message: 'Du kareli es grel miain ynkerneret' });
+      return res.status(403).json({ success: false, message: 'Կարելի է գրել միայն ընկերներին' });
     }
 
     const msg = await Message.create({
@@ -439,7 +439,7 @@ router.post('/chat', async (req, res) => {
 
     if (io && socketId) {
       const senderPd   = mySave && mySave.playerData;
-      const senderName = (senderPd && senderPd.name) || req.user.name || 'Ananun';
+      const senderName = (senderPd && senderPd.name) || req.user.name || 'Անանուն';
       io.to(socketId).emit('chatMessage', {
         _id:       String(msg._id),
         from:      String(req.user._id),
@@ -462,7 +462,7 @@ router.post('/chat', async (req, res) => {
     });
   } catch (err) {
     console.error('Chat send error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
@@ -475,12 +475,12 @@ router.get('/player/:userId', async (req, res) => {
     const mySave = await GameSave.findOne({ user: req.user._id }).lean();
     const isFriend = mySave && (mySave.friends || []).some(f => String(f.userId) === String(userId));
     if (!isFriend) {
-      return res.status(403).json({ success: false, message: 'Duk ynker cheq' });
+      return res.status(403).json({ success: false, message: 'Դուք ընկերներ չեք' });
     }
 
     const theirSave = await GameSave.findOne({ user: userId }).lean();
     if (!theirSave) {
-      return res.status(404).json({ success: false, message: 'Ogtagortse gtnvac che' });
+      return res.status(404).json({ success: false, message: 'Օգտատերը չի գտնվել' });
     }
 
     const pd = theirSave.playerData || {};
@@ -506,7 +506,7 @@ router.get('/player/:userId', async (req, res) => {
     });
   } catch (err) {
     console.error('Player stats error:', err);
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
+    res.status(500).json({ success: false, message: 'Սեռվերի սխալ' });
   }
 });
 
