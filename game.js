@@ -130,28 +130,6 @@ router.post('/transfer', async (req, res) => {
   }
 });
 
-// ─── GET /api/game/transfers/pending ─────────────────────────────
-// Polling endpoint: վերադարձնում + atomically մաքրում pending-ները
-router.get('/transfers/pending', async (req, res) => {
-  try {
-    const save = await GameSave.findOne({ user: req.user._id });
-    const transfers = (save && save.pendingTransfers && save.pendingTransfers.length > 0)
-      ? [...save.pendingTransfers]
-      : [];
-
-    if (transfers.length > 0) {
-      await GameSave.findOneAndUpdate(
-        { user: req.user._id },
-        { $set: { pendingTransfers: [] } }
-      );
-    }
-
-    res.json({ success: true, transfers });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Servreri skhal' });
-  }
-});
-
 // ─── POST /api/game/transfers/clear ──────────────────────────────
 router.post('/transfers/clear', async (req, res) => {
   try {
