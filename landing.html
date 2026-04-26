@@ -1438,6 +1438,45 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         </div>
     </section>
 
+<!-- FRIENDS PAGE -->
+<section id="page-friends" class="page">
+    <div class="card" style="max-width:700px;margin:0 auto;">
+        <h2 style="margin-bottom:18px;font-size:20px;color:var(--text-l);">
+            <i class="material-icons" style="vertical-align:middle;color:var(--accent);">people</i>
+            Ընկերներ
+        </h2>
+
+        <!-- Search -->
+        <div class="friends-search-wrap">
+            <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
+            <button onclick="searchFriendsNow()" style="padding:0 20px;border-radius:14px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;font-size:14px;">
+                <i class="material-icons" style="vertical-align:middle;">search</i>
+            </button>
+        </div>
+
+        <!-- Search results -->
+        <div id="friends-search-results"></div>
+
+        <!-- Pending friend requests -->
+        <div id="friends-requests-section" style="display:none;">
+            <div class="friends-section-title">
+                <i class="material-icons" style="font-size:16px;color:var(--accent);">mark_email_unread</i>
+                Ստացված Հայտեր
+            </div>
+            <div id="friends-requests-list"></div>
+        </div>
+
+        <!-- Friends list -->
+        <div class="friends-section-title">
+            <i class="material-icons" style="font-size:16px;color:var(--ok);">group</i>
+            Ընկերների Ցուցակ
+        </div>
+        <div id="friends-list-container">
+            <div class="friends-empty">Բեռնվում է...</div>
+        </div>
+    </div>
+</section>
+
 </main>
 
 <div id="dealer-modal" class="modal-overlay">
@@ -4287,9 +4326,9 @@ function buildFriendCard(u, relation) {
 
     let actionHtml = '';
     if (relation === 'friend') {
-        actionHtml = '<button class="btn-remove-friend" onclick="removeFriend('' + u.userId + '',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
+        actionHtml = '<button class="btn-remove-friend" onclick="removeFriend(\'' + u.userId + '\',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
     } else {
-        actionHtml = '<button class="btn-add-friend" id="add-btn-' + u.userId + '" onclick="sendFriendRequest('' + u.userId + '',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i></button>';
+        actionHtml = '<button class="btn-add-friend" id="add-btn-' + u.userId + '" onclick="sendFriendRequest(\'' + u.userId + '\',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i></button>';
     }
 
     return '<div class="friend-card">' +
@@ -4314,8 +4353,8 @@ function buildRequestCard(r) {
             '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + escHtml(r.fromAccount || '—') + '</div>' +
         '</div>' +
         '<div class="friend-actions">' +
-            '<button class="btn-accept" onclick="respondFriendRequest('' + r.fromUserId + '','accept',this)">✓ Ընդունել</button>' +
-            '<button class="btn-decline" onclick="respondFriendRequest('' + r.fromUserId + '','decline',this)">✕ Մերժել</button>' +
+            '<button class="btn-accept" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'accept\',this)">✓ Ընդունել</button>' +
+            '<button class="btn-decline" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'decline\',this)">✕ Մերժել</button>' +
         '</div>' +
     '</div>';
 }
@@ -4413,7 +4452,7 @@ function updateFriendBadge(count) {
 
 // Socket handlers for friend events
 window._friendSocketInit = function() {
-    if (!window._socket) return;
+    if (!_socket) return;
     _socket.on('friendRequest', (data) => {
         showNotification('👥 Ynkertyan hayт: ' + (data.fromName || '?'), true);
         updateFriendBadge(parseInt(document.getElementById('friend-req-badge').textContent || '0') + 1);
@@ -4442,45 +4481,6 @@ setInterval(() => {
 }, 15000);
 </script>
 
-
-<!-- FRIENDS PAGE -->
-<section id="page-friends" class="page">
-    <div class="card" style="max-width:700px;margin:0 auto;">
-        <h2 style="margin-bottom:18px;font-size:20px;color:var(--text-l);">
-            <i class="material-icons" style="vertical-align:middle;color:var(--accent);">people</i>
-            Ընկերներ
-        </h2>
-
-        <!-- Search -->
-        <div class="friends-search-wrap">
-            <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
-            <button onclick="searchFriendsNow()" style="padding:0 20px;border-radius:14px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;font-size:14px;">
-                <i class="material-icons" style="vertical-align:middle;">search</i>
-            </button>
-        </div>
-
-        <!-- Search results -->
-        <div id="friends-search-results"></div>
-
-        <!-- Pending friend requests -->
-        <div id="friends-requests-section" style="display:none;">
-            <div class="friends-section-title">
-                <i class="material-icons" style="font-size:16px;color:var(--accent);">mark_email_unread</i>
-                Ստացված Հայտեր
-            </div>
-            <div id="friends-requests-list"></div>
-        </div>
-
-        <!-- Friends list -->
-        <div class="friends-section-title">
-            <i class="material-icons" style="font-size:16px;color:var(--ok);">group</i>
-            Ընկերների Ցուցակ
-        </div>
-        <div id="friends-list-container">
-            <div class="friends-empty">Բեռնվում է...</div>
-        </div>
-    </div>
-</section>
 
 <!-- EDIT PROFILE MODAL -->
 <div class="modal-overlay" id="edit-profile-modal" style="z-index:5000;">
