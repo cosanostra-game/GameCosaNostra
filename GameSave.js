@@ -20,6 +20,18 @@ const gameSaveSchema = new mongoose.Schema(
 
     // Ե՞րբ է վերջին անգամ save արվել
     savedAt: { type: Date, default: Date.now },
+
+    // ─── Բանկային մուտք ծանուցումներ ─────────────────────────────
+    // Երբ ուրիշ խաղացող փոխանցում կատարի, այստեղ կպահվի
+    // Load-ի ժամանակ Frontend-ը կկarda ու կjnja
+    pendingTransfers: [
+      {
+        fromName:    { type: String },
+        fromAccount: { type: String },
+        amount:      { type: Number },
+        sentAt:      { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

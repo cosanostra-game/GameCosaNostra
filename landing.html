@@ -3007,15 +3007,54 @@ function bankAction(type) {
     else showNotification("Անբավ. միջոց", false);
     updateUI();
 }
-function bankTransfer() {
-    let acc = document.getElementById('bankTransferAcc').value.trim();
-    let amt = parseInt(document.getElementById('bankTransferAmt').value);
-    if (!acc||isNaN(amt)||amt<=0) return showNotification("Սխալ", false);
-    if (player.bank < amt) return showNotification("Բավ. գումար չկա", false);
-    player.bank -= amt;
-    if (acc===player.bankAccount) { player.bank+=amt; showNotification(`Ինք. փոխ. $${amt.toLocaleString()}`, true); }
-    else showNotification(`📤 $${amt.toLocaleString()} → ${acc}`, true);
-    playTone('coin',.2); updateUI();
+async function bankTransfer() {
+    const accInput = document.getElementById('bankTransferAcc');
+    const amtInput = document.getElementById('bankTransferAmt');
+
+    const acc = accInput.value.trim().toUpperCase();
+    const amt = parseInt(amtInput.value, 10);
+
+    // ── Local validation ──
+    if (!acc || !/^AM\d{6}$/.test(acc)) {
+        return showNotification('⚠️ Hashvehamerə skhale (paytq e AM + 6 tsan)', false);
+    }
+    if (isNaN(amt) || amt <= 0) {
+        return showNotification('⚠️ Gumarə nshvac che', false);
+    }
+    if (acc === player.bankAccount) {
+        return showNotification('⚠️ Iren hashvin chi karogh popoxancel', false);
+    }
+    if (player.bank < amt) {
+        return showNotification(`⚠️ Bank-um chka bavarar gumar ($${player.bank.toLocaleString()})`, false);
+    }
+
+    // ── Button-ə anaktivacel ashkhatabanku jamanak ──
+    const btn = document.querySelector('#page-bank button[onclick="bankTransfer()"]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Popoxantsvoum...'; }
+
+    try {
+        const result = await apiTransferMoney(acc, amt);
+
+        // Server-ic vardvac nory bank mnjorcə
+        player.bank = result.newSenderBank ?? (player.bank - amt);
+
+        // UI թarmlatel
+        updateUI();
+        accInput.value = '';
+        amtInput.value = '';
+
+        showNotification(`📤 $${amt.toLocaleString()} → ${acc} ✅`, true);
+        playTone && playTone('coin', 0.2);
+        spawnFloatMoney && spawnFloatMoney(amt, false);
+
+        // Auto-save
+        try { await apiSaveGame(player.toSave()); } catch(e) {}
+
+    } catch (err) {
+        showNotification('❌ ' + (err.message || 'Popoxantsumə chdzvec'), false);
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Popoxanel'; }
+    }
 }
 function bankLoanAction(type) {
     let amt = parseInt(document.getElementById('bankLoanAmt').value);

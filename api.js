@@ -1,17 +1,17 @@
 // api.js — Frontend-ի API helper (index.html և landing.html-ում include անել)
 // ══════════════════════════════════════════════════════════════════
-// Օգտագործում՝ <script src="api.js"></script>
+// Օgtagorcum: <script src="api.js"></script>
 // ══════════════════════════════════════════════════════════════════
 
-const API_BASE = 'https://cosa-nostra.onrender.com'; // ← ԱՅՍ ՓՈԽԵՔ
-// Local dev-ի ժամանակ:
-// const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://cosa-nostra.onrender.com'; // ← AYS POKHEQ
+// Local dev-i jamanak:
+// const API_BASE = 'http://localhost:5000';
 
 const TOKEN_KEY = 'cosaNostra_JWT';
 
 // ─── Token helpers ────────────────────────────────────────────────
-const getToken  = ()        => localStorage.getItem(TOKEN_KEY);
-const saveToken = (token)   => localStorage.setItem(TOKEN_KEY, token);
+const getToken   = ()       => localStorage.getItem(TOKEN_KEY);
+const saveToken  = (token)  => localStorage.setItem(TOKEN_KEY, token);
 const clearToken = ()       => localStorage.removeItem(TOKEN_KEY);
 
 // ─── Fetch wrapper ────────────────────────────────────────────────
@@ -23,10 +23,10 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
   const config = { method, headers };
   if (body) config.body = JSON.stringify(body);
 
-  const res = await fetch(`${API_BASE}/api${endpoint}`, config);
+  const res  = await fetch(`${API_BASE}/api${endpoint}`, config);
   const data = await res.json();
 
-  if (!res.ok) throw new Error(data.message || 'Սերվերի սխալ');
+  if (!res.ok) throw new Error(data.message || 'Servreri skhal');
   return data;
 }
 
@@ -34,35 +34,28 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
 //  AUTH API
 // ══════════════════════════════════════════════════════════════════
 
-/** Գրանցվել */
 async function apiRegister(name, email, password, avatarColor) {
-  const data = await apiRequest('/auth/register', 'POST', {
-    name, email, password, avatarColor,
-  });
+  const data = await apiRequest('/auth/register', 'POST', { name, email, password, avatarColor });
   saveToken(data.token);
   return data.user;
 }
 
-/** Մուտք գործել */
 async function apiLogin(email, password) {
   const data = await apiRequest('/auth/login', 'POST', { email, password });
   saveToken(data.token);
   return data.user;
 }
 
-/** Ելք */
 function apiLogout() {
   clearToken();
   window.location.href = 'index.html';
 }
 
-/** Ընթացիկ user-ի տվյալները */
 async function apiGetMe() {
   const data = await apiRequest('/auth/me');
   return data.user;
 }
 
-/** Պրոֆիլ թարմացնել */
 async function apiUpdateProfile(updates) {
   const data = await apiRequest('/auth/profile', 'PATCH', updates);
   return data.user;
@@ -72,67 +65,60 @@ async function apiUpdateProfile(updates) {
 //  GAME SAVE API
 // ══════════════════════════════════════════════════════════════════
 
-/** Խաղը բեռնել */
 async function apiLoadGame() {
   try {
     const data = await apiRequest('/game/save');
-    return data.playerData; // player object
+    // Pending transfers-ə ardyunabel — xaghatsoghi vra kanch katarelu hamar
+    if (data.pendingTransfers && data.pendingTransfers.length > 0) {
+      _showPendingTransferNotifications(data.pendingTransfers);
+      // Xyanotsumnern makhel server-ic
+      apiRequest('/game/transfers/clear', 'POST').catch(() => {});
+    }
+    return data.playerData;
   } catch (err) {
-    if (err.message.includes('404') || err.message.includes('Save գտնված չէ')) {
-      return null; // Նոր խաղ
+    if (err.message.includes('404') || err.message.toLowerCase().includes('save')) {
+      return null;
     }
     throw err;
   }
 }
 
-/** Խաղը պահել */
 async function apiSaveGame(playerData) {
   return apiRequest('/game/save', 'POST', { playerData });
 }
 
-/** Save-ը ջնջել (reset) */
 async function apiResetGame() {
   return apiRequest('/game/save', 'DELETE');
 }
 
 // ══════════════════════════════════════════════════════════════════
-//  EXAMPLE USAGE (landing.html-ի saveGame ֆունկցիան փոխարինելու)
+//  BANK TRANSFER API  ← NYUT AVELVAC
 // ══════════════════════════════════════════════════════════════════
-/*
 
-  // ── AUTO SAVE (10 վ. ամեն) ──
-  setInterval(async () => {
-    if (!getToken()) return;
-    try {
-      await apiSaveGame(player);
-      console.log('☁️ Auto-saved');
-    } catch (e) {
-      console.warn('Auto-save failed:', e.message);
-    }
-  }, 10000);
+/**
+ * Bancayin popoxantsun
+ * @param {string} toAccount  - "AM123456" dzevi hashvehamer
+ * @param {number} amount     - popoxancel gumar ($ bani mej)
+ * @returns {{ success, message, newSenderBank }}
+ */
+async function apiTransferMoney(toAccount, amount) {
+  return apiRequest('/game/transfer', 'POST', { toAccount, amount });
+}
 
-  // ── LOAD ON START ──
-  async function loadGame() {
-    const cloudData = await apiLoadGame();
-    if (cloudData) {
-      Object.assign(player, cloudData);
-      console.log('☁️ Cloud save բեռնվեց');
-    } else {
-      console.log('🆕 Նոր խաղ');
-    }
-    updateUI();
-  }
-
-  // ── LOGIN ──
-  async function handleLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass  = document.getElementById('loginPassword').value;
-    try {
-      const user = await apiLogin(email, pass);
-      window.location.href = 'landing.html';
-    } catch (err) {
-      showError('loginError', err.message);
-    }
-  }
-
-*/
+// ══════════════════════════════════════════════════════════════════
+//  INTERNAL — Pending transfer xyanotsumnern cuyts tarnel
+// ══════════════════════════════════════════════════════════════════
+function _showPendingTransferNotifications(transfers) {
+  // Miayn verjin 5-ə — orpes chshvagavoghvek
+  const recent = transfers.slice(-5);
+  recent.forEach((t, i) => {
+    setTimeout(() => {
+      const msg = `🏦 Bancayin mutoq +$${Number(t.amount).toLocaleString()} — ${t.fromName} (${t.fromAccount})`;
+      if (typeof showNotification === 'function') {
+        showNotification(msg, true);
+      } else {
+        console.info('[Transfer]', msg);
+      }
+    }, i * 1800); // Mtadrecner `1.8 vraymayov
+  });
+}
