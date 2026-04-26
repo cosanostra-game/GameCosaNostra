@@ -1,7 +1,22 @@
-// routes/game.js — Save / Load / Transfer
-const express  = require('express');
-const GameSave = require('./GameSave');
+// routes/game.js — Save / Load / Transfer / Chat
+const express   = require('express');
+const mongoose  = require('mongoose');
+const GameSave  = require('./GameSave');
 const { protect } = require('./auth');
+
+// ── Message Model (inline — no extra file needed) ─────────────────
+const _msgSchema = new mongoose.Schema(
+  {
+    from: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    to:   { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true, maxlength: 2000 },
+    read: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+_msgSchema.index({ from: 1, to: 1, createdAt: 1 });
+_msgSchema.index({ to: 1, read: 1 });
+const Message = mongoose.models.Message || mongoose.model('Message', _msgSchema);
 
 const router = express.Router();
 router.use(protect);
@@ -321,6 +336,111 @@ router.delete('/friends/:userId', async (req, res) => {
     if (theirSave) { theirSave.friends = theirSave.friends.filter(f => String(f.userId) !== String(req.user._id)); await theirSave.save(); }
     res.json({ success: true, message: 'Ynkern jnjvec' });
   } catch (err) {
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── GET /api/game/chat/unread — unread counts per friend ────────
+// (Must be before /chat/:userId to avoid route conflict)
+router.get('/chat/unread', async (req, res) => {
+  try {
+    const myObjId = new mongoose.Types.ObjectId(String(req.user._id));
+    const unread = await Message.aggregate([
+      { $match: { to: myObjId, read: false } },
+      { $group: { _id: '$from', count: { $sum: 1 } } },
+    ]);
+    const counts = {};
+    unread.forEach(u => { counts[String(u._id)] = u.count; });
+    res.json({ success: true, counts });
+  } catch (err) {
+    console.error('Unread error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── GET /api/game/chat/:userId — fetch conversation ─────────────
+router.get('/chat/:userId', async (req, res) => {
+  try {
+    const myId    = req.user._id;
+    const otherId = req.params.userId;
+    const msgs = await Message.find({
+      $or: [
+        { from: myId, to: otherId },
+        { from: otherId, to: myId },
+      ],
+    }).sort({ createdAt: 1 }).limit(120).lean();
+
+    // Mark incoming as read
+    await Message.updateMany(
+      { from: otherId, to: myId, read: false },
+      { $set: { read: true } }
+    );
+
+    res.json({ success: true, messages: msgs });
+  } catch (err) {
+    console.error('Chat load error:', err);
+    res.status(500).json({ success: false, message: 'Servreri skhal' });
+  }
+});
+
+// ─── POST /api/game/chat — send message ──────────────────────────
+router.post('/chat', async (req, res) => {
+  try {
+    const { toUserId, text } = req.body;
+
+    if (!toUserId || !text || !text.trim()) {
+      return res.status(400).json({ success: false, message: 'toUserId ev text patardir en' });
+    }
+    if (text.trim().length > 2000) {
+      return res.status(400).json({ success: false, message: 'Sarhmanafakum e 2000 nish' });
+    }
+    if (String(toUserId) === String(req.user._id)) {
+      return res.status(400).json({ success: false, message: 'Inkd kez chi kareli grel' });
+    }
+
+    // Must be friends
+    const mySave = await GameSave.findOne({ user: req.user._id }).lean();
+    const isFriend = mySave && (mySave.friends || []).some(f => String(f.userId) === String(toUserId));
+    if (!isFriend) {
+      return res.status(403).json({ success: false, message: 'Du kareli es grel miain ynkerneret' });
+    }
+
+    const msg = await Message.create({
+      from: req.user._id,
+      to:   toUserId,
+      text: text.trim(),
+    });
+
+    // Real-time delivery via Socket.IO
+    const io          = req.app.get('io');
+    const userSockets = req.app.get('userSockets');
+    const socketId    = userSockets && userSockets.get(String(toUserId));
+
+    if (io && socketId) {
+      const senderPd   = mySave && mySave.playerData;
+      const senderName = (senderPd && senderPd.name) || req.user.name || 'Ananun';
+      io.to(socketId).emit('chatMessage', {
+        _id:       String(msg._id),
+        from:      String(req.user._id),
+        fromName:  senderName,
+        text:      msg.text,
+        createdAt: msg.createdAt,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: {
+        _id:       String(msg._id),
+        from:      String(req.user._id),
+        to:        String(toUserId),
+        text:      msg.text,
+        createdAt: msg.createdAt,
+        read:      false,
+      },
+    });
+  } catch (err) {
+    console.error('Chat send error:', err);
     res.status(500).json({ success: false, message: 'Servreri skhal' });
   }
 });
