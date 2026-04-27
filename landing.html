@@ -649,11 +649,12 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 .chat-header-status.online { color:var(--ok); font-weight:600; }
 
 .chat-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:6px; }
-.chat-bubble-wrap { display:flex; flex-direction:column; }
+.chat-bubble-wrap { display:flex; flex-direction:column; width:100%; }
 .chat-bubble-wrap.mine { align-items:flex-end; }
 .chat-bubble-wrap.theirs { flex-direction:row; align-items:flex-end; gap:6px; }
-.chat-bubble-content { display:flex; flex-direction:column; align-items:flex-start; }
-.chat-bubble { max-width:72%; padding:10px 14px; border-radius:18px; font-size:14px; line-height:1.5; word-break:break-word; position:relative; }
+.chat-bubble-content { display:flex; flex-direction:column; align-items:flex-start; max-width:calc(75% - 36px); min-width:0; }
+.chat-bubble { max-width:100%; padding:10px 14px; border-radius:18px; font-size:14px; line-height:1.5; word-break:break-word; position:relative; display:inline-block; }
+.chat-bubble-wrap.mine > .chat-bubble { max-width:72%; }
 .chat-bubble.mine { background:var(--accent); color:#fff; border-bottom-right-radius:5px; box-shadow:0 2px 8px rgba(255,59,48,0.3); }
 .chat-bubble.theirs { background:var(--panel-solid); color:var(--text-l); border:1px solid var(--border); border-bottom-left-radius:5px; }
 .chat-bubble-time { font-size:10px; margin-top:3px; opacity:.55; padding:0 4px; }
@@ -990,7 +991,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <h3>🚙 Բիզնես/Սպորտային</h3>
                 <p>Թանկարժեք և արագընթաց մեքենաներ։ Բարձր ռիսկ դրսում, մեծ գումար սև շուկայում։</p>
                 <div class="card-footer"><span>⚡ 30%</span><span style="color:#ff3b30;">Ռիսկ 65%</span></div>
-                <button style="background:#0a84ff; color:#fff;" onclick="attemptCarTheft('expensive',30,0.35)">Գողանալ</button>
+                <button style="background:#0a84ff; color:#fff;" onclick="attemptCarTheft('expensive',20,0.58)">Գողանալ</button>
             </div>
         </div>
     </section>
@@ -3178,8 +3179,8 @@ function attemptCarTheft(type, cost, chance) {
         spawnFloatMoney(price, true);
         playTone('success', .2);
     } else { 
-        player.hp = Math.max(0, player.hp - 20);
-        goToPrison(120); 
+        player.hp = Math.max(0, player.hp - 10);
+        goToPrison(60); 
         playTone('fail', .3); 
     }
     checkRank(); updateUI(); renderGarage();
@@ -4259,39 +4260,12 @@ function saveGame() {
     apiSaveGame(player);
 }
 
-// loadGame — tries cloud first, falls back to localStorage
+// loadGame — INSTANT: localStorage first, cloud sync in background
 async function loadGame(manual = false) {
     player = getDefaultPlayerState();
     cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
 
-    if (getToken()) {
-        try {
-            const res = await apiCall('/game/save');
-            if (res.playerData) {
-                player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...res.playerData });
-                cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
-                if (currentUser) player.name = currentUser.name;
-                if (manual) showNotification('☁️ Cloud save բеռнвец', true);
-                updateUI(); renderGarage(); renderMyBusinesses();
-
-                // Handle any transfers that arrived before this load
-                if (res.pendingTransfers && res.pendingTransfers.length > 0) {
-                    res.pendingTransfers.forEach((t, i) => {
-                        setTimeout(() => _applyIncomingTransfer(t), 800 + i * 2500);
-                    });
-                    apiCall('/game/transfers/clear', 'POST').catch(() => {});
-                }
-
-                // Start real-time polling for future transfers
-                startTransferPolling(5000);
-                return;
-            }
-        } catch (e) {
-            console.warn('Cloud load failed, using local:', e.message);
-        }
-    }
-
-    // Fallback: localStorage
+    // ── Step 1: Load localStorage IMMEDIATELY (zero delay) ──────
     const saved = localStorage.getItem(getSaveKey());
     if (saved) {
         try {
@@ -4299,10 +4273,39 @@ async function loadGame(manual = false) {
             player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
             cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
             if (currentUser) player.name = currentUser.name;
-            if (manual) showNotification('📥 Тегаyin save бернвец', true);
         } catch (e) { console.error('Save load error', e); }
     }
     updateUI(); renderGarage(); renderMyBusinesses();
+
+    // ── Step 2: Sync with cloud in background (non-blocking) ────
+    if (getToken()) {
+        _syncCloudSave(manual);
+    }
+}
+
+// Background cloud sync — won't block game start
+async function _syncCloudSave(manual = false) {
+    try {
+        const res = await apiCall('/game/save');
+        if (res.playerData) {
+            player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...res.playerData });
+            cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
+            if (currentUser) player.name = currentUser.name;
+            if (manual) showNotification('☁️ Cloud save բеռнвец', true);
+            updateUI(); renderGarage(); renderMyBusinesses();
+
+            if (res.pendingTransfers && res.pendingTransfers.length > 0) {
+                res.pendingTransfers.forEach((t, i) => {
+                    setTimeout(() => _applyIncomingTransfer(t), 800 + i * 2500);
+                });
+                apiCall('/game/transfers/clear', 'POST').catch(() => {});
+            }
+        }
+        startTransferPolling(5000);
+    } catch (e) {
+        console.warn('Cloud sync failed, playing from local save:', e.message);
+        startTransferPolling(5000);
+    }
 }
 
 async function resetGame() {
@@ -4581,29 +4584,45 @@ function escHtml(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+let _cachedFriendsData = null; // cache → instant render on repeat visits
+
 async function renderFriendsPage() {
+    // ── Instant render from cache ────────────────────────────────
+    if (_cachedFriendsData) {
+        _applyFriendsData(_cachedFriendsData);
+    } else {
+        document.getElementById('friends-list-container').innerHTML =
+            '<div class="friends-empty" style="opacity:.5;">Բеռнваum e...</div>';
+    }
+    // ── Fetch fresh data silently ────────────────────────────────
     try {
         const data = await apiCall('/game/friend-requests');
-        // Requests
-        const reqSection = document.getElementById('friends-requests-section');
-        const reqList    = document.getElementById('friends-requests-list');
-        if (data.requests && data.requests.length > 0) {
-            reqSection.style.display = '';
-            reqList.innerHTML = data.requests.map(buildRequestCard).join('');
-            updateFriendBadge(data.requests.length);
-        } else {
-            reqSection.style.display = 'none';
-            updateFriendBadge(0);
-        }
-        // Friends list
-        const fl = document.getElementById('friends-list-container');
-        if (!data.friends || data.friends.length === 0) {
-            fl.innerHTML = '<div class="friends-empty">Ընկերների ցուցակն դատարկ է։ Գտեք ու ավելացրեք ընկերներ!</div>';
-        } else {
-            fl.innerHTML = data.friends.map(f => buildFriendCard(f, 'friend')).join('');
-        }
+        _cachedFriendsData = data;
+        _applyFriendsData(data);
     } catch (err) {
-        document.getElementById('friends-list-container').innerHTML = '<div class="friends-empty" style="color:var(--accent);">Բerrнваum e...</div>';
+        if (!_cachedFriendsData) {
+            document.getElementById('friends-list-container').innerHTML =
+                '<div class="friends-empty" style="color:var(--accent);">Կapи chen hastatvel.</div>';
+        }
+    }
+}
+
+function _applyFriendsData(data) {
+    const reqSection = document.getElementById('friends-requests-section');
+    const reqList    = document.getElementById('friends-requests-list');
+    if (data.requests && data.requests.length > 0) {
+        reqSection.style.display = '';
+        reqList.innerHTML = data.requests.map(buildRequestCard).join('');
+        updateFriendBadge(data.requests.length);
+    } else {
+        reqSection.style.display = 'none';
+        updateFriendBadge(0);
+    }
+    const fl = document.getElementById('friends-list-container');
+    if (!data.friends || data.friends.length === 0) {
+        fl.innerHTML = '<div class="friends-empty">Ընkerneri tsutsakn dataрk е։ Gtеq ав avlacreq ynkerner!</div>';
+    } else {
+        fl.innerHTML = data.friends.map(f => buildFriendCard(f, 'friend')).join('');
     }
 }
 
@@ -4650,6 +4669,8 @@ async function removeFriend(userId, btn) {
     try {
         await apiCall('/game/friends/' + userId, 'DELETE');
         btn.closest('.friend-card').remove();
+        _cachedFriendsData = null; // invalidate cache
+        _chatFriends = _chatFriends.filter(f => String(f.userId) !== String(userId));
         showNotification('Ynkern jnjvec', true);
     } catch (err) {
         btn.disabled = false;
@@ -4806,28 +4827,26 @@ let _chatLastMsg          = {};    // { userId: { text, time } }
 
 // ── Open messages page ────────────────────────────────────────────
 async function initMessagesPage() {
-    await loadChatContacts();
-    // Load unread counts
+    // ── Instant render from existing cache ──────────────────────
+    if (_chatFriends.length) {
+        renderChatContacts();
+    } else if (_cachedFriendsData && _cachedFriendsData.friends) {
+        _chatFriends = _cachedFriendsData.friends;
+        renderChatContacts();
+    }
+    // ── Re-open active conversation immediately ──────────────────
+    if (_chatActiveFriendId && _chatFriends.length) {
+        const f = _chatFriends.find(f => String(f.userId) === _chatActiveFriendId);
+        if (f) openChat(_chatActiveFriendId, _chatActiveFriendName || f.name, f.avatarColor || '#ff3b30', f.avatarImg || '', f.online);
+    }
+    // ── Background: refresh contacts + unread ────────────────────
+    loadChatContacts();
     try {
         const data = await apiCall('/game/chat/unread');
         if (data.counts) _chatUnread = data.counts;
         renderChatContacts();
         updateMsgBadge();
     } catch (e) { /* silently ignore */ }
-
-    // Re-open active conversation if one was open before switching tabs
-    if (_chatActiveFriendId) {
-        const friend = _chatFriends.find(f => String(f.userId) === _chatActiveFriendId);
-        if (friend) {
-            openChat(
-                _chatActiveFriendId,
-                _chatActiveFriendName || friend.name,
-                friend.avatarColor || '#ff3b30',
-                friend.avatarImg || '',
-                friend.online
-            );
-        }
-    }
 }
 
 // ── Load friends as contacts ──────────────────────────────────────
@@ -4835,11 +4854,14 @@ async function loadChatContacts() {
     try {
         const data = await apiCall('/game/friend-requests');
         _chatFriends = data.friends || [];
+        if (!_cachedFriendsData) _cachedFriendsData = data; // share cache
         renderChatContacts();
     } catch (err) {
         console.warn('loadChatContacts error:', err.message);
-        document.getElementById('chat-contacts-list').innerHTML =
-            '<div class="chat-contacts-empty" style="color:var(--accent);">Կապ չի հաստատվել։ Փորձեք կրկին.</div>';
+        if (!_chatFriends.length) {
+            document.getElementById('chat-contacts-list').innerHTML =
+                '<div class="chat-contacts-empty" style="color:var(--accent);">Կapи chen hastatvel.</div>';
+        }
     }
 }
 
