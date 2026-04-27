@@ -2789,14 +2789,16 @@ let activityItems = [];
 function toggleActivityLog() {
     activityLogOpen = !activityLogOpen;
     document.getElementById('activity-log').classList.toggle('open', activityLogOpen);
+    if (activityLogOpen) renderActivityLog();
 }
 function addActivity(msg, success = true) {
     activityItems.unshift({ msg, success, time: new Date().toLocaleTimeString('hy-AM', {hour:'2-digit',minute:'2-digit'}) });
     if (activityItems.length > 30) activityItems.pop();
-    renderActivityLog();
+    if (activityLogOpen) renderActivityLog(); // skip rebuild if log is hidden
 }
 function renderActivityLog() {
-    const list = document.getElementById('log-list');
+    const list = _dom['log-list'] || (_dom['log-list'] = document.getElementById('log-list'));
+    if (!list) return;
     if (activityItems.length === 0) { list.innerHTML = '<p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">Դեռ գործողություններ չկան</p>'; return; }
     list.innerHTML = activityItems.map(a => `
         <div class="log-item ${a.success?'success':'fail'}">
@@ -2850,7 +2852,7 @@ function getNextBonusCountdown() {
 
 function initDailyBonus() {
     updateDailyBonusUI();
-    setInterval(updateDailyBonusUI, 1000);
+    setInterval(updateDailyBonusUI, 10000);
 }
 
 function updateDailyBonusUI() {
@@ -2890,71 +2892,117 @@ function quickCrime(type) {
 }
 
 // ==========================================
+//   DOM CACHE — filled once on DOMContentLoaded
+// ==========================================
+const _dom = {};
+function _initDomCache() {
+    const ids = [
+        'moneyDisplay','energyDisplay','hpDisplay','rankDisplay',
+        'bankTopDisplay','bankPageDisplay','bankLoanDisplay','personalBankAccShow',
+        'my-biz-count','biz-slots-display','sidebar-rank-val','main-welcome-rank',
+        'stashDisplay','dirtyMoneyDisplay','hp-hosp','max-hp-display','max-energy-display',
+        'rep-level','stat-crimes','stat-cars','stat-earnings','stat-time',
+        'hp-bar','energy-bar','sidebar-xp-bar','sidebar-xp-text',
+        'player-crypto-amount','trade-coin-label','active-crypto-title',
+        'main-networth','main-exp','main-next-exp','main-cars','main-cars-limit','main-estate',
+        'prison-status','in-prison-ui','daily-bonus-btn','daily-btn-label','log-list',
+        'notification','topbar-cycle-time','cycle-time-page','cycle-type-page','cycle-bar',
+        'crypto-current-price','p-timer'
+    ];
+    ids.forEach(id => { _dom[id] = document.getElementById(id); });
+}
+
+// Cached previous values to skip DOM writes when nothing changed
+const _prev = {};
+function _set(id, val) {
+    if (_prev[id] === val) return;
+    _prev[id] = val;
+    const el = _dom[id] || (_dom[id] = document.getElementById(id));
+    if (el) el.innerText = val;
+}
+function _setW(el, val) {
+    if (el && el._prevW !== val) { el._prevW = val; el.style.width = val; }
+}
+
+// Cached button list for disableButtons
+let _disableBtnCache = null;
+function disableButtons(dis) {
+    if (!_disableBtnCache) {
+        _disableBtnCache = Array.from(document.querySelectorAll(
+            'button:not(.icon-btn):not(.theme-btn):not(.sub-tabs button):not(.crypto-pill):not(.close-btn):not(.log-close):not(.sidebar-toggle)'
+        ));
+    }
+    _disableBtnCache.forEach(b => {
+        if (!['bribe-btn','escape-btn'].includes(b.id)) b.disabled = dis;
+    });
+}
+
+// ==========================================
 //   UI UPDATE
 // ==========================================
 function updateUI() {
-    const safe = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
-    safe('moneyDisplay', player.money.toLocaleString());
-    safe('energyDisplay', Math.floor(player.energy));
-    safe('hpDisplay', Math.floor(player.hp));
-    safe('rankDisplay', player.rank);
-    safe('bankTopDisplay', player.bank.toLocaleString());
-    safe('bankPageDisplay', player.bank.toLocaleString());
-    safe('bankLoanDisplay', player.loan.toLocaleString());
-    safe('personalBankAccShow', player.bankAccount);
-    safe('my-biz-count', player.businesses.length);
-    safe('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
-    safe('sidebar-rank-val', player.rank);
-    safe('main-welcome-rank', '⭐ ' + player.rank);
+    _set('moneyDisplay',    player.money.toLocaleString());
+    _set('energyDisplay',   Math.floor(player.energy));
+    _set('hpDisplay',       Math.floor(player.hp));
+    _set('rankDisplay',     player.rank);
+    _set('bankTopDisplay',  player.bank.toLocaleString());
+    _set('bankPageDisplay', player.bank.toLocaleString());
+    _set('bankLoanDisplay', player.loan.toLocaleString());
+    _set('personalBankAccShow', player.bankAccount);
+    _set('my-biz-count',    player.businesses.length);
+    _set('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
+    _set('sidebar-rank-val', player.rank);
+    _set('main-welcome-rank', '⭐ ' + player.rank);
+    _set('stashDisplay',    player.stash.toLocaleString());
 
-    safe('stashDisplay', player.stash.toLocaleString());
-    const dirtyEl = document.getElementById('dirtyMoneyDisplay');
-    if (dirtyEl) dirtyEl.innerText = '$' + (player.dirtyMoney||0).toLocaleString();
-    safe('hp-hosp', Math.floor(player.hp));
-    safe('max-hp-display', player.maxHp);
-    safe('max-energy-display', player.maxEnergy);
-    safe('rep-level', player.reputation);
-    safe('stat-crimes', player.stats.crimes);
-    safe('stat-cars', player.stats.cars);
-    safe('stat-earnings', `$${player.stats.earnings.toLocaleString()}`);
-    safe('stat-time', `${Math.floor(player.stats.minutes)} րոպե`);
+    const dirtyEl = _dom['dirtyMoneyDisplay'] || (_dom['dirtyMoneyDisplay'] = document.getElementById('dirtyMoneyDisplay'));
+    const dirtyVal = '$' + (player.dirtyMoney||0).toLocaleString();
+    if (dirtyEl && dirtyEl._pv !== dirtyVal) { dirtyEl._pv = dirtyVal; dirtyEl.innerText = dirtyVal; }
+
+    _set('hp-hosp',          Math.floor(player.hp));
+    _set('max-hp-display',   player.maxHp);
+    _set('max-energy-display', player.maxEnergy);
+    _set('rep-level',        player.reputation);
+    _set('stat-crimes',      player.stats.crimes);
+    _set('stat-cars',        player.stats.cars);
+    _set('stat-earnings',    `$${player.stats.earnings.toLocaleString()}`);
+    _set('stat-time',        `${Math.floor(player.stats.minutes)} րոպե`);
 
     // HP / Energy bars
-    const hpBar = document.getElementById('hp-bar');
-    const nrgBar = document.getElementById('energy-bar');
-    if (hpBar) hpBar.style.width = Math.min(100, (player.hp / player.maxHp) * 100) + '%';
-    if (nrgBar) nrgBar.style.width = Math.min(100, (player.energy / player.maxEnergy) * 100) + '%';
+    _setW(_dom['hp-bar'],     Math.min(100, (player.hp / player.maxHp) * 100) + '%');
+    _setW(_dom['energy-bar'], Math.min(100, (player.energy / player.maxEnergy) * 100) + '%');
 
-    // XP bar — uses Player.getNextRankInfo() / getXpPercent()
+    // XP
     const _nextRank = player.getNextRankInfo();
     const nextExpVal = _nextRank ? _nextRank.exp : null;
-    const xpPct = player.getXpPercent();
-    const xpBar = document.getElementById('sidebar-xp-bar');
-    if (xpBar) xpBar.style.width = xpPct + '%';
-    safe('sidebar-xp-text', `${player.exp} / ${nextExpVal || 'MAX'}`);
+    _setW(_dom['sidebar-xp-bar'], player.getXpPercent() + '%');
+    _set('sidebar-xp-text', `${player.exp} / ${nextExpVal || 'MAX'}`);
 
     // Crypto
     const activeCoin = cryptosData.find(c => c.id === activeCryptoId);
-    safe('player-crypto-amount', player.cryptoBalances[activeCryptoId].toFixed(4));
-    safe('trade-coin-label', activeCryptoId);
-    const titleEl = document.getElementById('active-crypto-title');
-    if (titleEl && activeCoin) titleEl.innerHTML = `<i class="material-icons" style="color:${activeCoin.color};">${activeCoin.icon}</i> ${activeCoin.name} (${activeCryptoId})`;
+    _set('player-crypto-amount', player.cryptoBalances[activeCryptoId].toFixed(4));
+    _set('trade-coin-label', activeCryptoId);
+    const titleEl = _dom['active-crypto-title'] || (_dom['active-crypto-title'] = document.getElementById('active-crypto-title'));
+    if (titleEl && activeCoin) {
+        const tv = `<i class="material-icons" style="color:${activeCoin.color};">${activeCoin.icon}</i> ${activeCoin.name} (${activeCryptoId})`;
+        if (titleEl._pv !== tv) { titleEl._pv = tv; titleEl.innerHTML = tv; }
+    }
 
-    // Networth — delegates to Player.getNetWorth()
-    let netWorth = player.getNetWorth();
+    // Networth
+    const netWorth = player.getNetWorth();
+    _set('main-networth',   Math.floor(netWorth).toLocaleString());
+    _set('main-exp',        player.exp);
+    _set('main-next-exp',   nextExpVal || 'MAX');
+    _set('main-cars',       player.garage.length);
+    _set('main-cars-limit', player.garageLimit);
+    _set('main-estate',     player.realEstate.length);
 
-    safe('main-networth', Math.floor(netWorth).toLocaleString());
-    safe('main-exp', player.exp);
-    safe('main-next-exp', nextExpVal || 'MAX');
-    safe('main-cars', player.garage.length);
-    safe('main-cars-limit', player.garageLimit);
-    safe('main-estate', player.realEstate.length);
-
-    // Prison
-    const prisonDiv = document.getElementById('prison-status');
-    const inPrisonDiv = document.getElementById('in-prison-ui');
-    if (prisonDiv && inPrisonDiv) {
-        prisonDiv.style.display = player.inPrison ? 'none' : 'block';
+    // Prison — only update DOM if state actually changed
+    const prisonDiv   = _dom['prison-status']   || (_dom['prison-status']   = document.getElementById('prison-status'));
+    const inPrisonDiv = _dom['in-prison-ui']    || (_dom['in-prison-ui']    = document.getElementById('in-prison-ui'));
+    if (prisonDiv && inPrisonDiv && prisonDiv._inPrison !== player.inPrison) {
+        prisonDiv._inPrison = player.inPrison;
+        prisonDiv.style.display   = player.inPrison ? 'none'  : 'block';
         inPrisonDiv.style.display = player.inPrison ? 'block' : 'none';
         disableButtons(player.inPrison);
     }
@@ -2988,16 +3036,7 @@ function openRankModal() {
 function closeRankModal() { document.getElementById('rank-modal').style.display = 'none'; }
 
 // ==========================================
-//   DISABLE BUTTONS (Prison)
-// ==========================================
-function disableButtons(dis) {
-    document.querySelectorAll('button:not(.icon-btn):not(.theme-btn):not(.sub-tabs button):not(.crypto-pill):not(.close-btn):not(.log-close):not(.sidebar-toggle)').forEach(b => {
-        if (!['bribe-btn','escape-btn'].includes(b.id)) b.disabled = dis;
-    });
-}
-
-// ==========================================
-//   NOTIFICATIONS
+//   SWITCH TAB
 // ==========================================
 let notifTimeout = null;
 function showNotification(msg, ok = true) {
@@ -3024,28 +3063,50 @@ function checkRank() {
 // ==========================================
 //   SWITCH TAB
 // ==========================================
+// Cached page/menu elements — built once on first switchTab call
+let _tabPages = null;
+let _tabMenuLinks = null;
+let _activeTabId = null;
+
 function switchTab(id, el) {
-    if (id === 'profile') updateProfilePage();
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.menu a').forEach(a => a.classList.remove('active'));
-    const pg = document.getElementById('page-' + id);
-    if (pg) pg.classList.add('active');
-    
-    const menuLinks = document.querySelectorAll('.menu a');
-    menuLinks.forEach(a => { if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(`'${id}'`)) a.classList.add('active'); });
-    
-    if (id === 'garage') renderGarage();
-    if (id === 'inventory') renderInventory();
-    if (id === 'dealership') renderDealership();
-    if (id === 'estate') renderEstate();
-    if (id === 'business') renderMyBusinesses();
-    if (id === 'crypto') { renderCryptoPills(); drawChart(); }
-    if (id === 'quests') renderQuests();
+    if (id === _activeTabId) return; // already active — skip
+
+    // Build caches once
+    if (!_tabPages) {
+        _tabPages = {};
+        document.querySelectorAll('.page').forEach(p => {
+            const pid = p.id && p.id.replace('page-', '');
+            if (pid) _tabPages[pid] = p;
+        });
+    }
+    if (!_tabMenuLinks) {
+        _tabMenuLinks = Array.from(document.querySelectorAll('.menu a'));
+    }
+
+    // Deactivate previous
+    if (_activeTabId && _tabPages[_activeTabId]) _tabPages[_activeTabId].classList.remove('active');
+    _tabMenuLinks.forEach(a => a.classList.remove('active'));
+
+    // Activate new
+    _activeTabId = id;
+    if (_tabPages[id]) _tabPages[id].classList.add('active');
+    _tabMenuLinks.forEach(a => {
+        if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(`'${id}'`)) a.classList.add('active');
+    });
+
+    if (id === 'profile')     updateProfilePage();
+    if (id === 'garage')      renderGarage();
+    if (id === 'inventory')   renderInventory();
+    if (id === 'dealership')  renderDealership();
+    if (id === 'estate')      renderEstate();
+    if (id === 'business')    renderMyBusinesses();
+    if (id === 'crypto')      { renderCryptoPills(); drawChart(); }
+    if (id === 'quests')      renderQuests();
     if (id === 'leaderboard') renderLeaderboard();
-    if (id === 'families') renderFamilies();
-    if (id === 'main') updateUI();
-    if (id === 'friends') renderFriendsPage();
-    if (id === 'messages') initMessagesPage();
+    if (id === 'families')    renderFamilies();
+    if (id === 'main')        updateUI();
+    if (id === 'friends')     renderFriendsPage();
+    if (id === 'messages')    initMessagesPage();
     playTone('coin', .05);
 }
 
@@ -4295,19 +4356,23 @@ setInterval(() => {
     let timeStr = `${Math.floor(player.dayTime).toString().padStart(2,'0')}:${(Math.floor((player.dayTime%1)*60)).toString().padStart(2,'0')}`;
     let isNight = player.dayTime < 6 || player.dayTime >= 18;
     
-    const topTime = document.getElementById('topbar-cycle-time');
+    const topTime = _dom['topbar-cycle-time'] || (_dom['topbar-cycle-time'] = document.getElementById('topbar-cycle-time'));
     if (topTime) topTime.innerText = timeStr;
     
-    const pageTime = document.getElementById('cycle-time-page');
-    const pageType = document.getElementById('cycle-type-page');
-    const cycleBar = document.getElementById('cycle-bar');
+    const pageTime = _dom['cycle-time-page'] || (_dom['cycle-time-page'] = document.getElementById('cycle-time-page'));
+    const pageType = _dom['cycle-type-page'] || (_dom['cycle-type-page'] = document.getElementById('cycle-type-page'));
+    const cycleBar = _dom['cycle-bar']       || (_dom['cycle-bar']       = document.getElementById('cycle-bar'));
     
     if (pageTime) pageTime.innerText = timeStr;
     if (pageType) {
-        pageType.innerText = isNight ? '🌙 Գիշեր' : '☀️ Ցերեկ';
-        pageType.style.color = isNight ? '#af52de' : 'var(--warn)';
+        const typeVal = isNight ? '🌙 Գիշեր' : '☀️ Ցերեկ';
+        if (pageType._pv !== typeVal) {
+            pageType._pv = typeVal;
+            pageType.innerText = typeVal;
+            pageType.style.color = isNight ? '#af52de' : 'var(--warn)';
+        }
     }
-    if (cycleBar) cycleBar.style.width = `${(player.dayTime / 24) * 100}%`;
+    _setW(cycleBar, `${(player.dayTime / 24) * 100}%`);
 
     if (Math.random() < 0.005) {
         triggerRandomEvent();
@@ -4317,12 +4382,14 @@ setInterval(() => {
         player.prisonTime--;
         let m=Math.floor(player.prisonTime/60).toString().padStart(2,'0');
         let s=(player.prisonTime%60).toString().padStart(2,'0');
-        const tEl = document.getElementById('p-timer');
+        const tEl = _dom['p-timer'] || (_dom['p-timer'] = document.getElementById('p-timer'));
         if (tEl) tEl.innerText=`${m}:${s}`;
         if (player.prisonTime<=0) { player.inPrison=false; showNotification("🕊 Ազատ եք!", true); updateUI(); }
     } else if (!player.inPrison && player.energy < player.maxEnergy) {
-        player.energy += 0.5; 
-        updateUI();
+        player.energy += 0.5;
+        // Only update energy display + bar — NOT full updateUI (much faster)
+        _set('energyDisplay', Math.floor(player.energy));
+        _setW(_dom['energy-bar'], Math.min(100, (player.energy / player.maxEnergy) * 100) + '%');
     }
 
     if (secondsPassed % 10 === 0) {
@@ -4354,11 +4421,11 @@ setInterval(() => {
         
         localStorage.setItem(getSaveKey(), JSON.stringify(player));
         updateUI();
+        if(player.stats.crimes > 0) updateQuestProgress('crime', player.stats.crimes);
+        if(player.stats.cars > 0) updateQuestProgress('car', player.stats.cars);
     }
     
-    if(player.stats.crimes > 0) updateQuestProgress('crime', player.stats.crimes);
-    if(player.stats.cars > 0) updateQuestProgress('car', player.stats.cars);
-
+    // Quest progress — only check in the 10-second batch below
 }, 1000);
 
 // ==========================================
@@ -4414,6 +4481,7 @@ function disconnectSocket() {
 //   INIT (DOMContentLoaded)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    _initDomCache();
     loadGame(false); 
     renderCryptoPills();
     updateUI();
@@ -4716,13 +4784,13 @@ window._friendSocketInit = function() {
 
 // auto-load handled by auth system
 
-// Auto-save every 15 seconds (cloud + local)
+// Auto-save every 30 seconds to cloud (local save happens in ticker every 10s)
 setInterval(() => {
     if (typeof saveGame === 'function' && (currentUser || currentUserEmail)) {
         saveGame();
     }
     if (typeof updateProfilePage === 'function') updateProfilePage();
-}, 15000);
+}, 30000);
 
 // ══════════════════════════════════════════════════════════════════
 //   REAL-TIME CHAT SYSTEM
