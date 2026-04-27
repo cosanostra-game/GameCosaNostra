@@ -4874,9 +4874,21 @@ async function openChat(uid, name, color, avatarImg, online) {
 }
 
 // ── Render message bubbles ────────────────────────────────────────
+function _friendAvatarHtml() {
+    const friend = _chatFriends ? _chatFriends.find(f => String(f.userId) === _chatActiveFriendId) : null;
+    const avatarImg   = friend && friend.avatarImg;
+    const avatarColor = (friend && friend.avatarColor) || '#888';
+    const initials    = (_chatActiveFriendName || '?')[0].toUpperCase();
+    if (avatarImg) {
+        return `<img src="${escHtml(avatarImg)}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-right:6px;" alt="">`;
+    }
+    return `<div style="width:30px;height:30px;border-radius:50%;background:${escHtml(avatarColor)};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-right:6px;">${initials}</div>`;
+}
+
 function renderMessages(msgs) {
     const box   = document.getElementById('chat-messages');
-    const myId  = currentUser ? String(currentUser.id) : '';
+    // FIX: currentUser.id կամ currentUser._id (getMe-ն _id է վերադարձնում)
+    const myId  = currentUser ? String(currentUser.id || currentUser._id || '') : '';
 
     if (!msgs.length) {
         box.innerHTML = '<div class="chat-date-divider">Нaghordagrutʻyunner chkan. Grel arajin-y!</div>';
@@ -4892,12 +4904,24 @@ function renderMessages(msgs) {
             html += `<div class="chat-date-divider">${dStr}</div>`;
             lastDate = dStr;
         }
-        const mine = String(m.from) === myId;
+        const mine    = myId && String(m.from) === myId;
         const timeStr = d.toLocaleTimeString('hy-AM', { hour:'2-digit', minute:'2-digit' });
-        html += `<div class="chat-bubble-wrap ${mine ? 'mine' : 'theirs'}">
-            <div class="chat-bubble ${mine ? 'mine' : 'theirs'}">${escHtml(m.text)}</div>
-            <div class="chat-bubble-time">${timeStr}</div>
-        </div>`;
+        if (mine) {
+            html += `<div class="chat-bubble-wrap mine">
+                <div class="chat-bubble mine">${escHtml(m.text)}</div>
+                <div class="chat-bubble-time">${timeStr}</div>
+            </div>`;
+        } else {
+            html += `<div class="chat-bubble-wrap theirs">
+                <div style="display:flex;align-items:flex-end;">
+                    ${_friendAvatarHtml()}
+                    <div>
+                        <div class="chat-bubble theirs">${escHtml(m.text)}</div>
+                        <div class="chat-bubble-time">${timeStr}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
     });
     box.innerHTML = html;
     box.scrollTop = box.scrollHeight;
@@ -4911,8 +4935,18 @@ function appendMessage(m, isMine) {
     const timeStr = d.toLocaleTimeString('hy-AM', { hour:'2-digit', minute:'2-digit' });
     const wrap = document.createElement('div');
     wrap.className = 'chat-bubble-wrap ' + (isMine ? 'mine' : 'theirs');
-    wrap.innerHTML = `<div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">${escHtml(m.text)}</div>
-        <div class="chat-bubble-time">${timeStr}</div>`;
+    if (isMine) {
+        wrap.innerHTML = `<div class="chat-bubble mine">${escHtml(m.text)}</div>
+            <div class="chat-bubble-time">${timeStr}</div>`;
+    } else {
+        wrap.innerHTML = `<div style="display:flex;align-items:flex-end;">
+            ${_friendAvatarHtml()}
+            <div>
+                <div class="chat-bubble theirs">${escHtml(m.text)}</div>
+                <div class="chat-bubble-time">${timeStr}</div>
+            </div>
+        </div>`;
+    }
     box.appendChild(wrap);
     box.scrollTop = box.scrollHeight;
 }

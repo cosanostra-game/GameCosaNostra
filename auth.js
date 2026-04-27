@@ -94,7 +94,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    res.json({ success: true, user });
+    res.json({ success: true, user: { id: user._id, _id: user._id, name: user.name, email: user.email, avatarColor: user.avatarColor, avatarImg: user.avatarImg, bio: user.bio, createdAt: user.createdAt } });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
