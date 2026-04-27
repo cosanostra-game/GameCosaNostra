@@ -563,6 +563,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 .fma-msg:hover { filter:brightness(1.1); }
 .fma-remove { background:rgba(255,59,48,.1); color:var(--accent); }
 .fma-remove:hover { background:rgba(255,59,48,.2); }
+.friend-card {
     background: var(--panel-solid);
     border: 1px solid var(--border);
     border-radius: 18px;
@@ -4674,19 +4675,23 @@ function closeFriendProfileModal() {
 }
 
 function openChatWithFriend(userId, friendName) {
-    // Switch to messages page and open chat with this friend
-    const pageLinks = document.querySelectorAll('.menu li a');
-    pageLinks.forEach(l => {
-        if (l.getAttribute('onclick') && l.getAttribute('onclick').includes('page-messages')) {
-            l.click();
-        }
-    });
-    // Then open the specific chat after a short delay
+    // Switch to messages page
+    switchTab('messages', document.querySelector('[onclick*="messages"]'));
+    // After contacts load, open specific friend chat
     setTimeout(() => {
-        if (typeof openChat === 'function') {
-            openChat(userId, friendName);
+        const friend = _chatFriends.find(f => String(f.userId) === String(userId));
+        if (friend) {
+            openChat(
+                String(userId),
+                friendName || friend.name,
+                friend.avatarColor || '#ff3b30',
+                friend.avatarImg || '',
+                friend.online
+            );
+        } else if (typeof openChat === 'function') {
+            openChat(String(userId), friendName, '#ff3b30', '', false);
         }
-    }, 200);
+    }, 600);
 }
 
 // Socket handlers for friend events
@@ -4740,6 +4745,20 @@ async function initMessagesPage() {
         renderChatContacts();
         updateMsgBadge();
     } catch (e) { /* silently ignore */ }
+
+    // Re-open active conversation if one was open before switching tabs
+    if (_chatActiveFriendId) {
+        const friend = _chatFriends.find(f => String(f.userId) === _chatActiveFriendId);
+        if (friend) {
+            openChat(
+                _chatActiveFriendId,
+                _chatActiveFriendName || friend.name,
+                friend.avatarColor || '#ff3b30',
+                friend.avatarImg || '',
+                friend.online
+            );
+        }
+    }
 }
 
 // ── Load friends as contacts ──────────────────────────────────────
@@ -4749,8 +4768,9 @@ async function loadChatContacts() {
         _chatFriends = data.friends || [];
         renderChatContacts();
     } catch (err) {
+        console.warn('loadChatContacts error:', err.message);
         document.getElementById('chat-contacts-list').innerHTML =
-            '<div class="chat-contacts-empty" style="color:var(--accent);">Serrver skhale</div>';
+            '<div class="chat-contacts-empty" style="color:var(--accent);">Կապ չի հաստատվել։ Փորձեք կրկին.</div>';
     }
 }
 
@@ -4776,11 +4796,11 @@ function renderChatContacts() {
         const unreadPill = unread > 0 ? `<span class="chat-unread-pill">${unread}</span>` : '';
         const lastTxt = last ? escHtml(last.text.substring(0, 35)) + (last.text.length > 35 ? '…' : '') : '';
         const lastTime = last ? formatChatTime(last.time) : '';
-        return `<div class="chat-contact-item ${isActive}" onclick="openChat('${uid}','${escHtml(f.name||'?')}','${escHtml(color)}','${escHtml(f.avatarImg||'')}',${online})" data-uid="${uid}">
+        return `<div class="chat-contact-item ${isActive}" onclick="openChatFromEl(this)" data-uid="${uid}" data-name="${escHtml(f.name||'?')}" data-color="${escHtml(color)}" data-online="${online}">
             <div class="chat-contact-avatar" style="background:${color};">${avatarHtml}${onlineDot}</div>
             <div class="chat-contact-body">
                 <div class="chat-contact-name">${escHtml(f.name||'?')}</div>
-                <div class="chat-contact-preview">${lastTxt || '<span style="opacity:.45;">Haghordagrutʻyun chka</span>'}</div>
+                <div class="chat-contact-preview">${lastTxt || '<span style="opacity:.45;">Հաղ. չկա</span>'}</div>
             </div>
             <div class="chat-contact-meta">
                 <span class="chat-contact-time">${lastTime}</span>
@@ -4789,6 +4809,18 @@ function renderChatContacts() {
             <span class="chat-contact-label" style="display:none;">${escHtml(f.name||'?')}</span>
         </div>`;
     }).join('');
+}
+
+// ── Open a conversation (from data attributes — avoids base64 in onclick) ────
+function openChatFromEl(el) {
+    const uid    = el.dataset.uid;
+    const name   = el.dataset.name;
+    const color  = el.dataset.color;
+    const online = el.dataset.online === 'true';
+    // Find avatarImg from cached friends list
+    const friend = _chatFriends.find(f => String(f.userId) === uid);
+    const avatarImg = (friend && friend.avatarImg) || '';
+    openChat(uid, name, color, avatarImg, online);
 }
 
 // ── Open a conversation ───────────────────────────────────────────
@@ -4844,7 +4876,7 @@ async function openChat(uid, name, color, avatarImg, online) {
 // ── Render message bubbles ────────────────────────────────────────
 function renderMessages(msgs) {
     const box   = document.getElementById('chat-messages');
-    const myId  = String(currentUserId || '');
+    const myId  = currentUser ? String(currentUser.id) : '';
 
     if (!msgs.length) {
         box.innerHTML = '<div class="chat-date-divider">Нaghordagrutʻyunner chkan. Grel arajin-y!</div>';
