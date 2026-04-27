@@ -651,7 +651,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 .chat-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:6px; }
 .chat-bubble-wrap { display:flex; flex-direction:column; }
 .chat-bubble-wrap.mine { align-items:flex-end; }
-.chat-bubble-wrap.theirs { align-items:flex-start; }
+.chat-bubble-wrap.theirs { flex-direction:row; align-items:flex-end; gap:6px; }
+.chat-bubble-content { display:flex; flex-direction:column; align-items:flex-start; }
 .chat-bubble { max-width:72%; padding:10px 14px; border-radius:18px; font-size:14px; line-height:1.5; word-break:break-word; position:relative; }
 .chat-bubble.mine { background:var(--accent); color:#fff; border-bottom-right-radius:5px; box-shadow:0 2px 8px rgba(255,59,48,0.3); }
 .chat-bubble.theirs { background:var(--panel-solid); color:var(--text-l); border:1px solid var(--border); border-bottom-left-radius:5px; }
@@ -4948,9 +4949,9 @@ function _friendAvatarHtml() {
     const avatarColor = (friend && friend.avatarColor) || '#888';
     const initials    = (_chatActiveFriendName || '?')[0].toUpperCase();
     if (avatarImg) {
-        return `<img src="${escHtml(avatarImg)}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-right:6px;" alt="">`;
+        return `<img src="${escHtml(avatarImg)}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">`;
     }
-    return `<div style="width:30px;height:30px;border-radius:50%;background:${escHtml(avatarColor)};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-right:6px;">${initials}</div>`;
+    return `<div style="width:30px;height:30px;border-radius:50%;background:${escHtml(avatarColor)};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${initials}</div>`;
 }
 
 function renderMessages(msgs) {
@@ -4981,12 +4982,10 @@ function renderMessages(msgs) {
             </div>`;
         } else {
             html += `<div class="chat-bubble-wrap theirs">
-                <div style="display:flex;align-items:flex-end;">
-                    ${_friendAvatarHtml()}
-                    <div>
-                        <div class="chat-bubble theirs">${escHtml(m.text)}</div>
-                        <div class="chat-bubble-time">${timeStr}</div>
-                    </div>
+                ${_friendAvatarHtml()}
+                <div class="chat-bubble-content">
+                    <div class="chat-bubble theirs">${escHtml(m.text)}</div>
+                    <div class="chat-bubble-time">${timeStr}</div>
                 </div>
             </div>`;
         }
@@ -5007,13 +5006,11 @@ function appendMessage(m, isMine) {
         wrap.innerHTML = `<div class="chat-bubble mine">${escHtml(m.text)}</div>
             <div class="chat-bubble-time">${timeStr}</div>`;
     } else {
-        wrap.innerHTML = `<div style="display:flex;align-items:flex-end;">
-            ${_friendAvatarHtml()}
-            <div>
+        wrap.innerHTML = `${_friendAvatarHtml()}
+            <div class="chat-bubble-content">
                 <div class="chat-bubble theirs">${escHtml(m.text)}</div>
                 <div class="chat-bubble-time">${timeStr}</div>
-            </div>
-        </div>`;
+            </div>`;
     }
     box.appendChild(wrap);
     box.scrollTop = box.scrollHeight;
