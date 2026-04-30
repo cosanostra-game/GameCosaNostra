@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Cosa Nostra</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+    <!-- Fonts: non-blocking -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </noscript>
     <style>
-        
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+        /* Fallback until Montserrat loads */
 
 /* ===== CSS VARIABLES (iOS Style) ===== */
 :root {
@@ -412,23 +421,46 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 /* ===== MOBILE ===== */
 @media (max-width: 800px) {
     body { flex-direction: column; }
-    .sidebar { width: 100% !important; height: auto; position: fixed; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid var(--border); padding: 10px 5px 24px; background: var(--panel); z-index: 1000; border-radius: 24px 24px 0 0; }
+    .sidebar { width: 100% !important; height: auto; position: fixed; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid var(--border); padding: 8px 5px env(safe-area-inset-bottom, 16px); background: var(--panel); z-index: 1000; border-radius: 20px 20px 0 0; }
     .logo, .sidebar-player, .daily-bonus-btn, .sidebar-toggle, .menu-section-title { display: none; }
-    .menu { display: flex; flex-direction: row; padding: 0; gap: 8px; justify-content: flex-start; overflow-x: auto; overflow-y: hidden; white-space: nowrap; -webkit-overflow-scrolling: touch; flex: 1; }
+    .menu { display: flex; flex-direction: row; padding: 0; gap: 4px; justify-content: flex-start; overflow-x: auto; overflow-y: hidden; white-space: nowrap; -webkit-overflow-scrolling: touch; flex: 1; scroll-snap-type: x mandatory; }
     .menu::-webkit-scrollbar { display: none; }
-    .menu li { flex: 0 0 auto; margin: 0; }
-    .menu li a { flex-direction: column; padding: 10px 16px; font-size: 11px; border-radius: 16px; background: transparent; gap: 6px; }
-    .menu-label { font-size: 11px; }
-    .menu li a i { font-size: 1.4rem; width: auto; }
+    .menu li { flex: 0 0 auto; margin: 0; scroll-snap-align: start; }
+    .menu li a { flex-direction: column; padding: 8px 14px; font-size: 10px; border-radius: 14px; background: transparent; gap: 4px; min-height: 54px; min-width: 54px; justify-content: center; -webkit-tap-highlight-color: transparent; }
+    .menu-label { font-size: 10px; line-height: 1; }
+    .menu li a i { font-size: 1.3rem; width: auto; }
     .menu li a.active { background: var(--accent); color: #fff; }
     .new-badge { display: none; }
-    .main-content { padding-bottom: 100px; }
-    .topbar { flex-direction: column; align-items: stretch; padding: 16px; border-radius: 0 0 20px 20px; }
-    .stat-box { justify-content: space-between; gap: 10px; }
-    .page { padding: 24px 16px; }
-    .page h1 { font-size: 24px; }
-    #activity-log { right: 10px; width: calc(100vw - 20px); bottom: 110px; }
-    #notification { right: 10px; bottom: 110px; max-width: calc(100vw - 20px); }
+    .main-content { padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px)); overflow-x: hidden; }
+    .topbar { flex-direction: column; align-items: stretch; padding: 12px 16px; border-radius: 0 0 20px 20px; gap: 10px; }
+    .stat-box { justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .stat { min-width: 0; flex: 1 1 45%; }
+    .page { padding: 16px 12px; }
+    .page h1 { font-size: 22px; }
+    #activity-log { right: 8px; width: calc(100vw - 16px); bottom: calc(90px + env(safe-area-inset-bottom, 16px)); }
+    #notification { right: 8px; bottom: calc(90px + env(safe-area-inset-bottom, 16px)); max-width: calc(100vw - 16px); }
+    /* Cards: full-width on mobile */
+    .cards-grid, .feature-grid { grid-template-columns: 1fr !important; }
+    /* Modals: full-screen on mobile */
+    .modal-box { border-radius: 20px 20px 0 0 !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; top: auto !important; transform: none !important; max-width: 100% !important; max-height: 85vh; overflow-y: auto; }
+    /* Table overflow fix */
+    table { font-size: 12px; }
+    /* Crypto chart */
+    .chart-box { min-height: 180px; }
+    /* Disable heavy blur on mobile for performance */
+    .card, .stat, .form-box, .log-item, .crypto-pill, .stat-bar-wrap { backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; }
+    .sidebar { backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; }
+    /* Input tap fix */
+    input, select, button { -webkit-tap-highlight-color: transparent; }
+    /* Topbar stat values: prevent overflow */
+    .money-val, .bank-val { font-size: 16px !important; }
+}
+
+@media (max-width: 420px) {
+    .menu li a { padding: 7px 10px; font-size: 9px; }
+    .menu li a i { font-size: 1.2rem; }
+    .page h1 { font-size: 19px; }
+    .topbar { padding: 10px 12px; }
 }
 
 /* ══════════════════════════════════════════════
@@ -690,7 +722,6 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 }
 
 </style>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body data-theme="dark">
 
@@ -2085,27 +2116,33 @@ async function saveEditProfile() {
 //   PRELOADER (5 seconds)
 // ==========================================
 window.addEventListener('load', () => {
-    const statusTexts = ['Բեռնում...', 'Կապ հաստատվում...', 'Տվյալներ ստուգվում...', 'Պատրաստ է'];
+    const statusTexts = ['Բեռնում...', 'Կapв ham...', 'Patrast e'];
     const statusEl = document.getElementById('pre-status');
     let idx = 0;
     const textInterval = setInterval(() => {
         idx++;
         if (statusEl && statusTexts[idx]) statusEl.textContent = statusTexts[idx];
         if (idx >= statusTexts.length - 1) clearInterval(textInterval);
-    }, 1100);
+    }, 600);
 
-    setTimeout(() => {
+    // Run auth check IMMEDIATELY in parallel — returning users skip the wait
+    const MIN_PRELOADER_MS = 900;
+    const authPromise = authCheckAutoLogin();
+
+    Promise.all([
+        authPromise,
+        new Promise(r => setTimeout(r, MIN_PRELOADER_MS))
+    ]).then(([loggedIn]) => {
+        clearInterval(textInterval);
         const pl = document.getElementById('preloader');
         if (!pl) return;
+        pl.style.transition = 'opacity 0.5s ease-out';
         pl.style.opacity = '0';
         setTimeout(() => {
             pl.style.display = 'none';
-            // Check auto-login (async)
-            authCheckAutoLogin().then(loggedIn => {
-                if (!loggedIn) showAuthScreen();
-            });
-        }, 1000);
-    }, 4200); // 4.2s visible + 1s fade = ~5.2s total
+            if (!loggedIn) showAuthScreen();
+        }, 500);
+    });
 });
 
 // ==========================================
@@ -4641,25 +4678,46 @@ async function sendFriendRequest(toUserId, btn) {
     }
 }
 
+const _respondingIds = new Set(); // guard: prevent double-submit per user
+
 async function respondFriendRequest(fromUserId, action, btn) {
+    // Guard: prevent double-click / duplicate calls
+    if (_respondingIds.has(fromUserId)) return;
+    _respondingIds.add(fromUserId);
     btn.disabled = true;
+    // Also disable sibling button (accept/decline pair)
+    const card = document.getElementById('freq-' + fromUserId);
+    if (card) card.querySelectorAll('button').forEach(b => b.disabled = true);
+
     try {
         await apiCall('/game/friend-request/respond', 'POST', { fromUserId, action });
-        const card = document.getElementById('freq-' + fromUserId);
         if (card) card.remove();
         if (action === 'accept') {
-            showNotification('✅ Ynker avlacvec!', true);
+            showNotification('✅ Ընկեր ավելացվեց!', true);
             renderFriendsPage();
         } else {
-            showNotification('Hayty merjvec', true);
+            showNotification('Հայտը մերժվեց', true);
         }
-        // Update badge
-        const remaining = document.getElementById('friends-requests-list').children.length;
-        updateFriendBadge(remaining);
-        if (remaining === 0) document.getElementById('friends-requests-section').style.display = 'none';
+        const listEl = document.getElementById('friends-requests-list');
+        if (listEl) {
+            const remaining = listEl.children.length;
+            updateFriendBadge(remaining);
+            if (remaining === 0) {
+                const sec = document.getElementById('friends-requests-section');
+                if (sec) sec.style.display = 'none';
+            }
+        }
     } catch (err) {
-        btn.disabled = false;
-        showNotification('❌ ' + err.message, false);
+        _respondingIds.delete(fromUserId);
+        if (card) card.querySelectorAll('button').forEach(b => b.disabled = false);
+        // If the request was already handled (404/400) — just remove the card silently
+        if (err.message.includes('404') || err.message.includes('Հայտ չկա') || err.message.includes('չկա')) {
+            if (card) card.remove();
+        } else {
+            showNotification('❌ ' + err.message, false);
+        }
+    } finally {
+        _respondingIds.delete(fromUserId);
     }
 }
 
@@ -5195,5 +5253,7 @@ window._chatSocketInit = function() {
     </div>
 </div>
 
+<!-- socket.io — loaded last (non-blocking) -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
 </body>
 </html>

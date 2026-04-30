@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cosa Nostra — Պաշտոնական Կայք</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 
 <style>
 /* ===== RESET & ROOT ===== */
@@ -1532,17 +1535,23 @@ async function apiCall(endpoint, method = 'GET', body = null) {
   return data;
 }
 
-// ── If already logged in → go straight to game ──────────────────
+// ── If already logged in → redirect to game immediately ──────────
 (function checkAlreadyLoggedIn() {
   const token = getToken();
-  if (token) {
-    // Verify token is still valid
-    apiCall('/auth/me').then(() => {
-      window.location.href = 'landing.html';
-    }).catch(() => {
-      clearToken(); // Token expired → stay on login page
-    });
-  }
+  if (!token) return; // No token → show intro normally
+
+  // Token exists: verify it, redirect if valid
+  // Show a quick "checking..." state and redirect fast
+  const fill = document.getElementById('progressFill');
+  if (fill) fill.style.transition = 'width 0.8s ease';
+  if (fill) fill.style.width = '60%';
+
+  apiCall('/auth/me').then(() => {
+    if (fill) fill.style.width = '100%';
+    setTimeout(() => { window.location.href = 'landing.html'; }, 300);
+  }).catch(() => {
+    clearToken(); // Token expired → let intro play normally
+  });
 })();
 
 // ================================================================
@@ -1562,17 +1571,17 @@ setTimeout(() => {
 
 // Animate progress bar
 const progressInterval = setInterval(() => {
-  introProgress += (100 - introProgress) * 0.018 + 0.3;
+  introProgress += (100 - introProgress) * 0.06 + 1.5;
   if (introProgress >= 100) {
     introProgress = 100;
     clearInterval(progressInterval);
     fill.style.width = '100%';
     setTimeout(() => {
       enterBtn.classList.add('visible');
-    }, 400);
+    }, 200);
   }
   fill.style.width = introProgress + '%';
-}, 60);
+}, 40);
 
 function enterSite() {
   const intro = document.getElementById('intro');
@@ -1585,12 +1594,12 @@ function enterSite() {
   }, 1200);
 }
 
-// Auto-enter after 7s if user doesn't click
+// Auto-enter after 2.5s if user doesn't click
 setTimeout(() => {
   if (!document.getElementById('intro').classList.contains('hide')) {
     enterSite();
   }
-}, 7000);
+}, 2500);
 
 // ================================================================
 //  SCROLL REVEAL
