@@ -749,11 +749,11 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <div class="pre-logo-wrap">
         <div class="pre-title">COSA <span>NOSTRA</span></div>
         <div class="pre-divider"></div>
-        <div class="pre-sub">Մուտք հանցավոր աշխարհ</div>
-        <div class="pre-quote">"Ամեն ոք ունի իր ճակատագիրը..."</div>
+        <div class="pre-sub" data-i18n="pre.sub">Մուտք հանցավոր աշխարհ</div>
+        <div class="pre-quote" data-i18n="pre.quote">"Ամեն ոք ունի իր ճակատագիրը..."</div>
     </div>
     <div class="pre-progress-wrap">
-        <div class="pre-progress-label" id="pre-status">Բեռնում...</div>
+        <div class="pre-progress-label" id="pre-status" data-i18n="pre.loading">Բեռնում...</div>
         <div class="pre-progress-track"><div class="pre-progress-fill"></div></div>
     </div>
 </div>
@@ -766,30 +766,30 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="pre-divider"></div>
         </div>
         <div class="auth-tabs">
-            <button class="auth-tab active" onclick="authSwitchTab('login',this)">Մուտք</button>
-            <button class="auth-tab" onclick="authSwitchTab('register',this)">Գրանցում</button>
+            <button class="auth-tab active" onclick="authSwitchTab('login',this)" data-i18n="auth.loginTab">Մուտք</button>
+            <button class="auth-tab" onclick="authSwitchTab('register',this)" data-i18n="auth.registerTab">Գրանցում</button>
         </div>
         <!-- LOGIN -->
         <div id="auth-login-form">
             <div class="auth-input-wrap">
                 <i class="material-icons">email</i>
-                <input class="auth-input" type="email" id="login-email" placeholder="Gmail հասցե" autocomplete="email">
+                <input class="auth-input" type="email" id="login-email" placeholder="Gmail հասցե" data-i18n-ph="auth.emailPh" autocomplete="email">
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">lock</i>
-                <input class="auth-input" type="password" id="login-password" placeholder="Գաղտնաբառ" autocomplete="current-password">
+                <input class="auth-input" type="password" id="login-password" placeholder="Գաղտնաբառ" data-i18n-ph="auth.passPh" autocomplete="current-password">
             </div>
             <label class="auth-autologin">
                 <input type="checkbox" id="login-remember" checked>
-                <span>Հիշել ինձ (ավտոմատ մուտք)</span>
+                <span data-i18n="auth.remember">Հիշել ինձ (ավտոմատ մուտք)</span>
             </label>
-            <button class="auth-btn" onclick="authLogin()">Մտնել Խաղ</button>
+            <button class="auth-btn" onclick="authLogin()" data-i18n="auth.loginBtn">Մտնել Խաղ</button>
         </div>
         <!-- REGISTER -->
         <div id="auth-register-form" style="display:none;">
             <div class="auth-input-wrap">
                 <i class="material-icons">person</i>
-                <input class="auth-input" type="text" id="reg-name" placeholder="Ձեր անունը (Nickname)" autocomplete="nickname">
+                <input class="auth-input" type="text" id="reg-name" placeholder="Ձեր անունը (Nickname)" data-i18n-ph="auth.nickPh" autocomplete="nickname">
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">email</i>
@@ -797,17 +797,17 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">lock</i>
-                <input class="auth-input" type="password" id="reg-password" placeholder="Գաղտնաբառ (min 6)" autocomplete="new-password">
+                <input class="auth-input" type="password" id="reg-password" placeholder="Գաղտնաբառ (min 6)" data-i18n-ph="auth.newPassPh" autocomplete="new-password">
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">lock_outline</i>
-                <input class="auth-input" type="password" id="reg-confirm" placeholder="Կրկնեք գաղտնաբառը" autocomplete="new-password">
+                <input class="auth-input" type="password" id="reg-confirm" placeholder="Կրկնեք գաղտնաբառը" data-i18n-ph="auth.confPassPh" autocomplete="new-password">
             </div>
             <label class="auth-autologin">
                 <input type="checkbox" id="reg-remember" checked>
                 <span>Հիշել ինձ (ավտոմատ մուտք)</span>
             </label>
-            <button class="auth-btn" onclick="authRegister()">Գրանցվել և Խաղալ</button>
+            <button class="auth-btn" onclick="authRegister()" data-i18n="auth.registerBtn">Գրանցվել և Խաղալ</button>
         </div>
         <div class="auth-msg" id="auth-msg"></div>
     </div>
@@ -940,17 +940,17 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         </div>
 
         <div class="form-box" style="max-width:420px; text-align:center; margin:0 auto 30px;">
-            <p style="color:var(--text); margin-bottom:10px; font-size:14px; text-transform:uppercase; font-weight:600;">Անձնական Բանկային Հաշիվ</p>
+            <p style="color:var(--text); margin-bottom:10px; font-size:14px; text-transform:uppercase; font-weight:600;" data-i18n="main.bankLabel">Անձնական Բանկային Հաշիվ</p>
             <h2 id="personalBankAccShow" style="color:var(--text-l); font-size:32px; letter-spacing:2px;">AM000000</h2>
         </div>
 
         <div style="margin-bottom:30px;">
-            <p style="color:var(--text); font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;">⚡ Արագ Գործողություններ</p>
+            <p style="color:var(--text); font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;" data-i18n="main.quickActions">⚡ Արագ Գործողություններ</p>
             <div class="quick-actions">
-                <div class="quick-btn" onclick="quickCrime('pocket')"><i class="material-icons" style="color:#ff3b30;">back_hand</i>Գրպանահատ.</div>
-                <div class="quick-btn" onclick="quickCrime('shop')"><i class="material-icons" style="color:#ff9500;">storefront</i>Թալանել Խանութ</div>
-                <div class="quick-btn" onclick="switchTab('casino', document.querySelector('[onclick*=casino]'))"><i class="material-icons" style="color:#ffcc00;">casino</i>Կազինո</div>
-                <div class="quick-btn" onclick="switchTab('crypto', document.querySelector('[onclick*=crypto]'))"><i class="material-icons" style="color:#ff9500;">currency_bitcoin</i>Կրիպտո</div>
+                <div class="quick-btn" onclick="quickCrime('pocket')"><i class="material-icons" style="color:#ff3b30;">back_hand</i><span data-i18n="quick.pocket">Գրպանահատ.</span></div>
+                <div class="quick-btn" onclick="quickCrime('shop')"><i class="material-icons" style="color:#ff9500;">storefront</i><span data-i18n="quick.shop">Թալանել Խանութ</span></div>
+                <div class="quick-btn" onclick="switchTab('casino', document.querySelector('[onclick*=casino]'))"><i class="material-icons" style="color:#ffcc00;">casino</i><span data-i18n="menu.casino">Կազինո</span></div>
+                <div class="quick-btn" onclick="switchTab('crypto', document.querySelector('[onclick*=crypto]'))"><i class="material-icons" style="color:#ff9500;">currency_bitcoin</i><span data-i18n="menu.crypto">Կրիպտո</span></div>
             </div>
         </div>
 
@@ -983,53 +983,53 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <p style="color:var(--text); margin-bottom: 24px;"><span data-i18n="crypto.updateNote">Փող աշխատելը փողոցում հեշտ չէ։ Գնահատիր ռիսկերը նախքան գործի անցնելը։</span></p>
         <div class="cards-grid">
             <div class="card">
-                <h3>🎯 Գրպանահատություն</h3>
-                <p>Մանր գործ, մանր փողեր։ Ամենահեշտ տարբերակը սկսնակների համար։</p>
+                <h3 data-i18n="crime.pocket">🎯 Գրպանահատություն</h3>
+                <p data-i18n="crime.pocket.desc">Մանր գործ, մանր փողեր։ Ամենահեշտ տարբերակը սկսնակների համար։</p>
                 <div class="card-footer"><span>⚡ 5%</span><span style="color:#ff9500;">Ռիսկ 20%</span></div>
-                <button onclick="attemptAction('crime',5,10,30,0.80)">Կատարել</button>
+                <button onclick="attemptAction('crime',5,10,30,0.80)" data-i18n="btn.commit">Կատարել</button>
             </div>
             <div class="card">
-                <h3>🏪 Թալանել Խանութ</h3>
-                <p>Միջին ռիսկ, լավ գումար։ Գիշերը կատարելն ավելի ապահով է։</p>
+                <h3 data-i18n="crime.shop">🏪 Թալանել Խանութ</h3>
+                <p data-i18n="crime.shop.desc">Միջին ռիսկ, լավ գումար։ Գիշերը կատարելն ավելի ապահով է։</p>
                 <div class="card-footer"><span>⚡ 15%</span><span style="color:#ff3b30;">Ռիսկ 45%</span></div>
-                <button onclick="attemptAction('crime',15,50,150,0.55)">Կատարել</button>
+                <button onclick="attemptAction('crime',15,50,150,0.55)" data-i18n="btn.commit">Կատարել</button>
             </div>
             <div class="card">
-                <h3>💼 Շորթում (Extortion)</h3>
-                <p>Պահանջիր «տանիքի» փող տեղական խանութպաններից։ Պետք է լավ հեղինակություն ունենալ։</p>
+                <h3 data-i18n="crime.extort">💼 Շորթում (Extortion)</h3>
+                <p data-i18n="crime.extort.desc">Պահանջիր «տանիքի» փող տեղական խանութպաններից։ Պետք է լավ հեղինակություն ունենալ։</p>
                 <div class="card-footer"><span>⚡ 25%</span><span style="color:#ff3b30;">Ռիսկ 60%</span></div>
-                <button style="background:#ff9500; color:#fff;" onclick="attemptAction('crime',25,200,500,0.40)">Շորթել</button>
+                <button style="background:#ff9500; color:#fff;" onclick="attemptAction('crime',25,200,500,0.40)" data-i18n="btn.extort">Շորթել</button>
             </div>
             <div class="card">
-                <h3>📦 Մաքսանենգություն</h3>
-                <p>Ապօրինի ապրանքների տեղափոխում քաղաքի սահմանով։ Բարձր վարձատրություն, բարձր ռիսկ։</p>
+                <h3 data-i18n="crime.smuggle">📦 Մաքսանենգություն</h3>
+                <p data-i18n="crime.smuggle.desc">Ապօրինի ապրանքների տեղափոխում քաղաքի սահմանով։ Բարձր վարձատրություն, բարձր ռիսկ։</p>
                 <div class="card-footer"><span>⚡ 35%</span><span style="color:#ff3b30;">Ռիսկ 65%</span></div>
-                <button style="background:#af52de; color:#fff;" onclick="attemptAction('crime',35,500,1200,0.35)">Տեղափոխել</button>
+                <button style="background:#af52de; color:#fff;" onclick="attemptAction('crime',35,500,1200,0.35)" data-i18n="btn.smuggle">Տեղափոխել</button>
             </div>
             <div class="card">
-                <h3>🏦 Բանկի Կողոպուտ</h3>
-                <p>Միայն փորձառուների համար։ Մեծագույն ռիսկ, բայց խոշոր գումար։</p>
+                <h3 data-i18n="crime.bankrob">🏦 Բանկի Կողոպուտ</h3>
+                <p data-i18n="crime.bankrob.desc">Միայն փորձառուների համար։ Մեծագույն ռիսկ, բայց խոշոր գումար։</p>
                 <div class="card-footer"><span>⚡ 50%</span><span style="color:#ff3b30;">Ռիսկ 75%</span></div>
-                <button style="background:var(--text-l); color:var(--bg);" onclick="attemptAction('crime',50,1000,3000,0.25)">Կողոպտել</button>
+                <button style="background:var(--text-l); color:var(--bg);" onclick="attemptAction('crime',50,1000,3000,0.25)" data-i18n="btn.rob">Կողոպտել</button>
             </div>
         </div>
     </section>
 
     <section id="page-cars" class="page">
         <h1><i class="material-icons">directions_car</i> <span data-i18n="page.cars">Ավտոառևանգում</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Գողացած մեքենաները կարող ես վաճառել կամ օգտագործել այլ հանցագործությունների ժամանակ (իջեցնում է ռիսկը)։</p>
+        <p style="color:var(--text); margin-bottom: 24px;" data-i18n="cars.desc">Գողացած մեքենաները կարող ես վաճառել կամ օգտագործել այլ հանցագործությունների ժամանակ (իջեցնում է ռիսկը)։</p>
         <div class="cards-grid">
             <div class="card">
-                <h3>🚗 Էկոնոմ Դաս</h3>
-                <p>Սովորական կամ հին ավտոմեքենա։ Ցածր ռիսկ, փոքր եկամուտ։</p>
+                <h3 data-i18n="car.class0">🚗 Էկոնոմ Դաս</h3>
+                <p data-i18n="car.class0.desc">Սովորական կամ հին ավտոմեքենա։ Ցածր ռիսկ, փոքր եկամուտ։</p>
                 <div class="card-footer"><span>⚡ 10%</span><span style="color:#ff9500;">Ռիսկ 35%</span></div>
-                <button onclick="attemptCarTheft('cheap',10,0.65)">Գողանալ</button>
+                <button onclick="attemptCarTheft('cheap',10,0.65)" data-i18n="btn.steal">Գողանալ</button>
             </div>
             <div class="card">
-                <h3>🚙 Բիզնես/Սպորտային</h3>
-                <p>Թանկարժեք և արագընթաց մեքենաներ։ Բարձր ռիսկ դրսում, մեծ գումար սև շուկայում։</p>
+                <h3 data-i18n="car.class1">🚙 Բիզնես/Սպորտային</h3>
+                <p data-i18n="car.class1.desc">Թանկարժեք և արագընթաց մեքենաներ։ Բարձր ռիսկ դրսում, մեծ գումար սև շուկայում։</p>
                 <div class="card-footer"><span>⚡ 30%</span><span style="color:#ff3b30;">Ռիսկ 65%</span></div>
-                <button style="background:#0a84ff; color:#fff;" onclick="attemptCarTheft('expensive',20,0.58)">Գողանալ</button>
+                <button style="background:#0a84ff; color:#fff;" onclick="attemptCarTheft('expensive',20,0.58)" data-i18n="btn.steal">Գողանալ</button>
             </div>
         </div>
     </section>
@@ -1038,7 +1038,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <h1><i class="material-icons">warehouse</i> <span data-i18n="page.garage">Ավտոտնակ</span></h1>
         <div class="garage-header">
             <div style="font-size:16px;font-weight:600;">Տեղեր: <span id="garage-cap-display" style="color:var(--text-l);">0 / 10</span></div>
-            <button onclick="upgradeGarage()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;">Ընդլայնել +5 ($2,500)</button>
+            <button onclick="upgradeGarage()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;" data-i18n="btn.expand">Ընդլայնել +5 ($2,500)</button>
         </div>
         <div id="garage-list" class="cards-grid"></div>
     </section>
@@ -1062,8 +1062,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         </div>
 
         <div class="sub-tabs">
-            <button id="tab-inv-shop" class="active" onclick="toggleInvTab('shop')">🛒 Խանութ</button>
-            <button id="tab-inv-owned" onclick="toggleInvTab('owned')">🎒 Իմ Զինանոց</button>
+            <button id="tab-inv-shop" class="active" onclick="toggleInvTab('shop')" data-i18n="inv.shopTab">🛒 Խանութ</button>
+            <button id="tab-inv-owned" onclick="toggleInvTab('owned')" data-i18n="inv.ownedTab">🎒 Իմ Զինանոց</button>
         </div>
 
         <!-- SHOP VIEW -->
@@ -1086,8 +1086,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <section id="page-dealership" class="page">
         <h1><i class="material-icons">directions_car</i> <span data-i18n="page.dealership">Ավտոսալոն</span></h1>
         <div class="sub-tabs">
-            <button id="tab-dealer-new" class="active" onclick="toggleDealerTab('new')">Նոր Մեքենաներ</button>
-            <button id="tab-dealer-used" onclick="toggleDealerTab('used')">Օգտագործված</button>
+            <button id="tab-dealer-new" class="active" onclick="toggleDealerTab('new')" data-i18n="dealer.newTab">Նոր Մեքենաներ</button>
+            <button id="tab-dealer-used" onclick="toggleDealerTab('used')" data-i18n="dealer.usedTab">Օգտագործված</button>
         </div>
         <div id="dealer-filters" class="filter-bar">
             <select id="dealer-filter-type" onchange="renderDealership()">
@@ -1116,23 +1116,23 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <h2 style="color:#0a84ff; font-size:32px; text-align:center; margin-bottom:24px;">$<span id="bankPageDisplay">0</span></h2>
                 <input type="number" id="bankAmt" placeholder="Գումար...">
                 <div style="display:flex;gap:12px;">
-                    <button style="background:var(--ok);" onclick="bankAction('deposit')">Ավանդ</button>
-                    <button style="background:var(--border); color:var(--text-l);" onclick="bankAction('withdraw')">Կանխիկացնել</button>
+                    <button style="background:var(--ok);" onclick="bankAction('deposit')" data-i18n="btn.deposit">Ավանդ</button>
+                    <button style="background:var(--border); color:var(--text-l);" onclick="bankAction('withdraw')" data-i18n="btn.withdraw">Կանխիկացնել</button>
                 </div>
             </div>
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);"><span data-i18n="bank.transfer">Բանկային Փոխանցում</span></p>
-                <input type="text" id="bankTransferAcc" placeholder="Հաշվեհամար (AM123456)">
+                <input type="text" id="bankTransferAcc" placeholder="Հաշվեհամար (AM123456)" data-i18n-ph="bank.accPh">
                 <input type="number" id="bankTransferAmt" placeholder="Գումար ($)">
-                <button style="background:#5e5ce6;" onclick="bankTransfer()">Փոխանցել</button>
+                <button style="background:#5e5ce6;" onclick="bankTransfer()" data-i18n="btn.transfer">Փոխանցել</button>
             </div>
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);"><span data-i18n="bank.loan">Վարկային Գիծ</span></p>
                 <h2 style="color:var(--accent); font-size:32px; text-align:center; margin-bottom:24px;">$<span id="bankLoanDisplay">0</span></h2>
                 <input type="number" id="bankLoanAmt" placeholder="Գումար (Մաքս. $50,000)">
                 <div style="display:flex;gap:12px;">
-                    <button style="background:var(--accent);" onclick="bankLoanAction('take')">Վերցնել</button>
-                    <button style="background:var(--border); color:var(--text-l);" onclick="bankLoanAction('repay')">Մարել</button>
+                    <button style="background:var(--accent);" onclick="bankLoanAction('take')" data-i18n="btn.takeLoan">Վերցնել</button>
+                    <button style="background:var(--border); color:var(--text-l);" onclick="bankLoanAction('repay')" data-i18n="btn.repayLoan">Մարել</button>
                 </div>
             </div>
         </div>
@@ -1142,40 +1142,40 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <h1><i class="material-icons">work</i> <span data-i18n="page.business">Բիզնես և Լվացք</span></h1>
         <div class="garage-header">
             <div style="font-size:16px;font-weight:600;">Բիզնես Սլոտներ: <span id="biz-slots-display" style="color:var(--text-l);">0 / 5</span></div>
-            <button onclick="upgradeBizSlots()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;">Ընդլայնել ($100,000)</button>
+            <button onclick="upgradeBizSlots()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;" data-i18n="btn.expand2">Ընդլայնել ($100,000)</button>
         </div>
         <div class="sub-tabs">
-            <button id="tab-biz-market" class="active" onclick="toggleBizTab('market')">Շուկա</button>
-            <button id="tab-biz-my" onclick="toggleBizTab('my')">Իմ Բիզնեսները (<span id="my-biz-count">0</span>)</button>
+            <button id="tab-biz-market" class="active" onclick="toggleBizTab('market')" data-i18n="biz.market">Շուկա</button>
+            <button id="tab-biz-my" onclick="toggleBizTab('my')"><span data-i18n="biz.myTab">Իմ Բիզնեսները</span> (<span id="my-biz-count">0</span>)</button>
         </div>
         <div id="biz-market-view" class="cards-grid">
             <div class="card">
-                <h3><i class="material-icons">restaurant</i> Ռեստորան (Օրինական)</h3>
-                <p>Մաքուր և օրինական բիզնես։ Ցածր, բայց հաստատուն եկամուտ։ Max Lv: 15</p>
+                <h3><i class="material-icons">restaurant</i> <span data-i18n="biz.restaurant">Ռեստորան (Օրինական)</span></h3>
+                <p data-i18n="biz.restaurant.desc">Մաքուր և օրինական բիզնես։ Ցածր, բայց հաստատուն եկամուտ։ Max Lv: 15</p>
                 <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $75,000</p>
                 <input type="text" id="restaurantName" placeholder="Անվանում...">
-                <button style="background:#0a84ff;" onclick="buyRestaurant()">Հիմնել</button>
+                <button style="background:#0a84ff;" onclick="buyRestaurant()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
-                <h3><i class="material-icons">casino</i> Ընդհատակյա Խաղատուն</h3>
-                <p>Միայն մաֆիայի համար։ Բերում է մեծ եկամուտ, բայց պահանջում է կապեր։</p>
+                <h3><i class="material-icons">casino</i> <span data-i18n="biz.casino">Ընդհատակյա Խաղատուն</span></h3>
+                <p data-i18n="biz.casino.desc">Միայն մաֆիայի համար։ Բերում է մեծ եկամուտ, բայց պահանջում է կապեր։</p>
                 <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $150,000</p>
                 <input type="text" id="casinoBizName" placeholder="Խաղատան Անվանում...">
-                <button style="background:var(--warn); color:#000;" onclick="buyUndergroundCasino()">Հիմնել</button>
+                <button style="background:var(--warn); color:#000;" onclick="buyUndergroundCasino()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
-                <h3><i class="material-icons">my_location</i> Զենքի Արտադրամաս</h3>
-                <p>Ծանր, վտանգավոր, բայց անհավանական շահութաբեր ստվերային բիզնես։</p>
+                <h3><i class="material-icons">my_location</i> <span data-i18n="biz.arms">Զենքի Արտադրամաս</span></h3>
+                <p data-i18n="biz.arms.desc">Ծանր, վտանգավոր, բայց անհավանական շահութաբեր ստվերային բիզնես։</p>
                 <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $300,000</p>
                 <input type="text" id="armsBizName" placeholder="Անվանում...">
-                <button style="background:var(--text-l); color:var(--bg);" onclick="buyArmsDealer()">Հիմնել</button>
+                <button style="background:var(--text-l); color:var(--bg);" onclick="buyArmsDealer()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
-                <h3><i class="material-icons">nightlife</i> Ստրիպ Կլուբ 🔞</h3>
+                <h3><i class="material-icons">nightlife</i> <span data-i18n="biz.strip">Ստրիպ Կլուբ 🔞</span></h3>
                 <p>Ստվերային ժամանց, կեղտ փողեր։ Հեղ.: 40+ | Եկամուտ. <b style="color:#af52de;">Կեղտ փողի</b> ձևով։ Max Lv: 15</p>
                 <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $200,000</p>
                 <input type="text" id="stripBizName" placeholder="Կլուբի Անվանում...">
-                <button style="background:#af52de;" onclick="buyStripClub()">Հիմնել</button>
+                <button style="background:#af52de;" onclick="buyStripClub()" data-i18n="btn.found">Հիմնել</button>
             </div>
         </div>
 
@@ -1189,8 +1189,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
                 <input type="number" id="launderAmt" placeholder="Լվանալ ($)..." style="max-width:180px;">
-                <button style="background:#af52de;width:auto;padding:12px 24px;" onclick="launderMoney()">🧹 Լվանալ (70%)</button>
-                <button style="background:var(--border);color:var(--text-l);width:auto;padding:12px 24px;box-shadow:none;" onclick="launderAll()">Ամբողջը Լվանալ</button>
+                <button style="background:#af52de;width:auto;padding:12px 24px;" onclick="launderMoney()" data-i18n="btn.launder">🧹 Լվանալ (70%)</button>
+                <button style="background:var(--border);color:var(--text-l);width:auto;padding:12px 24px;box-shadow:none;" onclick="launderAll()" data-i18n="btn.launderAll">Ամբողջը Լվանալ</button>
             </div>
         </div>
         <div id="biz-my-view" class="cards-grid" style="display:none;"></div>
@@ -1201,33 +1201,33 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div id="prison-status">
             <div class="card" style="text-align:center;padding:48px;">
                 <i class="material-icons" style="font-size:48px;color:var(--ok);margin-bottom:20px;">emoji_nature</i>
-                <h3 style="justify-content:center;font-size:22px;color:var(--text-l);">Ազատության Մեջ</h3>
-                <p>Դուք մաքուր եք օրենքի առաջ (առայժմ)։</p>
+                <h3 style="justify-content:center;font-size:22px;color:var(--text-l);" data-i18n="prison.free">Ազատության Մեջ</h3>
+                <p data-i18n="prison.freeSub">Դուք մաքուր եք օրենքի առաջ (առայժմ)։</p>
             </div>
         </div>
         <div id="in-prison-ui" style="display:none;" class="prison-gate">
             <i class="material-icons" style="font-size:54px;color:var(--accent);margin-bottom:20px;">menu</i>
-            <h3 style="font-size:24px;letter-spacing:1px;margin-bottom:10px;color:var(--text-l);">ԴՈՒՔ ՃԱՂԵՐՈՒՄ ԵՔ</h3>
+            <h3 style="font-size:24px;letter-spacing:1px;margin-bottom:10px;color:var(--text-l);" data-i18n="prison.locked">ԴՈՒՔ ՃԱՂԵՐՈՒՄ ԵՔ</h3>
             <div class="prison-timer" id="p-timer">00:00</div>
             <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-                <button onclick="payBribe()" id="bribe-btn" style="background:var(--warn);color:#000;width:auto;padding:16px 32px;">💰 Կաշառք ($1,000)</button>
-                <button onclick="prisonEscape()" id="escape-btn" style="background:var(--border);color:var(--text-l);width:auto;padding:16px 32px;">🚀 Փախուստ ($2,500)</button>
+                <button onclick="payBribe()" id="bribe-btn" style="background:var(--warn);color:#000;width:auto;padding:16px 32px;" data-i18n="btn.bribe">💰 Կաշառք ($1,000)</button>
+                <button onclick="prisonEscape()" id="escape-btn" style="background:var(--border);color:var(--text-l);width:auto;padding:16px 32px;" data-i18n="btn.escape">🚀 Փախուստ ($2,500)</button>
             </div>
-            <p style="color:var(--text);font-size:13px;margin-top:20px;">Կաշառք = 100% հաջողություն, Փախուստ = 50% հաջողություն և մեծ ռիսկ։</p>
+            <p style="color:var(--text);font-size:13px;margin-top:20px;" data-i18n="prison.bribeTip">Կաշառք = 100% հաջողություն, Փախուստ = 50% հաջողություն և մեծ ռիսկ։</p>
         </div>
     </section>
 
     <section id="page-casino" class="page">
         <h1><i class="material-icons">casino</i> <span data-i18n="page.casino">Խաղատուն (Կազինո)</span></h1>
         <div class="sub-tabs">
-            <button id="tab-roulette" class="active" onclick="toggleCasinoTab('roulette')">Ռուլետկա</button>
-            <button id="tab-slots" onclick="toggleCasinoTab('slots')">Սլոթ Ապարատ</button>
+            <button id="tab-roulette" class="active" onclick="toggleCasinoTab('roulette')" data-i18n="casino.roulette">Ռուլետկա</button>
+            <button id="tab-slots" onclick="toggleCasinoTab('slots')" data-i18n="casino.slots">Սլոթ Ապարատ</button>
         </div>
         <div id="casino-roulette-view" class="form-box" style="max-width:580px;margin:0 auto;">
             <input type="number" id="betAmt" placeholder="Խաղադրույք ($)...">
             <div style="display:flex;gap:16px;margin-bottom:30px;">
-                <button id="btn-red" style="background:#ff3b30;" onclick="gamble('red')">🔴 ԿԱՐՄԻՐ (x2)</button>
-                <button id="btn-black" style="background:#1c1c1e;" onclick="gamble('black')">⚫ ՍԵՎ (x2)</button>
+                <button id="btn-red" style="background:#ff3b30;" onclick="gamble('red')" data-i18n="btn.red">🔴 ԿԱՐՄԻՐ (x2)</button>
+                <button id="btn-black" style="background:#1c1c1e;" onclick="gamble('black')" data-i18n="btn.black">⚫ ՍԵՎ (x2)</button>
             </div>
             <div style="text-align:center;margin:40px 0;position:relative;">
                 <div style="position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:24px solid var(--text-l);z-index:10;"></div>
@@ -1245,14 +1245,14 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 3x 🍋/🍒 = <b style="color:var(--ok)">2x</b> &nbsp;|&nbsp; 2 նույն = <b style="color:var(--ok)">1.2x</b>
             </div>
             <input type="number" id="slotBetAmt" placeholder="Խաղադրույք ($)..." style="text-align:center;font-size:18px;">
-            <button id="btn-spin-slot" style="background:var(--warn);color:#000;font-size:18px;padding:18px;" onclick="spinSlots()">🎰 ՊՏՏԵԼ</button>
+            <button id="btn-spin-slot" style="background:var(--warn);color:#000;font-size:18px;padding:18px;" onclick="spinSlots()" data-i18n="btn.spin">🎰 ՊՏՏԵԼ</button>
             <div id="slot-result" style="text-align:center;font-weight:700;font-size:22px;margin-top:20px;min-height:28px;"></div>
         </div>
     </section>
 
     <section id="page-crypto" class="page">
         <h1><i class="material-icons">currency_bitcoin</i> <span data-i18n="page.crypto">Կրիպտո</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Շուկան թարմացվում է յուրաքանչյուր 5 վայրկյանը մեկ։</p>
+        <p style="color:var(--text); margin-bottom: 24px;" data-i18n="crypto.updateNote">Շուկան թարմացվում է յուրաքանչյուր 5 վայրկյանը մեկ։</p>
         <div id="crypto-pill-list" class="crypto-pill-list"></div>
         <div class="crypto-container">
             <div class="chart-box">
@@ -1267,8 +1267,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <p style="margin-bottom:16px;font-size:15px;color:var(--text);">Ձեր պորտֆելը (<span id="trade-coin-label">BTC</span>): <br><b id="player-crypto-amount" style="color:var(--text-l);font-size:24px;">0.0000</b></p>
                 <input type="number" id="crypto-trade-amt" step="0.0001" placeholder="Քանակ">
                 <div style="display:flex;gap:12px;">
-                    <button style="background:var(--ok);" onclick="tradeCrypto('buy')">Գնել</button>
-                    <button style="background:var(--accent);" onclick="tradeCrypto('sell')">Վաճառել</button>
+                    <button style="background:var(--ok);" onclick="tradeCrypto('buy')" data-i18n="btn.buy">Գնել</button>
+                    <button style="background:var(--accent);" onclick="tradeCrypto('sell')" data-i18n="btn.sell">Վաճառել</button>
                 </div>
             </div>
         </div>
@@ -1277,8 +1277,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <section id="page-estate" class="page">
         <h1><i class="material-icons">business</i> <span data-i18n="page.estate">Անշարժ Գույք</span></h1>
         <div class="sub-tabs">
-            <button id="tab-market" class="active" onclick="toggleEstateTab('market')">Շուկա</button>
-            <button id="tab-myestate" onclick="toggleEstateTab('myestate')">Իմ Գույքը (<span id="my-estate-count">0</span>)</button>
+            <button id="tab-market" class="active" onclick="toggleEstateTab('market')" data-i18n="biz.market">Շուկա</button>
+            <button id="tab-myestate" onclick="toggleEstateTab('myestate')"><span data-i18n="estate.myTab">Իմ Գույքը</span> (<span id="my-estate-count">0</span>)</button>
         </div>
         <div id="estate-filters" class="filter-bar">
             <select id="filter-type" onchange="renderEstate()">
@@ -1306,10 +1306,10 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="form-box">
                 <p style="font-size:16px;margin-bottom:20px;text-align:center;color:var(--text);">Պահեստավորված</p>
                 <h2 style="color:var(--text-l);font-size:36px;text-align:center;margin-bottom:24px;">$<span id="stashDisplay">0</span></h2>
-                <input type="number" id="stashInAmt" placeholder="Մուտքագրել ($)...">
-                <button style="background:var(--ok); margin-bottom: 16px;" onclick="stashAction('in')">Թաքցնել</button>
-                <input type="number" id="stashOutAmt" placeholder="Հանել ($)...">
-                <button style="background:var(--border); color:var(--text-l);" onclick="stashAction('out')">Հանել</button>
+                <input type="number" id="stashInAmt" placeholder="Մուտքագրել ($)..." data-i18n-ph="stash.inPh">
+                <button style="background:var(--ok); margin-bottom: 16px;" onclick="stashAction('in')" data-i18n="btn.hide">Թաքցնել</button>
+                <input type="number" id="stashOutAmt" placeholder="Հանել ($)..." data-i18n-ph="stash.outPh">
+                <button style="background:var(--border); color:var(--text-l);" onclick="stashAction('out')" data-i18n="btn.take">Հանել</button>
             </div>
         </div>
     </section>
@@ -1319,35 +1319,35 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <p style="color:var(--text); margin-bottom: 24px;">Առողջություն (HP): <span id="hp-hosp" style="color:var(--text-l); font-weight:bold;">100</span> / 100</p>
         <div class="cards-grid">
             <div class="card">
-                <h3><i class="material-icons">vaccines</i> Թեթև Բուժում</h3>
-                <p>Վերականգնում է 25 HP։ Օգտակար է մանր վնասվածքների դեպքում։</p>
-                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $200</p>
-                <button onclick="healPlayer(25, 200)">Բուժվել</button>
+                <h3><i class="material-icons">vaccines</i> <span data-i18n="hosp.light">Թեթև Բուժում</span></h3>
+                <p data-i18n="hosp.lightDesc">Վերականգնում է 25 HP։ Օգտակար է մանր վնասվածքների դեպքում։</p>
+                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="hosp.lightPrice">Արժեք: $200</p>
+                <button onclick="healPlayer(25, 200)" data-i18n="btn.heal25">Բուժվել</button>
             </div>
             <div class="card">
-                <h3><i class="material-icons">emergency</i> Լրիվ Վերականգնում</h3>
-                <p>Վերականգնում է ամբողջական HP-ն և էներգիան։</p>
-                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $1,500</p>
-                <button style="background:var(--ok);" onclick="healPlayer(100, 1500)">Լրիվ Բուժում</button>
+                <h3><i class="material-icons">emergency</i> <span data-i18n="hosp.full">Լրիվ Վերականգնում</span></h3>
+                <p data-i18n="hosp.fullDesc">Վերականգնում է ամբողջական HP-ն և էներգիան։</p>
+                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="hosp.fullPrice">Արժեք: $1,500</p>
+                <button style="background:var(--ok);" onclick="healPlayer(100, 1500)" data-i18n="btn.healFull">Լրիվ Բուժում</button>
             </div>
         </div>
     </section>
 
     <section id="page-training" class="page">
         <h1><i class="material-icons">fitness_center</i> <span data-i18n="page.training">Վարժեցում</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Բարձրացրեք ձեր առավելագույն ֆիզիկական և մտավոր պարամետրերը։</p>
+        <p style="color:var(--text); margin-bottom: 24px;" data-i18n="train.desc">Բարձրացրեք ձեր առավելագույն ֆիզիկական և մտավոր պարամետրերը։</p>
         <div class="cards-grid">
             <div class="card">
-                <h3><i class="material-icons">monitor_heart</i> Ֆիզիկական Պատրաստվածություն</h3>
+                <h3><i class="material-icons">monitor_heart</i> <span data-i18n="train.phys">Ֆիզիկական Պատրաստվածություն</span></h3>
                 <p>+5 Առավելագույն HP (Max HP: <span id="max-hp-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
-                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $500</p>
-                <button onclick="trainSkill('hp')">Վարժվել</button>
+                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="train.price500">Արժեք: $500</p>
+                <button onclick="trainSkill('hp')" data-i18n="btn.train">Վարժվել</button>
             </div>
             <div class="card">
-                <h3><i class="material-icons">bolt</i> Մտավոր Պատրաստվածություն</h3>
+                <h3><i class="material-icons">bolt</i> <span data-i18n="train.mental">Մտավոր Պատրաստվածություն</span></h3>
                 <p>+5 Առավելագույն Էներգիա (Max Nrg: <span id="max-energy-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $500</p>
-                <button style="background:#0a84ff;" onclick="trainSkill('energy')">Վարժվել</button>
+                <button style="background:#0a84ff;" onclick="trainSkill('energy')" data-i18n="btn.train">Վարժվել</button>
             </div>
         </div>
     </section>
@@ -1361,7 +1361,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <h3><i class="material-icons">payments</i> Բարեգործություն / Կաշառք Քաղաքապետարանին</h3>
                 <p>Նվիրաբերելով գումար, դուք գնում եք քաղաքի լռությունը: +5 Համբավ</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $2,000</p>
-                <button style="background:var(--ok);" onclick="donateReputation()">Վճարել</button>
+                <button style="background:var(--ok);" onclick="donateReputation()" data-i18n="btn.donate">Վճարել</button>
             </div>
         </div>
     </section>
@@ -1376,22 +1376,22 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="cards-grid">
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--accent);margin-bottom:16px;">my_location</i>
-                <h3 style="justify-content:center;">Հանցագործություններ</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.crimes">Հանցագործություններ</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-crimes">0</p>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#0a84ff;margin-bottom:16px;">directions_car</i>
-                <h3 style="justify-content:center;">Գողացված մեքենաներ</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.cars">Գողացված մեքենաներ</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-cars">0</p>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--ok);margin-bottom:16px;">monetization_on</i>
-                <h3 style="justify-content:center;">Ընդհանուր վաստակած</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.earnings">Ընդհանուր վաստակած</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-earnings">$0</p>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#af52de;margin-bottom:16px;">hourglass_bottom</i>
-                <h3 style="justify-content:center;">Խաղացած ժամանակ</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.time">Խաղացած ժամանակ</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-time">0 րոպե</p>
             </div>
         </div>
@@ -1404,10 +1404,10 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <section id="page-events" class="page">
         <h1><i class="material-icons">bolt</i> <span data-i18n="page.events">Իրադարձություններ</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Քաղաքում տեղի ունեցող պատահական իրադարձությունների պատմություն։</p>
+        <p style="color:var(--text); margin-bottom: 24px;" data-i18n="events.desc">Քաղաքում տեղի ունեցող պատահական իրադարձությունների պատմություն։</p>
         <div class="form-box" style="padding:24px;">
             <div id="event-log" style="background:var(--bg); padding:16px; border-radius:16px; border:1px solid var(--border); max-height:400px; overflow-y:auto; font-size:14px; line-height:1.6; color:var(--text-l);">
-                <p style="color:var(--text);">Դեռ իրադարձություններ չկան...</p>
+                <p style="color:var(--text);" data-i18n="events.empty">Դեռ իրադարձություններ չկան...</p>
             </div>
         </div>
     </section>
@@ -1420,8 +1420,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <p style="font-size:16px; margin-bottom:24px;"><span data-i18n="cycle.status">Կարգավիճակ:</span> <span id="cycle-type-page" style="font-weight:700; color:var(--warn);">☀️ Ցերեկ</span></p>
             <div class="cycle-bar-track" style="margin-bottom: 24px;"><div id="cycle-bar" class="cycle-bar-fill" style="width: 50%;"></div></div>
             <div style="text-align:left; color:var(--text-l); font-size:14px; line-height:1.6; background:var(--bg); padding:16px; border-radius:16px; border:1px solid var(--border);">
-                <p>🌙 <strong>Գիշերը</strong> հանցագործությունները ավելի հաջողակ են (ռիսկը նվազում է), բայց ոստիկանության պարեկությունն ուժեղանում է։</p>
-                <p>☀️ <strong>Ցերեկը</strong> օրինական և ստվերային բիզնեսներն ավելի շահավետ են աշխատում։</p>
+                <p data-i18n="cycle.nightDesc">🌙 <strong>Գիշերը</strong> հանցագործությունները ավելի հաջողակ են (ռիսկը նվազում է), բայց ոստիկանության պարեկությունն ուժեղանում է։</p>
+                <p data-i18n="cycle.dayDesc">☀️ <strong>Ցերեկը</strong> օրինական և ստվերային բիզնեսներն ավելի շահավետ են աշխատում։</p>
             </div>
         </div>
     </section>
@@ -1445,7 +1445,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         </div>
         <div class="card" style="margin-bottom:24px;">
             <h3><i class="material-icons">wallpaper</i> <span data-i18n="set.bg">Ֆոնի Նկար</span></h3>
-            <p style="margin-bottom:0;">Ընտրեք ֆոնի նկարը ձեր պանակից:</p>
+            <p style="margin-bottom:0;" data-i18n="set.bgDesc">Ընտրեք ֆոնի նկարը ձեր պանակից:</p>
             <div class="bg-grid" id="bg-grid">
                 <img class="bg-thumb active" src="red_black_clouds_sky_sunset_dark_nature_wallpaper_background_4k_hd_dark_background-3840x2160.jpg" onclick="changeBackground(this)" alt="Sunset Sky">
                 <img class="bg-thumb" src="photo_2026-04-19_20-42-40.jpg" onclick="changeBackground(this)" alt="Mafia">
@@ -1466,21 +1466,21 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="cards-grid">
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--ok);margin-bottom:16px;">save</i>
-                <h3 style="justify-content:center;">Պահպանել Խաղը</h3>
-                <p>Պահպանեք ձեր առաջընթացը բրաուզերում:</p>
-                <button style="background:var(--ok);margin-top:10px;" onclick="saveGame()">Պահպանել</button>
+                <h3 style="justify-content:center;" data-i18n="set.save">Պահպանել Խաղը</h3>
+                <p data-i18n="set.saveDesc">Պահպանեք ձեր առաջընթացը բրաուզերում:</p>
+                <button style="background:var(--ok);margin-top:10px;" onclick="saveGame()" data-i18n="btn.save">Պահպանել</button>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#0a84ff;margin-bottom:16px;">download</i>
-                <h3 style="justify-content:center;">Վերականգնել Խաղը</h3>
-                <p>Բեռնել վերջին պահպանված վիճակը:</p>
-                <button style="background:#0a84ff;margin-top:10px;" onclick="loadGame(true)">Վերականգնել</button>
+                <h3 style="justify-content:center;" data-i18n="set.load">Վերականգնել Խաղը</h3>
+                <p data-i18n="set.loadDesc">Բեռնել վերջին պահպանված վիճակը:</p>
+                <button style="background:#0a84ff;margin-top:10px;" onclick="loadGame(true)" data-i18n="btn.load">Վերականգնել</button>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--accent);margin-bottom:16px;">delete</i>
-                <h3 style="justify-content:center;">Ջնջել Ամեն Ինչ</h3>
-                <p>Զրոյացնել ամբողջ առաջընթացը:</p>
-                <button style="background:var(--accent);margin-top:10px;" onclick="resetGame()">Ջնջել</button>
+                <h3 style="justify-content:center;" data-i18n="set.reset">Ջնջել Ամեն Ինչ</h3>
+                <p data-i18n="set.resetDesc">Զրոյացնել ամբողջ առաջընթացը:</p>
+                <button style="background:var(--accent);margin-top:10px;" onclick="resetGame()" data-i18n="btn.reset">Ջնջել</button>
             </div>
         </div>
     </section>
