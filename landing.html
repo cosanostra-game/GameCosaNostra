@@ -2859,7 +2859,7 @@ function addActivity(msg, success = true) {
 function renderActivityLog() {
     const list = _dom['log-list'] || (_dom['log-list'] = document.getElementById('log-list'));
     if (!list) return;
-    if (activityItems.length === 0) { list.innerHTML = '<p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">${t('page.no_activity')}</p>'; return; }
+    if (activityItems.length === 0) { list.innerHTML = `<p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">${t('page.no_activity')}</p>`; return; }
     list.innerHTML = activityItems.map(a => `
         <div class="log-item ${a.success?'success':'fail'}">
             <i class="material-icons">${a.success?'check_circle':'cancel'}</i>
@@ -3255,7 +3255,7 @@ function renderGarage() {
     safe('garage-cap-display', `${player.garage.length}/${player.garageLimit}`);
     let cont = document.getElementById('garage-list');
     if (!cont) return;
-    cont.innerHTML = player.garage.length === 0 ? '<p style="color:var(--text);font-size:16px;">${t('page.garage_empty')}</p>' : '';
+    cont.innerHTML = player.garage.length === 0 ? `<p style="color:var(--text);font-size:16px;">${t('page.garage_empty')}</p>` : '';
     player.garage.forEach((car, i) => {
         let isCrime = player.activeCrimeCarIndex === i;
         cont.innerHTML += `<div class="card" style="${isCrime ? 'border:2px solid var(--ok);' : ''} padding:0; overflow:hidden;">
