@@ -878,7 +878,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <i class="material-icons">redeem</i>
         <div>
             <div style="font-size:11px;color:var(--text);text-transform:uppercase;"><span data-i18n="daily.label">Ամենօրյա Բոնուս</span></div>
-            <div id="daily-btn-label" style="font-size:13px;color:var(--text-l);">Ստանալ $100</div>
+            <div id="daily-btn-label" style="font-size:13px;color:var(--text-l);" data-i18n="daily.claim">Ստանալ $100</div>
         </div>
     </div>
 </nav>
@@ -906,7 +906,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <div class="stat" style="flex-direction:column;align-items:flex-start;gap:6px;padding:8px 14px;">
                 <div class="stat-bar-wrap">
-                    <div class="stat-bar-label"><span>⚡ Էներգ.</span><span id="energyDisplay">100</span>%</div>
+                    <div class="stat-bar-label"><span data-i18n="topbar.energy">⚡ Էներգ.</span><span id="energyDisplay">100</span>%</div>
                     <div class="stat-bar-track" style="width:90px;"><div class="stat-bar-fill nrg-fill" id="energy-bar" style="width:100%;"></div></div>
                 </div>
             </div>
@@ -919,7 +919,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="topbar-actions">
             <button class="icon-btn" onclick="toggleActivityLog()" title="Գործունեության մատյան"><i class="material-icons">history</i></button>
             <button class="icon-btn" id="toggleSoundBtn" onclick="toggleSoundMute()" title="Ձայն"><i class="material-icons">volume_up</i></button>
-            <button class="theme-btn" onclick="changeTheme()"><i class="material-icons">contrast</i> Թեմա</button>
+            <button class="theme-btn" onclick="changeTheme()"><i class="material-icons">contrast</i> <span data-i18n="topbar.theme">Թեմա</span></button>
         </div>
     </header>
 
@@ -1051,9 +1051,9 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <!-- Equipped items banner -->
         <div class="garage-header" style="margin-bottom:24px;flex-wrap:wrap;gap:12px;">
             <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;">
-                <span style="font-size:13px;color:var(--text);font-weight:700;">🔫 Կր. Զենք:</span>
+                <span style="font-size:13px;color:var(--text);font-weight:700;" data-i18n="inv.equippedWeapon">🔫 Կր. Զենք:</span>
                 <span id="inv-equipped-weapon" style="font-size:14px;font-weight:800;color:var(--ok);">— Ոչ —</span>
-                <span style="font-size:13px;color:var(--text);font-weight:700;">🛡️ Կր. Զրահ:</span>
+                <span style="font-size:13px;color:var(--text);font-weight:700;" data-i18n="inv.equippedArmor">🛡️ Կր. Զրահ:</span>
                 <span id="inv-equipped-armor" style="font-size:14px;font-weight:800;color:#0a84ff;">— Ոչ —</span>
             </div>
             <div style="font-size:13px;color:var(--text);">
@@ -1101,8 +1101,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <option value="asc">Գինը ↑</option>
                 <option value="desc">Գինը ↓</option>
             </select>
-            <input type="number" id="dealer-filter-min" placeholder="Մին. գին ($)" oninput="renderDealership()">
-            <input type="number" id="dealer-filter-max" placeholder="Մաքս. գին ($)" oninput="renderDealership()">
+            <input type="number" id="dealer-filter-min" placeholder="Մին. գին ($)" data-i18n-ph="filter.min" oninput="renderDealership()">
+            <input type="number" id="dealer-filter-max" placeholder="Մաքս. գին ($)" data-i18n-ph="filter.max" oninput="renderDealership()">
         </div>
         <div id="dealer-new-view" class="list-am-grid"></div>
         <div id="dealer-used-view" class="list-am-grid" style="display:none;"></div>
@@ -1114,7 +1114,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);"><span data-i18n="bank.personal">Անձնական Հաշիվ</span></p>
                 <h2 style="color:#0a84ff; font-size:32px; text-align:center; margin-bottom:24px;">$<span id="bankPageDisplay">0</span></h2>
-                <input type="number" id="bankAmt" placeholder="Գումար...">
+                <input type="number" id="bankAmt" placeholder="Գումար..." data-i18n-ph="bank.amtPh">
                 <div style="display:flex;gap:12px;">
                     <button style="background:var(--ok);" onclick="bankAction('deposit')" data-i18n="btn.deposit">Ավանդ</button>
                     <button style="background:var(--border); color:var(--text-l);" onclick="bankAction('withdraw')" data-i18n="btn.withdraw">Կանխիկացնել</button>
@@ -1123,13 +1123,13 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);"><span data-i18n="bank.transfer">Բանկային Փոխանցում</span></p>
                 <input type="text" id="bankTransferAcc" placeholder="Հաշվեհամար (AM123456)" data-i18n-ph="bank.accPh">
-                <input type="number" id="bankTransferAmt" placeholder="Գումար ($)">
+                <input type="number" id="bankTransferAmt" placeholder="Գումար ($)" data-i18n-ph="bank.amtPh">
                 <button style="background:#5e5ce6;" onclick="bankTransfer()" data-i18n="btn.transfer">Փոխանցել</button>
             </div>
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);"><span data-i18n="bank.loan">Վարկային Գիծ</span></p>
                 <h2 style="color:var(--accent); font-size:32px; text-align:center; margin-bottom:24px;">$<span id="bankLoanDisplay">0</span></h2>
-                <input type="number" id="bankLoanAmt" placeholder="Գումար (Մաքս. $50,000)">
+                <input type="number" id="bankLoanAmt" placeholder="Գումար (Մաքս. $50,000)" data-i18n-ph="bank.loanPh">
                 <div style="display:flex;gap:12px;">
                     <button style="background:var(--accent);" onclick="bankLoanAction('take')" data-i18n="btn.takeLoan">Վերցնել</button>
                     <button style="background:var(--border); color:var(--text-l);" onclick="bankLoanAction('repay')" data-i18n="btn.repayLoan">Մարել</button>
@@ -1152,29 +1152,29 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="card">
                 <h3><i class="material-icons">restaurant</i> <span data-i18n="biz.restaurant">Ռեստորան (Օրինական)</span></h3>
                 <p data-i18n="biz.restaurant.desc">Մաքուր և օրինական բիզնես։ Ցածր, բայց հաստատուն եկամուտ։ Max Lv: 15</p>
-                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $75,000</p>
-                <input type="text" id="restaurantName" placeholder="Անվանում...">
+                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;" data-i18n="biz.price75">Արժեք: $75,000</p>
+                <input type="text" id="restaurantName" placeholder="Անվանում..." data-i18n-ph="biz.namePh">
                 <button style="background:#0a84ff;" onclick="buyRestaurant()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
                 <h3><i class="material-icons">casino</i> <span data-i18n="biz.casino">Ընդհատակյա Խաղատուն</span></h3>
                 <p data-i18n="biz.casino.desc">Միայն մաֆիայի համար։ Բերում է մեծ եկամուտ, բայց պահանջում է կապեր։</p>
-                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $150,000</p>
-                <input type="text" id="casinoBizName" placeholder="Խաղատան Անվանում...">
+                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;" data-i18n="biz.price150">Արժեք: $150,000</p>
+                <input type="text" id="casinoBizName" placeholder="Խաղատան Անվանում..." data-i18n-ph="biz.casinoNamePh">
                 <button style="background:var(--warn); color:#000;" onclick="buyUndergroundCasino()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
                 <h3><i class="material-icons">my_location</i> <span data-i18n="biz.arms">Զենքի Արտադրամաս</span></h3>
                 <p data-i18n="biz.arms.desc">Ծանր, վտանգավոր, բայց անհավանական շահութաբեր ստվերային բիզնես։</p>
-                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $300,000</p>
-                <input type="text" id="armsBizName" placeholder="Անվանում...">
+                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;" data-i18n="biz.price300">Արժեք: $300,000</p>
+                <input type="text" id="armsBizName" placeholder="Անվանում..." data-i18n-ph="biz.namePh">
                 <button style="background:var(--text-l); color:var(--bg);" onclick="buyArmsDealer()" data-i18n="btn.found">Հիմնել</button>
             </div>
             <div class="card">
                 <h3><i class="material-icons">nightlife</i> <span data-i18n="biz.strip">Ստրիպ Կլուբ 🔞</span></h3>
                 <p>Ստվերային ժամանց, կեղտ փողեր։ Հեղ.: 40+ | Եկամուտ. <b style="color:#af52de;">Կեղտ փողի</b> ձևով։ Max Lv: 15</p>
-                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;">Արժեք: $200,000</p>
-                <input type="text" id="stripBizName" placeholder="Կլուբի Անվանում...">
+                <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;" data-i18n="biz.price200">Արժեք: $200,000</p>
+                <input type="text" id="stripBizName" placeholder="Կլուբի Անվանում..." data-i18n-ph="biz.clubNamePh">
                 <button style="background:#af52de;" onclick="buyStripClub()" data-i18n="btn.found">Հիմնել</button>
             </div>
         </div>
@@ -1188,7 +1188,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <span id="dirtyMoneyDisplay" style="font-size:20px;font-weight:800;color:#af52de;">$0</span>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-                <input type="number" id="launderAmt" placeholder="Լվանալ ($)..." style="max-width:180px;">
+                <input type="number" id="launderAmt" placeholder="Լվանալ ($)..." data-i18n-ph="biz.launderPh" style="max-width:180px;">
                 <button style="background:#af52de;width:auto;padding:12px 24px;" onclick="launderMoney()" data-i18n="btn.launder">🧹 Լվանալ (70%)</button>
                 <button style="background:var(--border);color:var(--text-l);width:auto;padding:12px 24px;box-shadow:none;" onclick="launderAll()" data-i18n="btn.launderAll">Ամբողջը Լվանալ</button>
             </div>
@@ -1224,7 +1224,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <button id="tab-slots" onclick="toggleCasinoTab('slots')" data-i18n="casino.slots">Սլոթ Ապարատ</button>
         </div>
         <div id="casino-roulette-view" class="form-box" style="max-width:580px;margin:0 auto;">
-            <input type="number" id="betAmt" placeholder="Խաղադրույք ($)...">
+            <input type="number" id="betAmt" placeholder="Խաղադրույք ($)..." data-i18n-ph="casino.betPh">
             <div style="display:flex;gap:16px;margin-bottom:30px;">
                 <button id="btn-red" style="background:#ff3b30;" onclick="gamble('red')" data-i18n="btn.red">🔴 ԿԱՐՄԻՐ (x2)</button>
                 <button id="btn-black" style="background:#1c1c1e;" onclick="gamble('black')" data-i18n="btn.black">⚫ ՍԵՎ (x2)</button>
@@ -1244,7 +1244,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 3x 7️⃣ = <b style="color:var(--ok)">15x</b> &nbsp;|&nbsp; 3x 💎 = <b style="color:var(--ok)">8x</b> &nbsp;|&nbsp; 3x 🔔 = <b style="color:var(--ok)">4x</b><br>
                 3x 🍋/🍒 = <b style="color:var(--ok)">2x</b> &nbsp;|&nbsp; 2 նույն = <b style="color:var(--ok)">1.2x</b>
             </div>
-            <input type="number" id="slotBetAmt" placeholder="Խաղադրույք ($)..." style="text-align:center;font-size:18px;">
+            <input type="number" id="slotBetAmt" placeholder="Խաղադրույք ($)..." data-i18n-ph="casino.betPh" style="text-align:center;font-size:18px;">
             <button id="btn-spin-slot" style="background:var(--warn);color:#000;font-size:18px;padding:18px;" onclick="spinSlots()" data-i18n="btn.spin">🎰 ՊՏՏԵԼ</button>
             <div id="slot-result" style="text-align:center;font-weight:700;font-size:22px;margin-top:20px;min-height:28px;"></div>
         </div>
@@ -1263,9 +1263,9 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <canvas id="cryptoChart" width="600" height="240" style="max-height:260px;"></canvas>
             </div>
             <div class="trade-box">
-                <h3 style="margin-bottom:20px;">Առևտուր</h3>
+                <h3 style="margin-bottom:20px;" data-i18n="crypto.trade">Առևտուր</h3>
                 <p style="margin-bottom:16px;font-size:15px;color:var(--text);">Ձեր պորտֆելը (<span id="trade-coin-label">BTC</span>): <br><b id="player-crypto-amount" style="color:var(--text-l);font-size:24px;">0.0000</b></p>
-                <input type="number" id="crypto-trade-amt" step="0.0001" placeholder="Քանակ">
+                <input type="number" id="crypto-trade-amt" step="0.0001" placeholder="Քանակ" data-i18n-ph="crypto.amtPh">
                 <div style="display:flex;gap:12px;">
                     <button style="background:var(--ok);" onclick="tradeCrypto('buy')" data-i18n="btn.buy">Գնել</button>
                     <button style="background:var(--accent);" onclick="tradeCrypto('sell')" data-i18n="btn.sell">Վաճառել</button>
@@ -1292,8 +1292,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <option value="asc">Գինը ↑</option>
                 <option value="desc">Գինը ↓</option>
             </select>
-            <input type="number" id="filter-min" placeholder="Մին. ($)" oninput="renderEstate()">
-            <input type="number" id="filter-max" placeholder="Մաքս. ($)" oninput="renderEstate()">
+            <input type="number" id="filter-min" placeholder="Մին. ($)" data-i18n-ph="filter.minShort" oninput="renderEstate()">
+            <input type="number" id="filter-max" placeholder="Մաքս. ($)" data-i18n-ph="filter.maxShort" oninput="renderEstate()">
         </div>
         <div id="estate-market-view" class="list-am-grid"></div>
         <div id="estate-my-view" class="list-am-grid" style="display:none;"></div>
@@ -1602,7 +1602,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
         <!-- Search -->
         <div class="friends-search-wrap">
-            <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
+            <input id="friends-search-input" type="text" placeholder="Մուտքագրեք nickname..." data-i18n-ph="friends.searchPh" oninput="friendsSearchDebounce()" onkeydown="if(event.key==='Enter')searchFriendsNow()">
             <button class="friends-search-btn" onclick="searchFriendsNow()">
                 <i class="material-icons">search</i>
             </button>

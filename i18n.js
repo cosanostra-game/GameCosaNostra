@@ -498,3 +498,59 @@ Object.assign(HY, {
   'btn.rob':       'Կողոպտել',
   'btn.steal':     'Գողանալ',
 });
+
+// ── Second-pass additions ──────────────────────────────────────────
+Object.assign(RU, {
+  // Topbar
+  'topbar.energy':    '⚡ Энерг.',
+
+  // Inventory
+  'inv.equippedWeapon': '🔫 Экип. Оружие:',
+  'inv.equippedArmor':  '🛡️ Экип. Броня:',
+  'inv.weapons':        '⚔️ Оружие',
+
+  // Bank / Finance placeholders
+  'bank.amtPh':     'Сумма...',
+  'bank.loanPh':    'Сумма (Макс. $50,000)',
+
+  // Business
+  'biz.price75':       'Стоимость: $75,000',
+  'biz.price150':      'Стоимость: $150,000',
+  'biz.price200':      'Стоимость: $200,000',
+  'biz.price300':      'Стоимость: $300,000',
+  'biz.namePh':        'Название...',
+  'biz.casinoNamePh':  'Название казино...',
+  'biz.clubNamePh':    'Название клуба...',
+  'biz.launderPh':     'Отмыть ($)...',
+
+  // Casino
+  'casino.betPh':   'Ставка ($)...',
+
+  // Crypto
+  'crypto.amtPh':   'Количество',
+
+  // Estate / Dealer filters
+  'filter.min':      'Мин. цена ($)',
+  'filter.max':      'Макс. цена ($)',
+  'filter.minShort': 'Мин. ($)',
+  'filter.maxShort': 'Макс. ($)',
+
+  // Friends
+  'friends.searchPh': 'Введите nickname...',
+
+  // Friend profile modal
+  'fp.message': 'Написать',
+  'fp.remove':  'Удалить',
+
+  // Families
+  'families.desc': 'Пять известных мафиозных семей, поделивших город. Достигни звания <b style="color:var(--accent);">Мафиози</b> и накопи <b style="color:var(--ok);">$250,000</b> — создай 6-ю семью.',
+
+  // Reputation
+  'rep.donDesc': 'Жертвуя деньги, вы покупаете молчание города. +5 Репутация',
+  'rep.donPrice': 'Стоимость: $2,000',
+  'rep.desc': 'Ваша репутация в городе. Высокая репутация снижает риск ареста и открывает новые бизнесы.',
+
+  // Training extra
+  'train.physDesc': '+5 Максимальный HP',
+  'train.mentDesc': '+5 Максимальная Энергия',
+});
