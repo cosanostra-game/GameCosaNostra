@@ -1747,7 +1747,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <button class="log-close" onclick="toggleActivityLog()"><i class="material-icons">close</i></button>
     </div>
     <div class="log-list" id="log-list">
-        <p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">Դեռ գործողություններ չկան</p>
+        <p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">${t('page.no_activity')}</p>
     </div>
 </div>
 
@@ -1921,7 +1921,7 @@ async function authRegister() {
 
     const avatarColor = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
     const btn = document.querySelector('.auth-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Катарвum е...'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('btn.registering'); }
 
     try {
         const data = await apiCall('/auth/register', 'POST', { name, email, password: pass, avatarColor });
@@ -1930,7 +1930,7 @@ async function authRegister() {
         setTimeout(() => authSuccess(data.user), 900);
     } catch (err) {
         authMsg(err.message);
-        if (btn) { btn.disabled = false; btn.textContent = 'Грацнвел ew Хайkаl'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('btn.register'); }
     }
 }
 
@@ -1942,7 +1942,7 @@ async function authLogin() {
     if (!email || !pass) return authMsg('Лрацрек бolor дашterы');
 
     const btn = document.querySelector('.auth-btn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Ствуцворкс...'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('btn.logging_in'); }
 
     try {
         const data = await apiCall('/auth/login', 'POST', { email, password: pass });
@@ -1951,7 +1951,7 @@ async function authLogin() {
         setTimeout(() => authSuccess(data.user), 800);
     } catch (err) {
         authMsg(err.message);
-        if (btn) { btn.disabled = false; btn.textContent = 'Мтнел Хайg'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('btn.login'); }
     }
 }
 
@@ -2025,7 +2025,7 @@ async function deleteCurrentProfile() {
         currentUserEmail = null;
         window.location.href = 'index.html';
     } catch (err) {
-        if (typeof showNotification === 'function') showNotification('Ջнджелн схалвец: ' + err.message, false);
+        if (typeof showNotification === 'function') showNotification(t('notif.delete_error') + ': ' + err.message, false);
     }
 }
 
@@ -2096,9 +2096,9 @@ function handleAvatarUpload(input) {
             const data = await apiCall('/auth/profile', 'PATCH', { avatarImg: e.target.result });
             currentUser = { ...currentUser, ...data.user };
             refreshAvatarUI(currentUser.name, currentUser.email);
-            showNotification('📸 Avatar-ь тармацвец', true);
+            showNotification(t('notif.avatar_updated'), true);
         } catch (err) {
-            showNotification('Avatar схал: ' + err.message, false);
+            showNotification(t('notif.avatar_error') + ': ' + err.message, false);
         }
     };
     reader.readAsDataURL(file);
@@ -2127,9 +2127,9 @@ async function saveEditProfile() {
         refreshAvatarUI(name, currentUser.email);
         updateProfilePage();
         closeEditProfileModal();
-        showNotification('✅ Профилы тармацвец', true);
+        showNotification(t('notif.profile_updated'), true);
     } catch (err) {
-        showNotification('Схал: ' + err.message, false);
+        showNotification(t('notif.error_generic') + ': ' + err.message, false);
     }
 }
 
@@ -2430,7 +2430,7 @@ class Player extends Entity {
         }
         if (newRank !== this.rank) {
             this.rank = newRank;
-            showNotification(`⭐ Նոր կochum: ${this.rank}`, true);
+            showNotification(`${t('notif.new_rank')}: ${this.rank}`, true);
         }
         return this;
     }
@@ -2859,7 +2859,7 @@ function addActivity(msg, success = true) {
 function renderActivityLog() {
     const list = _dom['log-list'] || (_dom['log-list'] = document.getElementById('log-list'));
     if (!list) return;
-    if (activityItems.length === 0) { list.innerHTML = '<p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">Դեռ գործողություններ չկան</p>'; return; }
+    if (activityItems.length === 0) { list.innerHTML = '<p style="color:var(--text);font-size:13px;padding:10px;text-align:center;">${t('page.no_activity')}</p>'; return; }
     list.innerHTML = activityItems.map(a => `
         <div class="log-item ${a.success?'success':'fail'}">
             <i class="material-icons">${a.success?'check_circle':'cancel'}</i>
@@ -2921,12 +2921,12 @@ function updateDailyBonusUI() {
     if (!btn || !label) return;
     if (canClaimDailyBonus()) {
         btn.classList.remove('claimed');
-        label.innerText = 'Ստանալ $100';
+        label.innerText = t('notif.get_daily');
         btn.onclick = claimDailyBonus;
     } else {
         btn.classList.add('claimed');
         const cd = getNextBonusCountdown();
-        label.innerText = cd ? cd : 'Ստացված ✓';
+        label.innerText = cd ? cd : t('notif.daily_received');
         btn.onclick = null;
     }
 }
@@ -2937,7 +2937,7 @@ function claimDailyBonus() {
     player.stats.earnings += 100;
     localStorage.setItem(getDailyBonusKey(), Date.now().toString());
     updateDailyBonusUI();
-    showNotification('Ամենօրյա բոնուս +$100!', true);
+    showNotification(t('notif.daily_bonus'), true);
     spawnFloatMoney(100, true);
     playTone('upgrade', 0.35);
     addActivity('Ամենօրյա բոնուս +$100', true);
@@ -3177,9 +3177,9 @@ function switchTab(id, el) {
 //   CRIME
 // ==========================================
 function attemptAction(type, cost, min, max, chance) {
-    if (player.inPrison) return showNotification("Բանտում եք", false);
-    if (player.energy < cost) return showNotification("Էներգիա չի հերիքում", false);
-    if (player.hp <= 0) return showNotification("Անգիտակից եք։ Բուժվեք հիվանդանոցում։", false);
+    if (player.inPrison) return showNotification(t('notif.in_prison'), false);
+    if (player.energy < cost) return showNotification(t('notif.no_energy2'), false);
+    if (player.hp <= 0) return showNotification(t('notif.unconscious'), false);
 
     player.energy -= cost;
     
@@ -3220,9 +3220,9 @@ function attemptAction(type, cost, min, max, chance) {
 // ==========================================
 function attemptCarTheft(type, cost, chance) {
     if (player.inPrison) return;
-    if (player.hp <= 0) return showNotification("Անգիտակից եք։", false);
-    if (player.garage.length >= player.garageLimit) return showNotification("Ավտոտնակը լիքն է", false);
-    if (player.energy < cost) return showNotification("Էներգիա չկա", false);
+    if (player.hp <= 0) return showNotification(t('notif.unconscious2'), false);
+    if (player.garage.length >= player.garageLimit) return showNotification(t('notif.garage_full'), false);
+    if (player.energy < cost) return showNotification(t('notif.no_energy3'), false);
     
     player.energy -= cost;
     let isNight = player.dayTime < 6 || player.dayTime >= 18;
@@ -3255,7 +3255,7 @@ function renderGarage() {
     safe('garage-cap-display', `${player.garage.length}/${player.garageLimit}`);
     let cont = document.getElementById('garage-list');
     if (!cont) return;
-    cont.innerHTML = player.garage.length === 0 ? '<p style="color:var(--text);font-size:16px;">Ավտոտնակը դատարկ է</p>' : '';
+    cont.innerHTML = player.garage.length === 0 ? '<p style="color:var(--text);font-size:16px;">${t('page.garage_empty')}</p>' : '';
     player.garage.forEach((car, i) => {
         let isCrime = player.activeCrimeCarIndex === i;
         cont.innerHTML += `<div class="card" style="${isCrime ? 'border:2px solid var(--ok);' : ''} padding:0; overflow:hidden;">
@@ -3275,7 +3275,7 @@ function renderGarage() {
 }
 function toggleCrimeCar(i) {
     player.activeCrimeCarIndex = (player.activeCrimeCarIndex === i) ? -1 : i;
-    showNotification(player.activeCrimeCarIndex === -1 ? "Մեքենան հանվեց" : "Ընտրվեց (+5% շանս)", true);
+    showNotification(player.activeCrimeCarIndex === -1 ? t('notif.car_removed') : t('notif.car_selected'), true);
     playTone('coin', .1); renderGarage();
 }
 function sellCar(i) {
@@ -3291,8 +3291,8 @@ function sellCar(i) {
     renderGarage(); updateUI();
 }
 function upgradeGarage() {
-    if (player.money >= 2500) { player.money -= 2500; player.garageLimit += 5; renderGarage(); updateUI(); showNotification("Ավտոտնակ +5 տեղ ✅", true); playTone('upgrade', .2); }
-    else showNotification("Պետք է $2,500", false);
+    if (player.money >= 2500) { player.money -= 2500; player.garageLimit += 5; renderGarage(); updateUI(); showNotification(t('notif.garage_expanded'), true); playTone('upgrade', .2); }
+    else showNotification(t('notif.need_2500'), false);
 }
 
 // ==========================================
@@ -3351,7 +3351,7 @@ function openDealerModal(id) {
 }
 function closeDealerModal() { document.getElementById('dealer-modal').style.display = 'none'; }
 function buyDealershipCar(id) {
-    if (player.garage.length >= player.garageLimit) return showNotification("Ավտոտնակ լի է", false);
+    if (player.garage.length >= player.garageLimit) return showNotification(t('notif.garage_full2'), false);
     let isNew = id.startsWith('N');
     let market = isNew ? newCarsMarket : usedCarsMarket;
     let idx = market.findIndex(e=>e.id===id); if (idx===-1) return;
@@ -3364,7 +3364,7 @@ function buyDealershipCar(id) {
         spawnFloatMoney(item.price, false);
         playTone('upgrade', .25);
         closeDealerModal(); updateUI(); renderDealership();
-    } else showNotification("Գումար չի հերիքում", false);
+    } else showNotification(t('notif.no_money'), false);
 }
 
 // ==========================================
@@ -3375,7 +3375,7 @@ function bankAction(type) {
     if (isNaN(amt)||!isFinite(amt)||amt<=0) return;
     if (type==='deposit' && player.money>=amt) { player.money-=amt; player.bank+=amt; showNotification(`🏦 +$${amt.toLocaleString()} բանկ`, true); playTone('coin',.15); spawnFloatMoney(amt, false); }
     else if (type==='withdraw' && player.bank>=amt) { player.bank-=amt; player.money+=amt; showNotification(`💵 $${amt.toLocaleString()} կանխ.`, true); playTone('coin',.15); spawnFloatMoney(amt, true); }
-    else showNotification("Անբավ. միջոց", false);
+    else showNotification(t('notif.insufficient'), false);
     updateUI();
 }
 // ── API Transfer (using existing apiCall) ──
@@ -3391,21 +3391,21 @@ async function bankTransfer() {
 
     // ── Local validatsia ──────────────────────────────────────────
     if (!acc || !/^AM\d{6}$/.test(acc)) {
-        return showNotification('⚠️ Հаshvehamerə skhale — paytq e AM + 6 tsank (oric.՝ AM123456)', false);
+        return showNotification(t('notif.transfer_bad_acc'), false);
     }
     if (isNaN(amt) || amt <= 0) {
-        return showNotification('⚠️ Gumarə nshet', false);
+        return showNotification(t('notif.transfer_no_amt'), false);
     }
     if (acc === player.bankAccount) {
-        return showNotification('⚠️ Irenid hashvin chi kareli popoxancel', false);
+        return showNotification(t('notif.transfer_self'), false);
     }
     if ((player.bank || 0) < amt) {
-        return showNotification(`⚠️ Bank-um chka bavarar gumar. Mot e $${(player.bank || 0).toLocaleString()}`, false);
+        return showNotification(`${t('notif.transfer_no_bank')}. ${(player.bank || 0).toLocaleString()}$`, false);
     }
 
     // ── Button-ə disable anem ashxatabanku jamanak ────────────────
     const btn = document.querySelector('button[onclick="bankTransfer()"]');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Popoxantsvoum...'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('btn.transferring'); }
 
     try {
         // ── API kaнch → server ────────────────────────────────────
@@ -3418,7 +3418,7 @@ async function bankTransfer() {
         accEl.value = '';
         amtEl.value = '';
 
-        showNotification(`📤 $${amt.toLocaleString()} popoxancvec ${acc}-in ✅`, true);
+        showNotification(`📤 $${amt.toLocaleString()} ${t('notif.transfer_done')} ${acc}`, true);
         if (typeof playTone      === 'function') playTone('coin', 0.2);
         if (typeof spawnFloatMoney === 'function') spawnFloatMoney(amt, false);
 
@@ -3426,22 +3426,22 @@ async function bankTransfer() {
         try { await apiSaveGame(player.toSave ? player.toSave() : player); } catch(e) {}
 
     } catch (err) {
-        showNotification('❌ ' + (err.message || 'Popoxantsumə chdzvec'), false);
+        showNotification('❌ ' + (err.message || t('notif.transfer_fail')), false);
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Փоxancel'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('btn.transfer'); }
     }
 }
 function bankLoanAction(type) {
     let amt = parseInt(document.getElementById('bankLoanAmt').value);
-    if (isNaN(amt)||!isFinite(amt)||amt<=0) return showNotification("Սխ. գ.", false);
+    if (isNaN(amt)||!isFinite(amt)||amt<=0) return showNotification(t('notif.wrong_amount'), false);
     if (type==='take') {
-        if (player.loan+amt>50000) return showNotification("Մաքս. $50,000", false);
+        if (player.loan+amt>50000) return showNotification(t('notif.loan_max'), false);
         player.loan+=amt; player.money+=amt;
         showNotification(`Վ. +$${amt.toLocaleString()}`, true); playTone('coin',.2);
     } else {
-        if (player.loan===0) return showNotification("Վ. չկա", false);
+        if (player.loan===0) return showNotification(t('notif.loan_none'), false);
         if (amt>player.loan) amt=player.loan;
-        if (player.money<amt) return showNotification("Կ. գ. մ.", false);
+        if (player.money<amt) return showNotification(t('notif.loan_no_cash'), false);
         player.money-=amt; player.loan-=amt;
         showNotification(`Մարեցիք $${amt.toLocaleString()}`, true); playTone('coin',.2);
     }
@@ -3454,24 +3454,24 @@ function bankLoanAction(type) {
 function goToPrison(t) {
     // Delegates to Player.sendToPrison()
     player.sendToPrison(t);
-    showNotification("🚔 Բantel", false);
+    showNotification(t('notif.arrested'), false);
     playTone('fail', .3);
     updateUI();
 }
 function payBribe() {
-    if (player.money>=1000) { player.money-=1000; player.inPrison=false; player.prisonTime=0; showNotification("💸 Կաշառք ընդ.", true); playTone('upgrade',.25); updateUI(); }
-    else showNotification("$1000 չկա", false);
+    if (player.money>=1000) { player.money-=1000; player.inPrison=false; player.prisonTime=0; showNotification(t('notif.bribe_ok'), true); playTone('upgrade',.25); updateUI(); }
+    else showNotification(t('notif.no_1000'), false);
 }
 function prisonEscape() {
-    if (player.money < 2500) return showNotification("$2,500 չկա", false);
+    if (player.money < 2500) return showNotification(t('notif.no_2500'), false);
     player.money -= 2500;
     if (Math.random() < 0.5) {
         player.inPrison=false; player.prisonTime=0;
-        showNotification("🏃 Փախուստ հաջողվեց!", true); playTone('upgrade',.3); updateUI();
+        showNotification(t('notif.escape_ok'), true); playTone('upgrade',.3); updateUI();
     } else {
         player.prisonTime += 180;
         player.hp = Math.max(0, player.hp - 30);
-        showNotification("❌ Փախուստը ձախողվեց | HP -30", false); playTone('fail',.3); updateUI();
+        showNotification(t('notif.escape_fail'), false); playTone('fail',.3); updateUI();
     }
 }
 
@@ -3480,8 +3480,8 @@ function prisonEscape() {
 // ==========================================
 let activeBizTab = 'market';
 function upgradeBizSlots() {
-    if (player.money>=100000) { player.money-=100000; player.bizSlots+=5; showNotification("Բ.Սլ. +5", true); playTone('upgrade',.25); updateUI(); renderMyBusinesses(); }
-    else showNotification("$100,000 չկա", false);
+    if (player.money>=100000) { player.money-=100000; player.bizSlots+=5; showNotification(t('notif.biz_slot_add'), true); playTone('upgrade',.25); updateUI(); renderMyBusinesses(); }
+    else showNotification(t('notif.no_100k'), false);
 }
 function toggleBizTab(tab) {
     activeBizTab = tab;
@@ -3493,37 +3493,37 @@ function toggleBizTab(tab) {
 }
 
 function buyRestaurant() {
-    if (player.businesses.length>=player.bizSlots) return showNotification("Սլոտները լիքն են", false);
+    if (player.businesses.length>=player.bizSlots) return showNotification(t('notif.slots_full'), false);
     let name = document.getElementById('restaurantName').value.trim();
-    if (!name) return showNotification("Գրեք անուն", false);
-    if (player.money<75000) return showNotification("$75,000 չկա", false);
+    if (!name) return showNotification(t('notif.enter_name'), false);
+    if (player.money<75000) return showNotification(t('notif.no_75k'), false);
     player.money-=75000; player.businesses.push({id:Date.now(),type:'restaurant',name,level:1});
     document.getElementById('restaurantName').value=''; showNotification(`🍽 ${name} հիմնվեց`, true); playTone('upgrade',.25); updateUI(); toggleBizTab('my');
 }
 function buyUndergroundCasino() {
-    if (player.reputation < 30) return showNotification("Հեղինակություն պետք է լինի գոնե 30", false);
-    if (player.businesses.length>=player.bizSlots) return showNotification("Սլոտները լիքն են", false);
+    if (player.reputation < 30) return showNotification(t('notif.rep_30'), false);
+    if (player.businesses.length>=player.bizSlots) return showNotification(t('notif.slots_full'), false);
     let name = document.getElementById('casinoBizName').value.trim();
-    if (!name) return showNotification("Գրեք անուն", false);
-    if (player.money<150000) return showNotification("$150,000 չկա", false);
+    if (!name) return showNotification(t('notif.enter_name'), false);
+    if (player.money<150000) return showNotification(t('notif.no_150k'), false);
     player.money-=150000; player.businesses.push({id:Date.now(),type:'casino',name,level:1});
     document.getElementById('casinoBizName').value=''; showNotification(`🎲 ${name} հիմնվեց`, true); playTone('upgrade',.25); updateUI(); toggleBizTab('my');
 }
 function buyArmsDealer() {
-    if (player.reputation < 50) return showNotification("Հեղինակություն պետք է լինի գոնե 50", false);
-    if (player.businesses.length>=player.bizSlots) return showNotification("Սլոտները լիքն են", false);
+    if (player.reputation < 50) return showNotification(t('notif.rep_50'), false);
+    if (player.businesses.length>=player.bizSlots) return showNotification(t('notif.slots_full'), false);
     let name = document.getElementById('armsBizName').value.trim();
-    if (!name) return showNotification("Գրեք անուն", false);
-    if (player.money<300000) return showNotification("$300,000 չկա", false);
+    if (!name) return showNotification(t('notif.enter_name'), false);
+    if (player.money<300000) return showNotification(t('notif.no_300k'), false);
     player.money-=300000; player.businesses.push({id:Date.now(),type:'arms',name,level:1});
     document.getElementById('armsBizName').value=''; showNotification(`🔫 ${name} հիմնվեց`, true); playTone('upgrade',.25); updateUI(); toggleBizTab('my');
 }
 function buyStripClub() {
-    if (player.reputation < 40) return showNotification("Հեղինակություն պետք է լինի գոնե 40", false);
-    if (player.businesses.length>=player.bizSlots) return showNotification("Սլոտները լիքն են", false);
+    if (player.reputation < 40) return showNotification(t('notif.rep_40'), false);
+    if (player.businesses.length>=player.bizSlots) return showNotification(t('notif.slots_full'), false);
     let name = document.getElementById('stripBizName').value.trim();
-    if (!name) return showNotification("Գրեք կլուբի անուն", false);
-    if (player.money<200000) return showNotification("$200,000 չկա", false);
+    if (!name) return showNotification(t('notif.enter_name'), false);
+    if (player.money<200000) return showNotification(t('notif.no_200k'), false);
     player.money-=200000; player.businesses.push({id:Date.now(),type:'strip',name,level:1});
     document.getElementById('stripBizName').value=''; showNotification(`💜 ${name} հիմնվեց`, true); playTone('upgrade',.25); updateUI(); toggleBizTab('my');
 }
@@ -3569,7 +3569,7 @@ function renderMyBusinesses() {
 function upgradeBiz(i, cost) {
     let b=player.businesses[i]; 
     if(b.level>=15)return; 
-    if(player.money<cost) return showNotification("Գումար չկա",false); 
+    if(player.money<cost) return showNotification(t('notif.no_money'),false); 
     player.money-=cost; 
     b.level++; 
     showNotification(`⬆ Lv.${b.level}`,true); 
@@ -3591,8 +3591,8 @@ function sellBusiness(i, sp) {
 // ==========================================
 function launderMoney() {
     let amt = parseInt(document.getElementById('launderAmt').value);
-    if (isNaN(amt)||amt<=0) return showNotification("Մուտք. գ. սխ.", false);
-    if ((player.dirtyMoney||0) < amt) return showNotification("Կեղտ փող չի հերիքում", false);
+    if (isNaN(amt)||amt<=0) return showNotification(t('notif.wrong_amount'), false);
+    if ((player.dirtyMoney||0) < amt) return showNotification(t('notif.no_dirty'), false);
     let clean = Math.floor(amt * 0.70);
     player.dirtyMoney -= amt;
     player.money += clean;
@@ -3605,7 +3605,7 @@ function launderMoney() {
 }
 function launderAll() {
     let amt = player.dirtyMoney||0;
-    if (amt<=0) return showNotification("Կեղտ փող չկա", false);
+    if (amt<=0) return showNotification(t('notif.no_dirty'), false);
     let clean = Math.floor(amt * 0.70);
     player.dirtyMoney = 0;
     player.money += clean;
@@ -3666,12 +3666,12 @@ function renderFamilies() {
 
 function createMyFamily() {
     let name = (document.getElementById('familyNameInput')||{}).value;
-    if (!name || !name.trim()) return showNotification("Գրեք ընտ. անուն", false);
+    if (!name || !name.trim()) return showNotification(t('notif.enter_family_name'), false);
     name = name.trim();
     const canCreate = player.rank === 'Մաֆիոզ' || player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
-    if (!canCreate) return showNotification("Կոչումը բավ. չէ (Կ. Մաֆիոզ)", false);
-    if (player.money < 250000) return showNotification("$250,000 չկա", false);
-    if (mafiaFamilies.find(f=>f.name.toLowerCase()===name.toLowerCase())) return showNotification("Այդ անունն արդ. կա", false);
+    if (!canCreate) return showNotification(t('notif.rank_req_mafioso'), false);
+    if (player.money < 250000) return showNotification(t('notif.no_250k'), false);
+    if (mafiaFamilies.find(f=>f.name.toLowerCase()===name.toLowerCase())) return showNotification(t('notif.family_name_taken'), false);
     player.money -= 250000;
     player.family = new PlayerFamily({ name, members: 5, power: 15 });
     showNotification(`🏰 ${name} ընտ. հիմնվեց!`, true);
@@ -3682,19 +3682,19 @@ function createMyFamily() {
 }
 function upgradeFamilyPower() {
     if (!player.family) return;
-    if (player.money < 50000) return showNotification("$50,000 չկա", false);
+    if (player.money < 50000) return showNotification(t('notif.no_50k'), false);
     player.money -= 50000;
     player.family.power += 10;
-    showNotification(`💪 Ուժ +10 → ${player.family.power}`, true);
+    showNotification(t('notif.family_pow') + ` +10 → ${player.family.power}`, true);
     playTone('upgrade', .2);
     updateUI(); renderFamilies();
 }
 function recruitFamilyMember() {
     if (!player.family) return;
-    if (player.money < 10000) return showNotification("$10,000 չկա", false);
+    if (player.money < 10000) return showNotification(t('notif.no_10k'), false);
     player.money -= 10000;
     player.family.members += 1;
-    showNotification(`👤 Անդամ +1 → ${player.family.members}`, true);
+    showNotification(`👤 ${t('notif.family_mem')} → ${player.family.members}`, true);
     playTone('coin', .2);
     updateUI(); renderFamilies();
 }
@@ -3849,7 +3849,7 @@ function renderInventory() {
 function buyWeapon(id) {
     if (!player.inventory) player.inventory = { ownedWeaponIds:[], equippedWeaponId:null, ownedArmorIds:[], equippedArmorId:null };
     const w = weaponsData.find(x=>x.id===id); if (!w) return;
-    if (player.inventory.ownedWeaponIds.includes(id)) return showNotification("Արդ. ունես", false);
+    if (player.inventory.ownedWeaponIds.includes(id)) return showNotification(t('notif.already_have'), false);
     if (!playerHasRank(w.reqRank)) return showNotification(`Կոչ. ${w.reqRank} անհ.`, false);
     if (player.money < w.price) return showNotification(`$${w.price.toLocaleString()} չկա`, false);
     player.money -= w.price;
@@ -3862,7 +3862,7 @@ function buyWeapon(id) {
 function buyArmor(id) {
     if (!player.inventory) player.inventory = { ownedWeaponIds:[], equippedWeaponId:null, ownedArmorIds:[], equippedArmorId:null };
     const a = armorData.find(x=>x.id===id); if (!a) return;
-    if (player.inventory.ownedArmorIds.includes(id)) return showNotification("Արդ. ունես", false);
+    if (player.inventory.ownedArmorIds.includes(id)) return showNotification(t('notif.already_have'), false);
     if (!playerHasRank(a.reqRank)) return showNotification(`Կոչ. ${a.reqRank} անհ.`, false);
     if (player.money < a.price) return showNotification(`$${a.price.toLocaleString()} չկա`, false);
     player.money -= a.price;
@@ -3922,10 +3922,10 @@ function toggleCasinoTab(tab) {
 function gamble(chosen) {
     if (isSpinning||player.inPrison) return;
     let amt = parseInt(document.getElementById('betAmt').value);
-    if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification("Սխ. Գ.", false);
+    if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification(t('notif.wrong_amount'), false);
     // Max bet cap to limit easy winnings
     const MAX_BET = 5000;
-    if (amt > MAX_BET) return showNotification(`Մաքս. խաղադրույք $${MAX_BET.toLocaleString()}`, false);
+    if (amt > MAX_BET) return showNotification(`${t('notif.max_bet')} $${MAX_BET.toLocaleString()}`, false);
     player.money -= amt; updateUI(); isSpinning=true;
     document.getElementById('btn-red').disabled=true;
     document.getElementById('btn-black').disabled=true;
@@ -3972,10 +3972,10 @@ function gamble(chosen) {
 const slotSymbols=['🍒','🍋','🔔','💎','7️⃣']; let isSlotSpinning=false;
 function spinSlots() {
     let donExp = ranks.find(r=>r.name==='Մաֆիոզ').exp; // Իջեցված է Մաֆիոզի մակարդակ
-    if (player.exp<donExp) return showNotification("Միայն 'Մաֆիոզ' և բարձր", false);
+    if (player.exp<donExp) return showNotification(t('notif.only_mafioso'), false);
     if (isSlotSpinning||player.inPrison) return;
     let amt=parseInt(document.getElementById('slotBetAmt').value);
-    if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification("Սխ. Գ.", false);
+    if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification(t('notif.wrong_amount'), false);
     player.money-=amt; updateUI(); isSlotSpinning=true;
     document.getElementById('btn-spin-slot').disabled=true;
     document.getElementById('slot-result').innerHTML='';
@@ -3996,7 +3996,7 @@ function checkSlotWin(res, bet) {
     if (r1===r2&&r2===r3) { if(r1==='7️⃣')w=bet*15; else if(r1==='💎')w=bet*8; else if(r1==='🔔')w=bet*4; else w=bet*2; }
     else if (r1===r2||r2===r3||r1===r3) w=Math.floor(bet*1.2);
     if (w>0) { player.money+=w; player.stats.earnings+=w-bet; showNotification(`🎰 +$${w}`, true); playTone('success',.4); spawnFloatMoney(w,true); document.getElementById('slot-result').innerHTML=`<span style="color:var(--ok)">+$${w}!</span>`; }
-    else { showNotification("Ափսոս", false); playTone('fail',.3); document.getElementById('slot-result').innerHTML=`<span style="color:var(--accent)">Ափսոս, կրկնեք</span>`; }
+    else { showNotification(t('notif.casino_sorry'), false); playTone('fail',.3); document.getElementById('slot-result').innerHTML=`<span style="color:var(--accent)">Ափսոս, կրկնեք</span>`; }
     updateUI();
 }
 
@@ -4032,11 +4032,11 @@ function drawChart() {
 }
 function tradeCrypto(action) {
     let amt=parseFloat(document.getElementById('crypto-trade-amt').value);
-    if (isNaN(amt)||!isFinite(amt)||amt<=0) return showNotification("Սխալ քանակ", false);
+    if (isNaN(amt)||!isFinite(amt)||amt<=0) return showNotification(t('notif.bad_amount'), false);
     let price=cryptoPrices[activeCryptoId], cost=amt*price;
     if (action==='buy'&&player.money>=cost) { player.money-=cost; player.cryptoBalances[activeCryptoId]+=amt; showNotification(`🪙 +${amt} ${activeCryptoId}`, true); playTone('coin',.2); }
     else if (action==='sell'&&player.cryptoBalances[activeCryptoId]>=amt) { player.cryptoBalances[activeCryptoId]-=amt; player.money+=cost; player.stats.earnings+=cost; showNotification(`💰 +$${cost.toFixed(2)}`, true); spawnFloatMoney(Math.floor(cost), true); playTone('coin',.2); }
-    else showNotification("Անբավարար միջոցներ", false);
+    else showNotification(t('notif.insufficient'), false);
     document.getElementById('crypto-trade-amt').value=''; updateUI();
 }
 
@@ -4088,9 +4088,9 @@ function buyEstate(id) {
     let i=estateMarketData.findIndex(e=>e.id===id); if(i===-1)return;
     let x=estateMarketData[i];
     if(player.money>=x.price){player.money-=x.price;player.realEstate.push(new RealEstate({...x,isRented:false}));estateMarketData.splice(i,1);showNotification(`🏠 ${x.title}`,true);spawnFloatMoney(x.price,false);playTone('upgrade',.25);closeEstateModal();updateUI();renderEstate();}
-    else showNotification("Գումարը չի հերիքում",false);
+    else showNotification(t('notif.no_money'),false);
 }
-function toggleRent(i){player.realEstate[i].isRented=!player.realEstate[i].isRented;showNotification(player.realEstate[i].isRented?"Վարձով տրվեց":"Հանվեց",true);playTone('coin',.1);renderEstate();}
+function toggleRent(i){player.realEstate[i].isRented=!player.realEstate[i].isRented;showNotification(player.realEstate[i].isRented?t('notif.rented'):t('notif.unrented'),true);playTone('coin',.1);renderEstate();}
 function sellEstate(i){let p=Math.floor(player.realEstate[i].price*.8);player.money+=p;player.stats.earnings+=p;spawnFloatMoney(p,true);player.realEstate.splice(i,1);showNotification(`Վաճառվեց $${p.toLocaleString()}`,true);playTone('coin',.2);updateUI();renderEstate();}
 
 // ==========================================
@@ -4098,8 +4098,8 @@ function sellEstate(i){let p=Math.floor(player.realEstate[i].price*.8);player.mo
 // ==========================================
 
 function healPlayer(amount, cost) {
-    if (player.money < cost) return showNotification("Ոչ բավարար գումար", false);
-    if (player.hp >= player.maxHp) return showNotification("Դուք արդեն լրիվ առողջ եք", false);
+    if (player.money < cost) return showNotification(t('notif.no_money'), false);
+    if (player.hp >= player.maxHp) return showNotification(t('notif.already_full_hp'), false);
     player.money -= cost;
     player.hp = Math.min(player.maxHp, player.hp + amount);
     showNotification(`🏥 Բուժվեցիք +${amount} HP`, true);
@@ -4108,20 +4108,20 @@ function healPlayer(amount, cost) {
 }
 
 function trainSkill(type) {
-    if (player.money < 500) return showNotification("Ոչ բավարար գումար", false);
+    if (player.money < 500) return showNotification(t('notif.no_money'), false);
     player.money -= 500;
-    if (type === 'hp') { player.maxHp += 5; showNotification("🏋️ Max HP +5", true); }
-    else if (type === 'energy') { player.maxEnergy += 5; showNotification("🧠 Max Energy +5", true); }
+    if (type === 'hp') { player.maxHp += 5; showNotification(t('notif.train_hp'), true); }
+    else if (type === 'energy') { player.maxEnergy += 5; showNotification(t('notif.train_en'), true); }
     playTone('upgrade', .2);
     updateUI();
 }
 
 function donateReputation() {
-    if (player.money < 2000) return showNotification("Ոչ բավարար գումար ($2000)", false);
-    if (player.reputation >= 100) return showNotification("Համբավը արդեն մաքսիմալ է", false);
+    if (player.money < 2000) return showNotification(t('notif.no_money5'), false);
+    if (player.reputation >= 100) return showNotification(t('notif.rep_max'), false);
     player.money -= 2000;
     player.reputation = Math.min(100, player.reputation + 5);
-    showNotification("🤝 Վճարվեց։ Համբավ +5", true);
+    showNotification(t('notif.rep_paid'), true);
     playTone('coin', .2);
     updateUI();
 }
@@ -4132,12 +4132,12 @@ function stashAction(type) {
     if (isNaN(amt) || amt <= 0) return;
 
     if (type === 'in') {
-        if (player.money < amt) return showNotification("Անբավարար գումար", false);
+        if (player.money < amt) return showNotification(t('notif.no_money'), false);
         player.money -= amt;
         player.stash += amt;
         showNotification(`📦 Պահվեց $${amt.toLocaleString()}`, true);
     } else {
-        if (player.stash < amt) return showNotification("Պահեստում այդքան չկա", false);
+        if (player.stash < amt) return showNotification(t('notif.stash_no'), false);
         player.stash -= amt;
         player.money += amt;
         showNotification(`📦 Վերցվեց $${amt.toLocaleString()}`, true);
@@ -4153,7 +4153,7 @@ function generateQuests() {
         { id: 2, desc: '🚗 Գողացիր 1 մեքենա', target: 1, current: 0, reward: 600 },
         { id: 3, desc: '💰 Վաստակիր $1500 պասիվ եկամուտ', target: 1500, current: 0, reward: 250 }
     ];
-    showNotification("Խնդիրները թարմացվեցին", true);
+    showNotification(t('notif.quests_refresh'), true);
     renderQuests();
 }
 
@@ -4240,7 +4240,7 @@ function triggerRandomEvent() {
         { msg: '👮 Ոստիկանական ռեյդ շրջանում։', effect: () => { 
             if(player.money >= 500) {
                 player.money -= 500;
-                showNotification('👮 Կաշառեցիք ոստիկանին -$500', false);
+                showNotification(t('notif.arrested2'), false);
             } else {
                 goToPrison(60);
             }
@@ -4352,7 +4352,7 @@ async function _syncCloudSave(manual = false) {
             player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...res.playerData });
             cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
             if (currentUser) player.name = currentUser.name;
-            if (manual) showNotification('☁️ Cloud save բеռнвец', true);
+            if (manual) showNotification(t('notif.cloud_loaded'), true);
             updateUI(); renderGarage(); renderMyBusinesses();
 
             if (res.pendingTransfers && res.pendingTransfers.length > 0) {
@@ -4449,7 +4449,7 @@ setInterval(() => {
         let s=(player.prisonTime%60).toString().padStart(2,'0');
         const tEl = _dom['p-timer'] || (_dom['p-timer'] = document.getElementById('p-timer'));
         if (tEl) tEl.innerText=`${m}:${s}`;
-        if (player.prisonTime<=0) { player.inPrison=false; showNotification("🕊 Ազատ եք!", true); updateUI(); }
+        if (player.prisonTime<=0) { player.inPrison=false; showNotification(t('notif.freed'), true); updateUI(); }
     } else if (!player.inPrison && player.energy < player.maxEnergy) {
         player.energy += 0.5;
         // Only update energy display + bar — NOT full updateUI (much faster)
@@ -4694,7 +4694,7 @@ async function sendFriendRequest(toUserId, btn) {
         await apiCall('/game/friend-request', 'POST', { toUserId });
         btn.innerHTML = '<i class="material-icons" style="font-size:16px;vertical-align:middle;">check</i>';
         btn.style.background = 'var(--ok)';
-        showNotification('✅ Ընkertyan haytn ugharkvec', true);
+        showNotification(t('notif.friend_req_ok'), true);
     } catch (err) {
         btn.disabled = false;
         btn.innerHTML = '<i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i>';
@@ -4717,10 +4717,10 @@ async function respondFriendRequest(fromUserId, action, btn) {
         await apiCall('/game/friend-request/respond', 'POST', { fromUserId, action });
         if (card) card.remove();
         if (action === 'accept') {
-            showNotification('✅ Ընկեր ավելացվեց!', true);
+            showNotification(t('notif.friend_added'), true);
             renderFriendsPage();
         } else {
-            showNotification('Հայտը մերժվեց', true);
+            showNotification(t('notif.friend_declined'), false);
         }
         const listEl = document.getElementById('friends-requests-list');
         if (listEl) {
@@ -4870,7 +4870,7 @@ function openChatWithFriend(userId, friendName) {
 window._friendSocketInit = function() {
     if (!_socket) return;
     _socket.on('friendRequest', (data) => {
-        showNotification('👥 Ynkertyan hayт: ' + (data.fromName || '?'), true);
+        showNotification('👥 ' + (data.fromName || '?') + ` (${t('notif.friend_req_ok')})`, true);
         updateFriendBadge(parseInt(document.getElementById('friend-req-badge').textContent || '0') + 1);
         document.getElementById('friend-req-badge').style.display = '';
         // If on friends page, refresh
