@@ -185,5 +185,18 @@ router.patch('/profile', protect, async (req, res) => {
   }
 });
 
+// ── DELETE /api/auth/account ──────────────────────────────────────
+router.delete('/account', protect, async (req, res) => {
+  try {
+    const GameSave = require('./GameSave');
+    await GameSave.findOneAndDelete({ user: req.user._id });
+    await User.findByIdAndDelete(req.user._id);
+    res.json({ success: true, message: 'Հաշիվը հաջողությամբ ջնջվեց' });
+  } catch (err) {
+    console.error('Delete account error:', err);
+    res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
+  }
+});
+
 module.exports = router;
 module.exports.protect = protect;

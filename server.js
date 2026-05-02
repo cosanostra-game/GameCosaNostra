@@ -30,12 +30,20 @@ if (process.env.GITHUB_PAGES_URL) {
   allowedOrigins.push(process.env.GITHUB_PAGES_URL.replace(/\/$/, ''));
 }
 
+// Allow all github.io and githubusercontent.com domains automatically
+function isOriginAllowed(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.endsWith('.github.io')) return true;
+  if (origin.endsWith('.githubusercontent.com')) return true;
+  if (process.env.NODE_ENV !== 'production') return true;
+  return false;
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      if (process.env.NODE_ENV === 'development') return callback(null, true);
+      if (isOriginAllowed(origin)) return callback(null, true);
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
@@ -96,8 +104,7 @@ const userSockets = new Map();
 const io = new Server(httpServer, {
   cors: {
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-      if (process.env.NODE_ENV === 'development') return callback(null, true);
+      if (isOriginAllowed(origin)) return callback(null, true);
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
