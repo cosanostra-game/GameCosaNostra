@@ -2,13 +2,14 @@
 // Ogtagorcum: <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 //             <script src="api.js"></script>
 
-const API_BASE  = 'https://cosa-nostra.onrender.com'; // ← dzher URL
+const API_BASE  = 'https://cosa-nostra.onrender.com';
 const TOKEN_KEY = 'cosaNostra_JWT';
 
 const getToken   = ()  => localStorage.getItem(TOKEN_KEY);
 const saveToken  = (t) => localStorage.setItem(TOKEN_KEY, t);
 const clearToken = ()  => localStorage.removeItem(TOKEN_KEY);
 
+// ── FIX: Error-ին status կոդ կցել, որ catch-ում ճիշտ detect անենք ──
 async function apiRequest(endpoint, method = 'GET', body = null) {
   const headers = { 'Content-Type': 'application/json' };
   const token = getToken();
@@ -19,7 +20,12 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
 
   const res  = await fetch(`${API_BASE}/api${endpoint}`, config);
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Servreri skhal');
+  if (!res.ok) {
+    // FIX: status-ն error object-ին կցում ենք, ոչ թե string-ի մեջ թաղում
+    const err = new Error(data.message || 'Սerverի sxal');
+    err.status = res.status;
+    throw err;
+  }
   return data;
 }
 
@@ -59,7 +65,10 @@ async function apiLoadGame() {
 
     return data.playerData;
   } catch (err) {
-    if (err.message.includes('404') || err.message.toLowerCase().includes('save')) return null;
+    // FIX: err.status === 404 — ճիշտ check HTTP կոդի վրա, ոչ թե string-ի
+    // Հին կոդը `err.message.includes('404')` — երբeq true չէր դaронум,
+    // քանի որ message-ն server-ի text-ն է ('Save գtнvac che'), ոչ թե '404':
+    if (err.status === 404) return null;
     throw err;
   }
 }
@@ -78,15 +87,10 @@ async function apiTransferMoney(toAccount, amount) {
 // ── Socket.IO — Real-time ─────────────────────────────────────────
 let _socket = null;
 
-/**
- * initSocket(userId) — Login-ից հետո կանչել։
- * Socket-ը JWT-ով authenticate է լինում, հետո real-time transfer event-եր ստանում։
- */
 function initSocket() {
   const token = getToken();
   if (!token) return;
 
-  // Արդեն կապված է — չկրկնել
   if (_socket && _socket.connected) return;
 
   _socket = io(API_BASE, {
@@ -102,11 +106,7 @@ function initSocket() {
     console.warn('Socket connect error:', err.message);
   });
 
-  // ── Real-time bancayin mutoq ──────────────────────────────────
   _socket.on('bankTransfer', (data) => {
-    // data = { fromName, fromAccount, amount, newBalance }
-
-    // 1. Ծանուցում ցույց տալ
     const msg = `🏦 Բankayin mutoq  +$${Number(data.amount).toLocaleString()}  ←  ${data.fromName} (${data.fromAccount})`;
     if (typeof showNotification === 'function') {
       showNotification(msg, true);
@@ -114,23 +114,17 @@ function initSocket() {
       alert(msg);
     }
 
-    // 2. Խաղի player.bank-ը թարմացնել (landing.html-ի global player object)
-    //    + UI-ն թարմացնել
     if (typeof window !== 'undefined' && typeof player !== 'undefined') {
       player.bank = data.newBalance;
       if (typeof updateUI === 'function') updateUI();
     }
 
-    // 3. Հատուկ callback — եթե game-ը ավելի ճկուն handling ուզի
     if (typeof window.onBankTransferReceived === 'function') {
       window.onBankTransferReceived(data);
     }
   });
 }
 
-/**
- * disconnectSocket() — Logout-ի ժամանակ կանչել։
- */
 function disconnectSocket() {
   if (_socket) {
     _socket.disconnect();
