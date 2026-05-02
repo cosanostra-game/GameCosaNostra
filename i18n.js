@@ -550,6 +550,8 @@ Object.assign(RU, {
   'loading':          'Загрузка...',
 });
 
+// ── HY dict additions for new keys ───────────────────────────────
+Object.assign(HY, {
   'pre.loading':   'Բեռնում...',
   'btn.commit':    'Կատարել',
   'btn.extort':    'Շորթել',
