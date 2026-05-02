@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Cosa Nostra</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌹</text></svg>">
+    <!-- Fonts: non-blocking -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </noscript>
     <style>
-        
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+        /* Fallback until Montserrat loads */
 
 /* ===== CSS VARIABLES (iOS Style) ===== */
 :root {
@@ -412,23 +421,46 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 /* ===== MOBILE ===== */
 @media (max-width: 800px) {
     body { flex-direction: column; }
-    .sidebar { width: 100% !important; height: auto; position: fixed; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid var(--border); padding: 10px 5px 24px; background: var(--panel); z-index: 1000; border-radius: 24px 24px 0 0; }
+    .sidebar { width: 100% !important; height: auto; position: fixed; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid var(--border); padding: 8px 5px env(safe-area-inset-bottom, 16px); background: var(--panel); z-index: 1000; border-radius: 20px 20px 0 0; }
     .logo, .sidebar-player, .daily-bonus-btn, .sidebar-toggle, .menu-section-title { display: none; }
-    .menu { display: flex; flex-direction: row; padding: 0; gap: 8px; justify-content: flex-start; overflow-x: auto; overflow-y: hidden; white-space: nowrap; -webkit-overflow-scrolling: touch; flex: 1; }
+    .menu { display: flex; flex-direction: row; padding: 0; gap: 4px; justify-content: flex-start; overflow-x: auto; overflow-y: hidden; white-space: nowrap; -webkit-overflow-scrolling: touch; flex: 1; scroll-snap-type: x mandatory; }
     .menu::-webkit-scrollbar { display: none; }
-    .menu li { flex: 0 0 auto; margin: 0; }
-    .menu li a { flex-direction: column; padding: 10px 16px; font-size: 11px; border-radius: 16px; background: transparent; gap: 6px; }
-    .menu-label { font-size: 11px; }
-    .menu li a i { font-size: 1.4rem; width: auto; }
+    .menu li { flex: 0 0 auto; margin: 0; scroll-snap-align: start; }
+    .menu li a { flex-direction: column; padding: 8px 14px; font-size: 10px; border-radius: 14px; background: transparent; gap: 4px; min-height: 54px; min-width: 54px; justify-content: center; -webkit-tap-highlight-color: transparent; }
+    .menu-label { font-size: 10px; line-height: 1; }
+    .menu li a i { font-size: 1.3rem; width: auto; }
     .menu li a.active { background: var(--accent); color: #fff; }
     .new-badge { display: none; }
-    .main-content { padding-bottom: 100px; }
-    .topbar { flex-direction: column; align-items: stretch; padding: 16px; border-radius: 0 0 20px 20px; }
-    .stat-box { justify-content: space-between; gap: 10px; }
-    .page { padding: 24px 16px; }
-    .page h1 { font-size: 24px; }
-    #activity-log { right: 10px; width: calc(100vw - 20px); bottom: 110px; }
-    #notification { right: 10px; bottom: 110px; max-width: calc(100vw - 20px); }
+    .main-content { padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px)); overflow-x: hidden; }
+    .topbar { flex-direction: column; align-items: stretch; padding: 12px 16px; border-radius: 0 0 20px 20px; gap: 10px; }
+    .stat-box { justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .stat { min-width: 0; flex: 1 1 45%; }
+    .page { padding: 16px 12px; }
+    .page h1 { font-size: 22px; }
+    #activity-log { right: 8px; width: calc(100vw - 16px); bottom: calc(90px + env(safe-area-inset-bottom, 16px)); }
+    #notification { right: 8px; bottom: calc(90px + env(safe-area-inset-bottom, 16px)); max-width: calc(100vw - 16px); }
+    /* Cards: full-width on mobile */
+    .cards-grid, .feature-grid { grid-template-columns: 1fr !important; }
+    /* Modals: full-screen on mobile */
+    .modal-box { border-radius: 20px 20px 0 0 !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; top: auto !important; transform: none !important; max-width: 100% !important; max-height: 85vh; overflow-y: auto; }
+    /* Table overflow fix */
+    table { font-size: 12px; }
+    /* Crypto chart */
+    .chart-box { min-height: 180px; }
+    /* Disable heavy blur on mobile for performance */
+    .card, .stat, .form-box, .log-item, .crypto-pill, .stat-bar-wrap { backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; }
+    .sidebar { backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; }
+    /* Input tap fix */
+    input, select, button { -webkit-tap-highlight-color: transparent; }
+    /* Topbar stat values: prevent overflow */
+    .money-val, .bank-val { font-size: 16px !important; }
+}
+
+@media (max-width: 420px) {
+    .menu li a { padding: 7px 10px; font-size: 9px; }
+    .menu li a i { font-size: 1.2rem; }
+    .page h1 { font-size: 19px; }
+    .topbar { padding: 10px 12px; }
 }
 
 /* ══════════════════════════════════════════════
@@ -689,8 +721,14 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     padding:2px 8px; border-radius:20px; margin-left:6px;
 }
 
+
+        /* ── Language selector ── */
+        .cn-lang-btn { transition: all .2s; }
+        .cn-lang-btn:hover { border-color: var(--accent) !important; transform: translateY(-1px); }
+        .cn-lang-btn.cn-lang-active { border-color: var(--accent) !important; background: rgba(255,59,48,0.15) !important; box-shadow: 0 0 0 3px rgba(255,59,48,.18); }
+        #lang-toggle-btn { font-size:13px; letter-spacing:.5px; }
+
 </style>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body data-theme="dark">
 
@@ -792,7 +830,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </div>
 
     <div class="sidebar-player" style="display:none;">
-        <div class="sidebar-rank">Կոչում</div>
+        <div class="sidebar-rank" data-i18n="sidebar.rank">Կոչում</div>
         <div class="sidebar-rank-val" id="sidebar-rank-val">Դատարկապորտ</div>
         <div class="xp-bar-wrap">
             <div class="xp-bar-label"><span>XP</span><span id="sidebar-xp-text">0 / 300</span></div>
@@ -801,45 +839,45 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </div>
 
     <ul class="menu">
-        <div class="menu-section-title" data-i18n="nav.section.main">Հիմնական</div>
-        <li><a onclick="switchTab('main',this)" class="active"><i class="material-icons">home</i><span class="menu-label" data-i18n="nav.main">Գլխավոր</span></a></li>
-        <li><a onclick="switchTab('crimes',this)"><i class="material-icons">my_location</i><span class="menu-label" data-i18n="nav.crimes">Հանցագործություններ</span></a></li>
-        <li><a onclick="switchTab('cars',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="nav.cars">Ավտոառևանգում</span></a></li>
-        <li><a onclick="switchTab('garage',this)"><i class="material-icons">warehouse</i><span class="menu-label" data-i18n="nav.garage">Ավտոտնակ</span></a></li>
-        <li><a onclick="switchTab('inventory',this)"><i class="material-icons">security</i><span class="menu-label" data-i18n="nav.inventory">Զինանոց</span></a></li>
-        <li><a onclick="switchTab('dealership',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="nav.dealership">Ավտոսալոն</span></a></li>
+        <div class="menu-section-title" data-i18n="section.main">Հիմնական</div>
+        <li><a onclick="switchTab('main',this)" class="active"><i class="material-icons">home</i><span class="menu-label" data-i18n="menu.main">Գլխավոր</span></a></li>
+        <li><a onclick="switchTab('crimes',this)"><i class="material-icons">my_location</i><span class="menu-label" data-i18n="menu.crimes">Հանցագործություններ</span></a></li>
+        <li><a onclick="switchTab('cars',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="menu.cars">Ավտոառևանգում</span></a></li>
+        <li><a onclick="switchTab('garage',this)"><i class="material-icons">warehouse</i><span class="menu-label" data-i18n="menu.garage">Ավտոտնակ</span></a></li>
+        <li><a onclick="switchTab('inventory',this)"><i class="material-icons">security</i><span class="menu-label" data-i18n="menu.inventory">Զինանոց</span></a></li>
+        <li><a onclick="switchTab('dealership',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="menu.dealership">Ավտոսալոն</span></a></li>
         
-        <div class="menu-section-title" data-i18n="nav.section.finance">Ֆինանսներ և Գույք</div>
-        <li><a onclick="switchTab('bank',this)"><i class="material-icons">account_balance</i><span class="menu-label" data-i18n="nav.bank">Բանկ</span></a></li>
-        <li><a onclick="switchTab('business',this)"><i class="material-icons">work</i><span class="menu-label" data-i18n="nav.business">Բիզնես</span></a></li>
-        <li><a onclick="switchTab('casino',this)"><i class="material-icons">casino</i><span class="menu-label" data-i18n="nav.casino">Կազինո</span></a></li>
-        <li><a onclick="switchTab('crypto',this)"><i class="material-icons">currency_bitcoin</i><span class="menu-label" data-i18n="nav.crypto">Կրիպտո</span></a></li>
-        <li><a onclick="switchTab('estate',this)"><i class="material-icons">business</i><span class="menu-label" data-i18n="nav.estate">Անշ. Գույք</span></a></li>
-        <li><a onclick="switchTab('stash',this)"><i class="material-icons">inventory_2</i><span class="menu-label" data-i18n="nav.stash">Գաղտնի Պահեստ</span></a></li>
+        <div class="menu-section-title" data-i18n="section.finance">Ֆինանսներ և Գույք</div>
+        <li><a onclick="switchTab('bank',this)"><i class="material-icons">account_balance</i><span class="menu-label" data-i18n="menu.bank">Բանկ</span></a></li>
+        <li><a onclick="switchTab('business',this)"><i class="material-icons">work</i><span class="menu-label" data-i18n="menu.business">Բիզնես</span></a></li>
+        <li><a onclick="switchTab('casino',this)"><i class="material-icons">casino</i><span class="menu-label" data-i18n="menu.casino">Կազինո</span></a></li>
+        <li><a onclick="switchTab('crypto',this)"><i class="material-icons">currency_bitcoin</i><span class="menu-label" data-i18n="menu.crypto">Կրիպտո</span></a></li>
+        <li><a onclick="switchTab('estate',this)"><i class="material-icons">business</i><span class="menu-label" data-i18n="menu.estate">Անշ. Գույք</span></a></li>
+        <li><a onclick="switchTab('stash',this)"><i class="material-icons">inventory_2</i><span class="menu-label" data-i18n="menu.stash">Գաղտնի Պահեստ</span></a></li>
 
-        <div class="menu-section-title" data-i18n="nav.section.underground">Ընդհատակ</div>
-        <li><a onclick="switchTab('prison',this)" id="prison-link"><i class="material-icons">lock</i><span class="menu-label" data-i18n="nav.prison">Բանտ</span></a></li>
-        <li><a onclick="switchTab('hospital',this)"><i class="material-icons">local_hospital</i><span class="menu-label" data-i18n="nav.hospital">Հիվանդանոց</span></a></li>
-        <li><a onclick="switchTab('training',this)"><i class="material-icons">fitness_center</i><span class="menu-label" data-i18n="nav.training">Վարժեցում</span></a></li>
-        <li><a onclick="switchTab('reputation',this)"><i class="material-icons">handshake</i><span class="menu-label" data-i18n="nav.reputation">Համբավ</span></a></li>
-        <li><a onclick="switchTab('families',this)"><i class="material-icons">groups</i><span class="menu-label" data-i18n="nav.families">Ընտանիքներ</span></a></li>
-        <li><a onclick="switchTab('friends',this)" id="friends-menu-link"><i class="material-icons">people</i><span class="menu-label" data-i18n="nav.friends">Ընկերներ</span><span class="new-badge" id="friend-req-badge" style="display:none;">0</span></a></li>
-        <li><a onclick="switchTab('messages',this)" id="messages-menu-link"><i class="material-icons">chat</i><span class="menu-label" data-i18n="nav.messages">Հաղորդագրություններ</span><span class="new-badge" id="msg-unread-badge" style="display:none;">0</span></a></li>
+        <div class="menu-section-title" data-i18n="section.underground">Ընդհատակ</div>
+        <li><a onclick="switchTab('prison',this)" id="prison-link"><i class="material-icons">lock</i><span class="menu-label" data-i18n="menu.prison">Բանտ</span></a></li>
+        <li><a onclick="switchTab('hospital',this)"><i class="material-icons">local_hospital</i><span class="menu-label" data-i18n="menu.hospital">Հիվանդանոց</span></a></li>
+        <li><a onclick="switchTab('training',this)"><i class="material-icons">fitness_center</i><span class="menu-label" data-i18n="menu.training">Վարժեցում</span></a></li>
+        <li><a onclick="switchTab('reputation',this)"><i class="material-icons">handshake</i><span class="menu-label" data-i18n="menu.reputation">Համբավ</span></a></li>
+        <li><a onclick="switchTab('families',this)"><i class="material-icons">groups</i><span class="menu-label" data-i18n="menu.families">Ընտանիքներ</span></a></li>
+        <li><a onclick="switchTab('friends',this)" id="friends-menu-link"><i class="material-icons">people</i><span class="menu-label" data-i18n="menu.friends">Ընկերներ</span><span class="new-badge" id="friend-req-badge" style="display:none;">0</span></a></li>
+        <li><a onclick="switchTab('messages',this)" id="messages-menu-link"><i class="material-icons">chat</i><span class="menu-label" data-i18n="menu.messages">Հաղորդագրություններ</span><span class="new-badge" id="msg-unread-badge" style="display:none;">0</span></a></li>
 
-        <div class="menu-section-title" data-i18n="nav.section.extra">Հավելյալ</div>
-        <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label" data-i18n="nav.quests">Օրվա Խնդիրներ</span></a></li>
-        <li><a onclick="switchTab('daynight',this)"><i class="material-icons">dark_mode</i><span class="menu-label" data-i18n="nav.daynight">Գիշեր/Ցերեկ</span></a></li>
-        <li><a onclick="switchTab('events',this)"><i class="material-icons">bolt</i><span class="menu-label" data-i18n="nav.events">Իրադարձություններ</span></a></li>
-        <li><a onclick="switchTab('stats',this)"><i class="material-icons">pie_chart</i><span class="menu-label" data-i18n="nav.stats">Վիճակագրություն</span></a></li>
-        <li><a onclick="switchTab('leaderboard',this)"><i class="material-icons">emoji_events</i><span class="menu-label" data-i18n="nav.leaderboard">Լիդերբորդ</span></a></li>
-        <li><a onclick="switchTab('settings',this)"><i class="material-icons">settings</i><span class="menu-label" data-i18n="nav.settings">Կարգավորումներ</span></a></li>
-        <li><a onclick="switchTab('profile',this)"><i class="material-icons">account_circle</i><span class="menu-label" data-i18n="nav.profile">Իմ Պրոֆիլը</span></a></li>
+        <div class="menu-section-title" data-i18n="section.extra">Հավելյալ</div>
+        <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label" data-i18n="menu.quests">Օրվա Խնդիրներ</span></a></li>
+        <li><a onclick="switchTab('daynight',this)"><i class="material-icons">dark_mode</i><span class="menu-label" data-i18n="menu.daynight">Գիշեր/Ցերեկ</span></a></li>
+        <li><a onclick="switchTab('events',this)"><i class="material-icons">bolt</i><span class="menu-label" data-i18n="menu.events">Իրադարձություններ</span></a></li>
+        <li><a onclick="switchTab('stats',this)"><i class="material-icons">pie_chart</i><span class="menu-label" data-i18n="menu.stats">Վիճակագրություն</span></a></li>
+        <li><a onclick="switchTab('leaderboard',this)"><i class="material-icons">emoji_events</i><span class="menu-label" data-i18n="menu.leaderboard">Լիդերբորդ</span></a></li>
+        <li><a onclick="switchTab('settings',this)"><i class="material-icons">settings</i><span class="menu-label" data-i18n="menu.settings">Կարգավորումներ</span></a></li>
+        <li><a onclick="switchTab('profile',this)"><i class="material-icons">account_circle</i><span class="menu-label" data-i18n="menu.profile">Իմ Պրոֆիլը</span></a></li>
     </ul>
 
     <div class="daily-bonus-btn" id="daily-bonus-btn" onclick="claimDailyBonus()">
         <i class="material-icons">redeem</i>
         <div>
-            <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ամենօրյա Բոնուս</div>
+            <div style="font-size:11px;color:var(--text);text-transform:uppercase;"><span data-i18n="daily.label">Ամենօրյա Բոնուս</span></div>
             <div id="daily-btn-label" style="font-size:13px;color:var(--text-l);">Ստանալ $100</div>
         </div>
     </div>
@@ -881,13 +919,12 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="topbar-actions">
             <button class="icon-btn" onclick="toggleActivityLog()" title="Գործունեության մատյան"><i class="material-icons">history</i></button>
             <button class="icon-btn" id="toggleSoundBtn" onclick="toggleSoundMute()" title="Ձայն"><i class="material-icons">volume_up</i></button>
-            <button class="theme-btn" onclick="changeTheme()"><i class="material-icons">contrast</i> <span data-i18n="topbar.theme">Թեմա</span></button>
-            <button id="lang-toggle-btn" class="theme-btn" onclick="toggleLang()" title="Փoxel lezun" style="min-width:58px;">🇷🇺 Ρус</button>
+            <button class="theme-btn" onclick="changeTheme()"><i class="material-icons">contrast</i> Թեմա</button>
         </div>
     </header>
 
     <section id="page-main" class="page active">
-        <h1 data-i18n="main.title"><i class="material-icons">home</i> Գլխավոր կայան</h1>
+        <h1><i class="material-icons">home</i> <span data-i18n="page.main">Գլխավոր կայան</span></h1>
 
         <!-- Player Welcome Banner -->
         <div class="main-welcome-banner">
@@ -896,7 +933,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <img id="main-page-avatar-img" src="" style="display:none;" alt="">
             </div>
             <div class="main-welcome-info">
-                <div class="main-welcome-greeting">Բարի գալուստ</div>
+                <div class="main-welcome-greeting" data-i18n="profile.welcome">Բարի գալուստ</div>
                 <div class="main-welcome-name" id="main-welcome-name">Խաղացող</div>
                 <div class="main-welcome-rank" id="main-welcome-rank">⭐ Դատարկապորտ</div>
             </div>
@@ -920,30 +957,30 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="cards-grid">
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--ok);margin-bottom:16px;">show_chart</i>
-                <h3 style="justify-content:center;">Ընդ. Կարողություն</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.crimes">Ընդ. Կարողություն</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;">$<span id="main-networth">0</span></p>
             </div>
             <div class="card" style="text-align:center;cursor:pointer;" onclick="openRankModal()">
                 <i class="material-icons" style="font-size:36px;color:var(--warn);margin-bottom:16px;">star</i>
-                <h3 style="justify-content:center;">Հեղինակություն</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.cars">Հեղինակություն</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-exp">0</span> / <span id="main-next-exp">300</span> XP</p>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#0a84ff;margin-bottom:16px;">directions_car</i>
-                <h3 style="justify-content:center;">Ավտոպարկ</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.earnings">Ավտոպարկ</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-cars">0</span> / <span id="main-cars-limit">10</span></p>
             </div>
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#af52de;margin-bottom:16px;">business</i>
-                <h3 style="justify-content:center;">Անշ. Գույք</h3>
+                <h3 style="justify-content:center;" data-i18n="stats.time">Անշ. Գույք</h3>
                 <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-estate">0</span> օբյ.</p>
             </div>
         </div>
     </section>
 
     <section id="page-crimes" class="page">
-        <h1 data-i18n="crimes.title"><i class="material-icons">my_location</i> Հանցագործություններ</h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Փող աշխատելը փողոցում հեշտ չէ։ Գնահատիր ռիսկերը նախքան գործի անցնելը։</p>
+        <h1><i class="material-icons">my_location</i> <span data-i18n="page.crimes">Հանցագործություններ</span></h1>
+        <p style="color:var(--text); margin-bottom: 24px;"><span data-i18n="crypto.updateNote">Փող աշխատելը փողոցում հեշտ չէ։ Գնահատիր ռիսկերը նախքան գործի անցնելը։</span></p>
         <div class="cards-grid">
             <div class="card">
                 <h3>🎯 Գրպանահատություն</h3>
@@ -979,7 +1016,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-cars" class="page">
-        <h1 data-i18n="cars.title"><i class="material-icons">directions_car</i> Ավտոառևանգում</h1>
+        <h1><i class="material-icons">directions_car</i> <span data-i18n="page.cars">Ավտոառևանգում</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Գողացած մեքենաները կարող ես վաճառել կամ օգտագործել այլ հանցագործությունների ժամանակ (իջեցնում է ռիսկը)։</p>
         <div class="cards-grid">
             <div class="card">
@@ -998,7 +1035,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-garage" class="page">
-        <h1 data-i18n="garage.title"><i class="material-icons">warehouse</i> Ավտոտնակ</h1>
+        <h1><i class="material-icons">warehouse</i> <span data-i18n="page.garage">Ավտոտնակ</span></h1>
         <div class="garage-header">
             <div style="font-size:16px;font-weight:600;">Տեղեր: <span id="garage-cap-display" style="color:var(--text-l);">0 / 10</span></div>
             <button onclick="upgradeGarage()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;">Ընդլայնել +5 ($2,500)</button>
@@ -1008,7 +1045,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <!-- ═══════════════ INVENTORY / ARMORY PAGE ═══════════════ -->
     <section id="page-inventory" class="page">
-        <h1 data-i18n="inv.title"><i class="material-icons">security</i> Զինանոց (Inventory)</h1>
+        <h1><i class="material-icons">security</i> <span data-i18n="page.inventory">Զինանոց (Inventory)</span></h1>
         <p style="color:var(--text);margin-bottom:24px;">Զենքերն ու զրահները ազդում են հանցագործ. հաջողության % և կորցրած HP-ի վրա:</p>
 
         <!-- Equipped items banner -->
@@ -1047,7 +1084,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-dealership" class="page">
-        <h1 data-i18n="dealer.title"><i class="material-icons">directions_car</i> Ավտոսալոն</h1>
+        <h1><i class="material-icons">directions_car</i> <span data-i18n="page.dealership">Ավտոսալոն</span></h1>
         <div class="sub-tabs">
             <button id="tab-dealer-new" class="active" onclick="toggleDealerTab('new')">Նոր Մեքենաներ</button>
             <button id="tab-dealer-used" onclick="toggleDealerTab('used')">Օգտագործված</button>
@@ -1072,7 +1109,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-bank" class="page">
-        <h1 data-i18n="bank.title"><i class="material-icons">account_balance</i> Կենտրոնական Բանկ</h1>
+        <h1><i class="material-icons">account_balance</i> <span data-i18n="page.bank">Կենտրոնական Բանկ</span></h1>
         <div class="cards-grid">
             <div class="form-box">
                 <p style="font-size:16px; margin-bottom:20px; text-align:center; color:var(--text);">Անձնական Հաշիվ</p>
@@ -1102,7 +1139,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-business" class="page">
-        <h1 data-i18n="biz.title"><i class="material-icons">work</i> Բիզնես և Լվացք</h1>
+        <h1><i class="material-icons">work</i> <span data-i18n="page.business">Բիզնես և Լվացք</span></h1>
         <div class="garage-header">
             <div style="font-size:16px;font-weight:600;">Բիզնես Սլոտներ: <span id="biz-slots-display" style="color:var(--text-l);">0 / 5</span></div>
             <button onclick="upgradeBizSlots()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;">Ընդլայնել ($100,000)</button>
@@ -1160,7 +1197,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-prison" class="page">
-        <h1 data-i18n="prison.title"><i class="material-icons">lock</i> Բանտ</h1>
+        <h1><i class="material-icons">lock</i> <span data-i18n="page.prison">Բանտ</span></h1>
         <div id="prison-status">
             <div class="card" style="text-align:center;padding:48px;">
                 <i class="material-icons" style="font-size:48px;color:var(--ok);margin-bottom:20px;">emoji_nature</i>
@@ -1173,15 +1210,15 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <h3 style="font-size:24px;letter-spacing:1px;margin-bottom:10px;color:var(--text-l);">ԴՈՒՔ ՃԱՂԵՐՈՒՄ ԵՔ</h3>
             <div class="prison-timer" id="p-timer">00:00</div>
             <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
-                <button onclick="payBribe()" data-i18n="prison.bribe" id="bribe-btn" style="background:var(--warn);color:#000;width:auto;padding:16px 32px;">💰 Կաշառք ($1,000)</button>
-                <button onclick="prisonEscape()" data-i18n="prison.escape" id="escape-btn" style="background:var(--border);color:var(--text-l);width:auto;padding:16px 32px;">🚀 Փախուստ ($2,500)</button>
+                <button onclick="payBribe()" id="bribe-btn" style="background:var(--warn);color:#000;width:auto;padding:16px 32px;">💰 Կաշառք ($1,000)</button>
+                <button onclick="prisonEscape()" id="escape-btn" style="background:var(--border);color:var(--text-l);width:auto;padding:16px 32px;">🚀 Փախուստ ($2,500)</button>
             </div>
             <p style="color:var(--text);font-size:13px;margin-top:20px;">Կաշառք = 100% հաջողություն, Փախուստ = 50% հաջողություն և մեծ ռիսկ։</p>
         </div>
     </section>
 
     <section id="page-casino" class="page">
-        <h1 data-i18n="casino.title"><i class="material-icons">casino</i> Խաղատուն (Կազինո)</h1>
+        <h1><i class="material-icons">casino</i> <span data-i18n="page.casino">Խաղատուն (Կազինո)</span></h1>
         <div class="sub-tabs">
             <button id="tab-roulette" class="active" onclick="toggleCasinoTab('roulette')">Ռուլետկա</button>
             <button id="tab-slots" onclick="toggleCasinoTab('slots')">Սլոթ Ապարատ</button>
@@ -1214,7 +1251,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-crypto" class="page">
-        <h1 data-i18n="crypto.title"><i class="material-icons">currency_bitcoin</i> Կրիպտո</h1>
+        <h1><i class="material-icons">currency_bitcoin</i> <span data-i18n="page.crypto">Կրիպտո</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Շուկան թարմացվում է յուրաքանչյուր 5 վայրկյանը մեկ։</p>
         <div id="crypto-pill-list" class="crypto-pill-list"></div>
         <div class="crypto-container">
@@ -1238,7 +1275,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-estate" class="page">
-        <h1 data-i18n="estate.title"><i class="material-icons">business</i> Անշարժ Գույք</h1>
+        <h1><i class="material-icons">business</i> <span data-i18n="page.estate">Անշարժ Գույք</span></h1>
         <div class="sub-tabs">
             <button id="tab-market" class="active" onclick="toggleEstateTab('market')">Շուկա</button>
             <button id="tab-myestate" onclick="toggleEstateTab('myestate')">Իմ Գույքը (<span id="my-estate-count">0</span>)</button>
@@ -1263,8 +1300,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-stash" class="page">
-        <h1 data-i18n="stash.title"><i class="material-icons">inventory_2</i> Գաղտնի Պահեստ (Սեյֆ)</h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Այս գումարը պաշտպանված է ոստիկանական առգրավումներից կամ այլ կորուստներից։</p>
+        <h1><i class="material-icons">inventory_2</i> <span data-i18n="page.stash">Գաղտնի Պահեստ (Սեյֆ)</span></h1>
+        <p style="color:var(--text); margin-bottom: 24px;"><span data-i18n="stash.desc">Այս գումարը պաշտպանված է ոստիկանական առգրավումներից կամ այլ կորուստներից։</span></p>
         <div class="cards-grid">
             <div class="form-box">
                 <p style="font-size:16px;margin-bottom:20px;text-align:center;color:var(--text);">Պահեստավորված</p>
@@ -1278,7 +1315,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-hospital" class="page">
-        <h1 data-i18n="hospital.title"><i class="material-icons">local_hospital</i> Հիվանդանոց</h1>
+        <h1><i class="material-icons">local_hospital</i> <span data-i18n="page.hospital">Հիվանդանոց</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Առողջություն (HP): <span id="hp-hosp" style="color:var(--text-l); font-weight:bold;">100</span> / 100</p>
         <div class="cards-grid">
             <div class="card">
@@ -1297,7 +1334,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-training" class="page">
-        <h1 data-i18n="training.title"><i class="material-icons">fitness_center</i> Վարժեցում</h1>
+        <h1><i class="material-icons">fitness_center</i> <span data-i18n="page.training">Վարժեցում</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Բարձրացրեք ձեր առավելագույն ֆիզիկական և մտավոր պարամետրերը։</p>
         <div class="cards-grid">
             <div class="card">
@@ -1316,7 +1353,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-reputation" class="page">
-        <h1 data-i18n="rep.title"><i class="material-icons">handshake</i> Համբավ</h1>
+        <h1><i class="material-icons">handshake</i> <span data-i18n="page.reputation">Համբավ</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Քո հեղինակությունը քաղաքում։ Բարձր համբավը նվազեցնում է ձերբակալման ռիսկը և բացում է նոր բիզնեսներ։</p>
         <div class="form-box" style="max-width:500px;">
             <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);">Մակարդակ: <span id="rep-level" style="color:var(--warn)">50</span>/100</h2>
@@ -1330,12 +1367,12 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-quests" class="page">
-        <h1 data-i18n="quests.title"><i class="material-icons">checklist</i> Օրվա Խնդիրներ</h1>
+        <h1><i class="material-icons">checklist</i> <span data-i18n="page.quests">Օրվա Խնդիրներ</span></h1>
         <div id="quest-list" class="cards-grid"></div>
     </section>
 
     <section id="page-stats" class="page">
-        <h1 data-i18n="stats.title"><i class="material-icons">pie_chart</i> Վիճակագրություն</h1>
+        <h1><i class="material-icons">pie_chart</i> <span data-i18n="page.stats">Վիճակագրություն</span></h1>
         <div class="cards-grid">
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:var(--accent);margin-bottom:16px;">my_location</i>
@@ -1361,12 +1398,12 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-leaderboard" class="page">
-        <h1 data-i18n="leaderboard.title"><i class="material-icons">emoji_events</i> Լիդերբորդ</h1>
+        <h1><i class="material-icons">emoji_events</i> <span data-i18n="page.leaderboard">Լիդերբորդ</span></h1>
         <div id="leaderboard-list" class="cards-grid"></div>
     </section>
 
     <section id="page-events" class="page">
-        <h1 data-i18n="events.title"><i class="material-icons">bolt</i> Իրադարձություններ</h1>
+        <h1><i class="material-icons">bolt</i> <span data-i18n="page.events">Իրադարձություններ</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;">Քաղաքում տեղի ունեցող պատահական իրադարձությունների պատմություն։</p>
         <div class="form-box" style="padding:24px;">
             <div id="event-log" style="background:var(--bg); padding:16px; border-radius:16px; border:1px solid var(--border); max-height:400px; overflow-y:auto; font-size:14px; line-height:1.6; color:var(--text-l);">
@@ -1376,7 +1413,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-daynight" class="page">
-        <h1 data-i18n="daynight.title"><i class="material-icons">dark_mode</i> Ժամանակի Ցիկլ</h1>
+        <h1><i class="material-icons">dark_mode</i> <span data-i18n="page.daynight">Ժամանակի Ցիկլ</span></h1>
         <div class="form-box" style="text-align:center; max-width:500px; margin: 0 auto;">
             <p style="font-size:16px; margin-bottom:10px; color:var(--text);">Ընթացիկ ժամ</p>
             <h2 id="cycle-time-page" style="color:var(--text-l); font-size:36px; margin-bottom:10px;">12:00</h2>
@@ -1390,7 +1427,22 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-settings" class="page">
-        <h1 data-i18n="settings.title"><i class="material-icons">settings</i> Կարգավորումներ</h1>
+        <h1><i class="material-icons">settings</i> <span data-i18n="page.settings">Կարգավորումներ</span></h1>
+        
+        <div class="card" style="margin-bottom:24px;">
+            <h3><i class="material-icons">language</i> <span data-i18n="set.langTitle">Լezvi Entrutyun</span></h3>
+            <p style="margin-bottom:16px;" data-i18n="set.langDesc">Entreq khaghits lezun:</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <button class="cn-lang-btn" data-lang="hy" onclick="setLang('hy')"
+                    style="display:flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;border:2px solid var(--border);background:var(--panel-solid);color:var(--text-l);font-size:15px;font-weight:700;cursor:pointer;transition:.2s;">
+                    🇦🇲 Հայerеrеn
+                </button>
+                <button class="cn-lang-btn" data-lang="ru" onclick="setLang('ru')"
+                    style="display:flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;border:2px solid var(--border);background:var(--panel-solid);color:var(--text-l);font-size:15px;font-weight:700;cursor:pointer;transition:.2s;">
+                    🇷🇺 Русский
+                </button>
+            </div>
+        </div>
         <div class="card" style="margin-bottom:24px;">
             <h3><i class="material-icons">wallpaper</i> Ֆոնի Նկար</h3>
             <p style="margin-bottom:0;">Ընտրեք ֆոնի նկարը ձեր պանակից:</p>
@@ -1434,7 +1486,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </section>
 
     <section id="page-families" class="page">
-        <h1 data-i18n="families.title"><i class="material-icons">groups</i> Ընտանիքներ</h1>
+        <h1><i class="material-icons">groups</i> <span data-i18n="page.families">Ընտանիքներ</span></h1>
         <p style="color:var(--text);margin-bottom:20px;">Քաղաքի 5 հայտնի մաֆիոզ ընտանիքները, որոնք կիսել են տարածքը։ Հասիր <b style="color:var(--accent);">Մաֆիոզ</b> կոչումին և ունեցիր <b style="color:var(--ok);">$250,000</b> — ստեղծիր 6-րդ ընտանիքը։</p>
         <div id="families-npc-list" class="cards-grid"></div>
         <div id="my-family-section" style="margin-top:24px;"></div>
@@ -1443,7 +1495,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <!-- ═══════════════ PROFILE PAGE ═══════════════ -->
     <section id="page-profile" class="page">
-        <h1 data-i18n="profile.title"><i class="material-icons">account_circle</i> Իմ Պրոֆիլը</h1>
+        <h1><i class="material-icons">account_circle</i> <span data-i18n="page.profile">Իմ Պրոֆիլը</span></h1>
 
         <!-- Hero Card -->
         <div class="profile-hero">
@@ -1459,7 +1511,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <div class="profile-hero-email" id="profile-hero-email">—</div>
                 <div class="profile-badge"><i class="material-icons" style="font-size:14px;">military_tech</i><span id="profile-hero-rank">Դատարկապորտ</span></div>
                 <div class="profile-hero-actions">
-                    <button class="profile-action-btn" onclick="openEditProfileModal()"><i class="material-icons" style="font-size:16px;">edit</i> <span data-i18n="profile.edit_btn">Хмбагрел</span>
+                    <button class="profile-action-btn" onclick="openEditProfileModal()">
                         <i class="material-icons" style="font-size:16px;">edit</i> Խմբագրել
                     </button>
                     <button class="profile-action-btn" onclick="authLogout()">
@@ -1477,48 +1529,48 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="profile-stat-card">
                 <div class="psc-icon">💰</div>
                 <div class="psc-val" id="psc-money">$0</div>
-                <div class="psc-label">Կանխիկ</div>
+                <div class="psc-label" data-i18n="profile.cash">Կանխիկ</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">🏦</div>
                 <div class="psc-val" id="psc-bank">$0</div>
-                <div class="psc-label">Բանկ</div>
+                <div class="psc-label" data-i18n="profile.bank">Բանկ</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">⭐</div>
                 <div class="psc-val" id="psc-xp">0</div>
-                <div class="psc-label">XP Միավոր</div>
+                <div class="psc-label" data-i18n="profile.xp">XP Միավոր</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">🔫</div>
                 <div class="psc-val" id="psc-crimes">0</div>
-                <div class="psc-label">Հանցագործ.</div>
+                <div class="psc-label" data-i18n="profile.crimes">Հանցագործ.</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">🚗</div>
                 <div class="psc-val" id="psc-cars">0</div>
-                <div class="psc-label">Ավտոպարկ</div>
+                <div class="psc-label" data-i18n="profile.cars">Ավտոպարկ</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">❤️</div>
                 <div class="psc-val" id="psc-hp">100</div>
-                <div class="psc-label">Կյանք (HP)</div>
+                <div class="psc-label" data-i18n="profile.hp">Կյանք (HP)</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">📅</div>
                 <div class="psc-val" id="psc-since" style="font-size:14px;">—</div>
-                <div class="psc-label">Գրանցման Օր</div>
+                <div class="psc-label" data-i18n="profile.since">Գրանցման Օր</div>
             </div>
             <div class="profile-stat-card">
                 <div class="psc-icon">🏆</div>
                 <div class="psc-val" id="psc-level">1</div>
-                <div class="psc-label">Մակարդակ</div>
+                <div class="psc-label" data-i18n="profile.level">Մակարդակ</div>
             </div>
         </div>
 
         <!-- Account info card -->
         <div class="card">
-            <h3><i class="material-icons">info</i> Հաշվի Տեղեկություններ</h3>
+            <h3><i class="material-icons">info</i> <span data-i18n="profile.accInfo">Հաշվի Տեղեկություններ</span></h3>
             <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
                 <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
                     <span style="color:var(--text);font-size:14px;">Nickname</span>
@@ -1587,10 +1639,10 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <!-- Contacts sidebar -->
         <div class="chat-contacts">
             <div class="chat-contacts-header">
-                <h3><i class="material-icons" style="font-size:18px;vertical-align:middle;color:var(--accent);margin-right:6px;">chat</i>Հաղորդagrutʻyunner</h3>
+                <h3><i class="material-icons" style="font-size:18px;vertical-align:middle;color:var(--accent);margin-right:6px;">chat</i>Հաղորդագրություններ</h3>
             </div>
             <div class="chat-contacts-list" id="chat-contacts-list">
-                <div class="chat-contacts-empty">Բεռнвum e...</div>
+                <div class="chat-contacts-empty">Բեռնվում է...</div>
             </div>
         </div>
 
@@ -1598,7 +1650,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="chat-pane" id="chat-pane">
             <div class="chat-pane-empty" id="chat-pane-empty">
                 <i class="material-icons">forum</i>
-                <p>Ընտրεք yntker՝ grlу surbeluʻ hamar</p>
+                <p>Ընտրեք ընկերոջը գրելու համար</p>
             </div>
             <!-- Header (hidden until a chat is open) -->
             <div class="chat-header" id="chat-header" style="display:none;">
@@ -1612,7 +1664,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="chat-messages" id="chat-messages" style="display:none;"></div>
             <!-- Input area (hidden until a chat is open) -->
             <div class="chat-input-area" id="chat-input-area" style="display:none;">
-                <textarea id="chat-textarea" rows="1" placeholder="Grel haghordagrutʻyun..." data-i18n="messages.input_ph" data-i18n-attr="placeholder" onkeydown="chatKeyDown(event)" oninput="autoResizeChatArea(this)"></textarea>
+                <textarea id="chat-textarea" rows="1" placeholder="Grel haghordagrutʻyun..." onkeydown="chatKeyDown(event)" oninput="autoResizeChatArea(this)"></textarea>
                 <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()" title="Uхarkel">
                     <i class="material-icons">send</i>
                 </button>
@@ -2085,27 +2137,33 @@ async function saveEditProfile() {
 //   PRELOADER (5 seconds)
 // ==========================================
 window.addEventListener('load', () => {
-    const statusTexts = ['Բեռնում...', 'Կապ հաստատվում...', 'Տվյալներ ստուգվում...', 'Պատրաստ է'];
+    const statusTexts = ['Բեռնում...', 'Կapв ham...', 'Patrast e'];
     const statusEl = document.getElementById('pre-status');
     let idx = 0;
     const textInterval = setInterval(() => {
         idx++;
         if (statusEl && statusTexts[idx]) statusEl.textContent = statusTexts[idx];
         if (idx >= statusTexts.length - 1) clearInterval(textInterval);
-    }, 1100);
+    }, 600);
 
-    setTimeout(() => {
+    // Run auth check IMMEDIATELY in parallel — returning users skip the wait
+    const MIN_PRELOADER_MS = 900;
+    const authPromise = authCheckAutoLogin();
+
+    Promise.all([
+        authPromise,
+        new Promise(r => setTimeout(r, MIN_PRELOADER_MS))
+    ]).then(([loggedIn]) => {
+        clearInterval(textInterval);
         const pl = document.getElementById('preloader');
         if (!pl) return;
+        pl.style.transition = 'opacity 0.5s ease-out';
         pl.style.opacity = '0';
         setTimeout(() => {
             pl.style.display = 'none';
-            // Check auto-login (async)
-            authCheckAutoLogin().then(loggedIn => {
-                if (!loggedIn) showAuthScreen();
-            });
-        }, 1000);
-    }, 4200); // 4.2s visible + 1s fade = ~5.2s total
+            if (!loggedIn) showAuthScreen();
+        }, 500);
+    });
 });
 
 // ==========================================
@@ -4641,25 +4699,46 @@ async function sendFriendRequest(toUserId, btn) {
     }
 }
 
+const _respondingIds = new Set(); // guard: prevent double-submit per user
+
 async function respondFriendRequest(fromUserId, action, btn) {
+    // Guard: prevent double-click / duplicate calls
+    if (_respondingIds.has(fromUserId)) return;
+    _respondingIds.add(fromUserId);
     btn.disabled = true;
+    // Also disable sibling button (accept/decline pair)
+    const card = document.getElementById('freq-' + fromUserId);
+    if (card) card.querySelectorAll('button').forEach(b => b.disabled = true);
+
     try {
         await apiCall('/game/friend-request/respond', 'POST', { fromUserId, action });
-        const card = document.getElementById('freq-' + fromUserId);
         if (card) card.remove();
         if (action === 'accept') {
-            showNotification('✅ Ynker avlacvec!', true);
+            showNotification('✅ Ընկեր ավելացվեց!', true);
             renderFriendsPage();
         } else {
-            showNotification('Hayty merjvec', true);
+            showNotification('Հայտը մերժվեց', true);
         }
-        // Update badge
-        const remaining = document.getElementById('friends-requests-list').children.length;
-        updateFriendBadge(remaining);
-        if (remaining === 0) document.getElementById('friends-requests-section').style.display = 'none';
+        const listEl = document.getElementById('friends-requests-list');
+        if (listEl) {
+            const remaining = listEl.children.length;
+            updateFriendBadge(remaining);
+            if (remaining === 0) {
+                const sec = document.getElementById('friends-requests-section');
+                if (sec) sec.style.display = 'none';
+            }
+        }
     } catch (err) {
-        btn.disabled = false;
-        showNotification('❌ ' + err.message, false);
+        _respondingIds.delete(fromUserId);
+        if (card) card.querySelectorAll('button').forEach(b => b.disabled = false);
+        // If the request was already handled (404/400) — just remove the card silently
+        if (err.message.includes('404') || err.message.includes('Հայտ չկա') || err.message.includes('չկա')) {
+            if (card) card.remove();
+        } else {
+            showNotification('❌ ' + err.message, false);
+        }
+    } finally {
+        _respondingIds.delete(fromUserId);
     }
 }
 
@@ -5166,8 +5245,8 @@ window._chatSocketInit = function() {
 <div class="modal-overlay" id="friend-profile-modal" style="z-index:5100;display:none;" onclick="if(event.target===this)closeFriendProfileModal()">
     <div class="modal-content" style="max-width:400px;">
         <div class="modal-header">
-            <h2 style="margin:0;font-size:18px;color:var(--text-l);">👤 Ընkeri Profil</h2>
-            <button class="close-btn" onclick="closeFriendProfileModal()"><i class="material-icons">close</i></button>
+            <h2 style="margin:0;font-size:18px;color:var(--text-l);">👤 Ընկերոջ պրոֆիլ</h2>
+            <button class="close-btn" onclick="closeFriendProfileModal()"><i class="material-icons">Փակել</i></button>
         </div>
         <div class="modal-body">
             <!-- Avatar + basic info -->
@@ -5195,6 +5274,8 @@ window._chatSocketInit = function() {
     </div>
 </div>
 
-    <script src="lang.js"></script>
+<!-- socket.io — loaded last (non-blocking) -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+<script src="i18n.js"></script>
 </body>
 </html>

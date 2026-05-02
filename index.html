@@ -1023,6 +1023,11 @@ footer {
 .reveal-el.visible {
   opacity: 1; transform: translateY(0);
 }
+
+        /* ── Language selector ── */
+        .cn-lang-btn.cn-lang-active { color: var(--gold) !important; border-color: var(--gold) !important; }
+        #lang-toggle-btn { font-size: 11px; letter-spacing: 2px; min-width: 64px; }
+
 </style>
 </head>
 <body>
@@ -1053,9 +1058,9 @@ footer {
     </div>
 
     <div class="intro-sub">Roleplay · Crime · Family</div>
-    <div class="intro-quote">"Ընտանիքը ամեն ինչ է — ամեն ինչ ընտանիք է"</div>
+    <div class="intro-quote"><span data-i18n="intro.quote">"Ընտանիքը ամեն ինչ է — ամեն ինչ ընտանիք է"</span></div>
 
-    <button class="intro-enter" id="introEnter" onclick="enterSite()">Մուտք Գործել</button>
+    <button class="intro-enter" id="introEnter" onclick="enterSite()"><span data-i18n="intro.enter">Մուտք Գործել</span></button>
   </div>
 
   <div class="intro-progress-wrap">
@@ -1072,14 +1077,15 @@ footer {
     <div class="nav-inner">
       <a href="#" class="nav-logo">Cosa <span>Nostra</span></a>
       <ul class="nav-links">
-        <li><a href="#about">Մասին</a></li>
-        <li><a href="#features">Հնարավորություններ</a></li>
-        <li><a href="#factions">Ֆրակցիաներ</a></li>
-        <li><a href="#rules">Կանոններ</a></li>
+        <li><a href="#about"><span data-i18n="nav.about">Մասին</span></a></li>
+        <li><a href="#features"><span data-i18n="nav.features">Հնարավորություններ</span></a></li>
+        <li><a href="#factions"><span data-i18n="nav.factions">Ֆրակցիաներ</span></a></li>
+        <li><a href="#rules"><span data-i18n="nav.rules">Կանոններ</span></a></li>
       </ul>
       <div class="nav-actions">
-        <button class="btn btn-ghost" onclick="openModal('login')">Մուտք</button>
-        <button class="btn btn-primary" onclick="openModal('register')">Գրանցում</button>
+        <button class="btn btn-ghost" onclick="openModal('login')"><span data-i18n="nav.login">Մուտք</span></button>
+        <button class="btn btn-primary" onclick="openModal('register')"><span data-i18n="nav.register">Գրանցում</span></button>
+        <button id="lang-toggle-btn" class="btn btn-ghost" onclick="setLang(getLang()==='hy'?'ru':'hy')">🇦🇲 ՀՅ</button>
       </div>
     </div>
   </nav>
@@ -1090,16 +1096,16 @@ footer {
     <div class="hero-crest">🌹</div>
 
     <div class="hero-inner">
-      <p class="hero-label">Հայկական Mafia Roleplay</p>
+      <p class="hero-label"><span data-i18n="hero.label">Հայկական Mafia Roleplay</span></p>
       <h1 class="hero-title">
         Cosa
         <em>Nostra</em>
       </h1>
-      <p class="hero-tagline">Մաֆիայի Կյանքը Ձեր Ձեռքերում</p>
-      <p class="hero-desc">
+      <p class="hero-tagline"><span data-i18n="hero.tagline">Մաֆիայի Կյանքը Ձեր Ձեռքերում</span></p>
+      <p class="hero-desc"><span data-i18n-html="hero.desc">
         Մտե՛ք ամենամութ, ամենահարուստ և ամենավտանգավոր ընդհատակյա կյանք:
         Կառուցե՛ք ձեր կայսրությունը, ղեկավարե՛ք ֆրակցիա, ապրե՛ք ըստ Օրենքի:
-      </p>
+      </span></p>
       <div class="hero-actions">
         <button class="btn btn-primary btn-hero" onclick="openModal('register')">▶ Խաղ Սկսել</button>
         <button class="btn btn-ghost btn-hero" onclick="openModal('login')">Մուտք Գործել</button>
@@ -1421,7 +1427,7 @@ footer {
     <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
     <div class="modal-header">
       <span class="modal-emblem">🌹</span>
-      <div class="modal-title">Բարի Գալուստ</div>
+      <div class="modal-title"><span data-i18n="login.title">Բարի Գալուստ</span></div>
       <div class="modal-subtitle">Մուտք Cosa Nostra · Ձեր հաշիվը</div>
     </div>
     <div class="modal-body">
@@ -1439,7 +1445,7 @@ footer {
         </div>
       </div>
 
-      <button class="form-submit" onclick="handleLogin()">Մուտք Գործել ➤</button>
+      <button class="form-submit" onclick="handleLogin()"><span data-i18n="login.submit">Մուտք Գործել ➤</span></button>
 
       <div class="form-switch">
         Հաշիվ չունե՞ք։ <a onclick="switchModal('loginModal','registerModal')">Գրանցվեք հիմա</a>
@@ -1454,7 +1460,7 @@ footer {
     <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
     <div class="modal-header">
       <span class="modal-emblem">🌹</span>
-      <div class="modal-title">Գրանցվել</div>
+      <div class="modal-title"><span data-i18n="reg.title">Գրանցվել</span></div>
       <div class="modal-subtitle">Cosa Nostra · Ստեղծեք ձեր նոր կերպարը</div>
     </div>
     <div class="modal-body">
@@ -1488,7 +1494,7 @@ footer {
         <label for="termsCheck">Կարդացել և համաձայն եմ <a href="#">Օգտագործման Կանոններին</a> և <a href="#">Գաղտնիության Քաղաքականությանը</a></label>
       </div>
 
-      <button class="form-submit" onclick="handleRegister()">Գրանցվել և Սկսել ➤</button>
+      <button class="form-submit" onclick="handleRegister()"><span data-i18n="reg.submit">Գրանցվել և Սկսել ➤</span></button>
 
       <div class="form-switch">
         Արդեն ունե՞ք հաշիվ։ <a onclick="switchModal('registerModal','loginModal')">Մուտք գործել</a>
@@ -1763,5 +1769,6 @@ async function handleRegister() {
 }
 </script>
 
+<script src="i18n.js"></script>
 </body>
 </html>

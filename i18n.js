@@ -1,0 +1,372 @@
+// =====================================================
+//  i18n.js — Cosa Nostra · Language System v1.0
+//  Languages: hy (Հայerern) · ru (Ռuserern)
+//
+//  HOW IT WORKS:
+//  On first applyLang() call the original Armenian text
+//  is captured from the DOM into data-i18n-orig.
+//  Russian mode replaces it; Armenian mode restores it.
+// =====================================================
+
+const RU = {
+  // ── Sidebar navigation ─────────────────────────────
+  'menu.main':         'Главная',
+  'menu.crimes':       'Преступления',
+  'menu.cars':         'Угон авто',
+  'menu.garage':       'Гараж',
+  'menu.inventory':    'Арсенал',
+  'menu.dealership':   'Автосалон',
+  'menu.bank':         'Банк',
+  'menu.business':     'Бизнес',
+  'menu.casino':       'Казино',
+  'menu.crypto':       'Крипто',
+  'menu.estate':       'Недвижимость',
+  'menu.stash':        'Тайник',
+  'menu.prison':       'Тюрьма',
+  'menu.hospital':     'Больница',
+  'menu.training':     'Тренировка',
+  'menu.reputation':   'Репутация',
+  'menu.families':     'Семьи',
+  'menu.friends':      'Друзья',
+  'menu.messages':     'Сообщения',
+  'menu.quests':       'Задания дня',
+  'menu.daynight':     'Ночь / День',
+  'menu.events':       'События',
+  'menu.stats':        'Статистика',
+  'menu.leaderboard':  'Лидерборд',
+  'menu.settings':     'Настройки',
+  'menu.profile':      'Мой профиль',
+
+  // ── Menu section titles ─────────────────────────────
+  'section.main':        'Основное',
+  'section.finance':     'Финансы и Имущество',
+  'section.underground': 'Подполье',
+  'section.extra':       'Дополнительно',
+
+  // ── Sidebar misc ────────────────────────────────────
+  'sidebar.rank': 'Звание',
+  'daily.label':  'Ежедневный бонус',
+  'daily.claim':  'Получить $100',
+  'daily.claimed':'Получен ✓',
+
+  // ── Topbar ──────────────────────────────────────────
+  'topbar.log':   'Журнал',
+  'topbar.sound': 'Звук',
+  'topbar.theme': 'Тема',
+  'topbar.lang':  '🇷🇺 РУ',
+
+  // ── Page headings (h1 / h2) ─────────────────────────
+  'page.main':        'Главная',
+  'page.crimes':      'Преступления',
+  'page.cars':        'Угон авто',
+  'page.garage':      'Гараж',
+  'page.inventory':   'Арсенал',
+  'page.dealership':  'Автосалон',
+  'page.bank':        'Центральный Банк',
+  'page.business':    'Бизнес и Отмывание',
+  'page.prison':      'Тюрьма',
+  'page.casino':      'Казино',
+  'page.crypto':      'Крипто',
+  'page.estate':      'Недвижимость',
+  'page.stash':       'Тайник (Сейф)',
+  'page.hospital':    'Больница',
+  'page.training':    'Тренировка',
+  'page.reputation':  'Репутация',
+  'page.quests':      'Задания дня',
+  'page.stats':       'Статистика',
+  'page.leaderboard': 'Лидерборд',
+  'page.events':      'События',
+  'page.daynight':    'Цикл Времени',
+  'page.settings':    'Настройки',
+  'page.families':    'Семьи',
+  'page.profile':     'Мой профиль',
+  'page.friends':     'Друзья',
+  'page.messages':    'Сообщения',
+
+  // ── Buttons ─────────────────────────────────────────
+  'btn.deposit':      'Внести',
+  'btn.withdraw':     'Снять',
+  'btn.transfer':     'Перевести',
+  'btn.buy':          'Купить',
+  'btn.sell':         'Продать',
+  'btn.launder':      '🧹 Отмыть (70%)',
+  'btn.launderAll':   'Отмыть всё',
+  'btn.takeLoan':     'Взять',
+  'btn.repayLoan':    'Погасить',
+  'btn.found':        'Основать',
+  'btn.save':         'Сохранить',
+  'btn.load':         'Загрузить',
+  'btn.reset':        'Удалить',
+  'btn.heal25':       'Лечиться',
+  'btn.healFull':     'Полное лечение',
+  'btn.train':        'Тренироваться',
+  'btn.donate':       'Заплатить',
+  'btn.spin':         '🎰 КРУТИТЬ',
+  'btn.red':          '🔴 КРАСНОЕ (x2)',
+  'btn.black':        '⚫ ЧЁРНОЕ (x2)',
+  'btn.bribe':        '💰 Взятка ($1,000)',
+  'btn.escape':       '🚀 Побег ($2,500)',
+  'btn.logout':       'Выход',
+  'btn.edit':         'Редактировать',
+  'btn.deleteProfile':'Удалить профиль',
+  'btn.expand':       'Расширить ($100,000)',
+  'btn.hide':         'Спрятать',
+  'btn.take':         'Извлечь',
+
+  // ── Bank ────────────────────────────────────────────
+  'bank.personal': 'Личный счёт',
+  'bank.transfer': 'Банковский перевод',
+  'bank.loan':     'Кредитная линия',
+
+  // ── Business ────────────────────────────────────────
+  'biz.slots':        'Слоты бизнеса:',
+  'biz.market':       'Рынок',
+  'biz.my':           'Мои бизнесы',
+  'biz.launderTitle': 'Благотворительный фонд',
+  'biz.launderSub':   '(Отмывание денег)',
+  'biz.dirtyMoney':   '🚫💰 Грязные деньги:',
+
+  // ── Prison ──────────────────────────────────────────
+  'prison.free':    'На свободе',
+  'prison.freeSub': 'Вы чисты перед законом (пока что).',
+  'prison.locked':  'ВЫ ЗА РЕШЁТКОЙ',
+  'prison.bribeTip':'Взятка = 100% успех, Побег = 50% и большой риск.',
+
+  // ── Stash ────────────────────────────────────────────
+  'stash.stored': 'Хранится',
+  'stash.desc':   'Эти деньги защищены от полицейских конфискаций.',
+
+  // ── Hospital ─────────────────────────────────────────
+  'hosp.hp':        'Здоровье (HP):',
+  'hosp.light':     'Лёгкое лечение',
+  'hosp.lightDesc': 'Восстанавливает 25 HP. Полезно при лёгких травмах.',
+  'hosp.lightPrice':'Цена: $200',
+  'hosp.full':      'Полное восстановление',
+  'hosp.fullDesc':  'Полностью восстанавливает HP и энергию.',
+  'hosp.fullPrice': 'Цена: $1,500',
+
+  // ── Training ─────────────────────────────────────────
+  'train.desc':      'Повысьте ваши максимальные физические и умственные параметры.',
+  'train.phys':      'Физическая подготовка',
+  'train.physDesc':  '+5 Максимальный HP',
+  'train.physPrice': 'Цена: $500',
+  'train.mental':    'Умственная подготовка',
+  'train.mentDesc':  '+5 Максимальная Энергия',
+  'train.mentPrice': 'Цена: $500',
+
+  // ── Reputation ───────────────────────────────────────
+  'rep.desc':     'Ваша репутация в городе. Высокая репутация снижает риск ареста.',
+  'rep.donation': 'Благотворительность / Взятка мэрии',
+  'rep.donDesc':  'Жертвуя деньги, покупаете молчание города. +5 Репутация',
+  'rep.donPrice': 'Цена: $2,000',
+
+  // ── Settings ─────────────────────────────────────────
+  'set.bg':       'Фоновое изображение',
+  'set.bgDesc':   'Выберите фон из вашей папки:',
+  'set.save':     'Сохранить игру',
+  'set.saveDesc': 'Сохраните прогресс в браузере.',
+  'set.load':     'Загрузить игру',
+  'set.loadDesc': 'Загрузить последнее сохранение:',
+  'set.reset':    'Удалить всё',
+  'set.resetDesc':'Сбросить весь прогресс:',
+  'set.langTitle':'Выбор языка',
+  'set.langDesc': 'Выберите язык игры:',
+
+  // ── Stats ────────────────────────────────────────────
+  'stats.crimes':   'Преступления',
+  'stats.cars':     'Угнанные машины',
+  'stats.earnings': 'Всего заработано',
+  'stats.time':     'Время в игре',
+
+  // ── Events ───────────────────────────────────────────
+  'events.desc':  'История случайных событий в городе.',
+  'events.empty': 'Событий пока нет...',
+
+  // ── Day/Night ────────────────────────────────────────
+  'cycle.current': 'Текущее время',
+  'cycle.status':  'Статус:',
+  'cycle.day':     '☀️ День',
+  'cycle.night':   '🌙 Ночь',
+
+  // ── Profile ──────────────────────────────────────────
+  'profile.cash':    'Наличные',
+  'profile.bank':    'Банк',
+  'profile.xp':      'XP Очки',
+  'profile.crimes':  'Преступления',
+  'profile.cars':    'Автопарк',
+  'profile.hp':      'Здоровье (HP)',
+  'profile.since':   'Дата регистрации',
+  'profile.level':   'Уровень',
+  'profile.accInfo': 'Информация об аккаунте',
+  'profile.rank':    'Звание',
+  'profile.created': 'Создан',
+  'profile.welcome': 'Добро пожаловать',
+
+  // ── Friends ──────────────────────────────────────────
+  'friends.requests': 'Входящие заявки',
+
+  // ── Crypto ───────────────────────────────────────────
+  'crypto.trade':     'Торговля',
+  'crypto.portfolio': 'Ваш портфель',
+  'crypto.updateNote':'Рынок обновляется каждые 5 секунд.',
+
+  // ── Notifications used via t() in JS ─────────────────
+  'notif.inPrison':    'Вы в тюрьме',
+  'notif.noEnergy':    'Недостаточно энергии',
+  'notif.noHp':        'Вы без сознания. Идите в больницу.',
+  'notif.garageFull':  'Гараж заполнен',
+  'notif.saved':       'Сохранено ✓',
+  'notif.loaded':      'Загружено ✓',
+  'notif.resetConfirm':'Уверены? Всё будет удалено безвозвратно!',
+  'notif.dailyClaim':  'Ежедневный бонус +$100!',
+  'notif.dailyAlready':'Уже получен сегодня',
+  'notif.newRank':     'Новое звание:',
+  'notif.carStolen':   'Угнан',
+  'notif.garageExpand':'Гараж +5 мест ✅',
+
+  // ── index.html specific ─────────────────────────────
+  'nav.about':     'О нас',
+  'nav.features':  'Возможности',
+  'nav.factions':  'Фракции',
+  'nav.rules':     'Правила',
+  'nav.login':     'Войти',
+  'nav.register':  'Регистрация',
+  'intro.enter':   'Войти',
+  'hero.label':    'Армянский Мафия Ролплей',
+  'hero.tagline':  'Жизнь мафии — в ваших руках',
+  'hero.play':     '▶ Начать игру',
+  'hero.login':    'Войти',
+  'hero.scroll':   'Прокрутите',
+  'login.title':   'Добро пожаловать',
+  'login.subtitle':'Вход в Cosa Nostra · Ваш аккаунт',
+  'login.email':   'Эл. почта',
+  'login.pass':    'Пароль',
+  'login.submit':  'Войти ➤',
+  'login.noAcc':   'Нет аккаунта?',
+  'login.register':'Зарегистрируйтесь',
+  'reg.title':     'Регистрация',
+  'reg.subtitle':  'Cosa Nostra · Создайте персонажа',
+  'reg.nick':      'Имя персонажа (Nickname)',
+  'reg.email':     'Эл. почта',
+  'reg.pass':      'Пароль',
+  'reg.pass2':     'Повторите пароль',
+  'reg.submit':    'Зарегистрироваться ➤',
+  'reg.hasAcc':    'Уже есть аккаунт?',
+  'reg.loginLink': 'Войти',
+};
+
+// ── Armenian notifications for t() fallback ────────────────────────
+const HY = {
+  'notif.inPrison':    'Բантум еq',
+  'notif.noEnergy':    'Энергиа чи херikhум',
+  'notif.noHp':        'Анgiтакiтс еq. Бужvеq hivandanotsеум.',
+  'notif.garageFull':  'Авtотнакy ліqс е',
+  'notif.saved':       'Պahpanvel ✓',
+  'notif.loaded':      'Берrvеl ✓',
+  'notif.resetConfirm':'Varаn? Амен inч ккоrtс, анvаkаs!',
+  'notif.dailyClaim':  'Амsорja бонус +$100!',
+  'notif.dailyAlready':'Arдем steаtsvel аjsoре',
+  'notif.newRank':     'Нор кocум:',
+  'notif.carStolen':   'Гoghаtsvel е',
+  'notif.garageExpand':'Авtотнак +5 теghер ✅',
+};
+
+// ═══════════════════════════════════════════════════════
+//   PUBLIC API
+// ═══════════════════════════════════════════════════════
+
+/** Get current language code ('hy' | 'ru') */
+function getLang() {
+  return localStorage.getItem('cnLang') || 'hy';
+}
+
+/**
+ * t(key) — translate key for use in JavaScript strings.
+ * Example: showNotification(t('notif.inPrison'), false)
+ */
+function t(key) {
+  const lang = getLang();
+  if (lang === 'ru') return RU[key] !== undefined ? RU[key] : key;
+  return HY[key] !== undefined ? HY[key] : key;
+}
+
+/**
+ * setLang(lang) — switch language and refresh all translated elements.
+ * lang: 'hy' | 'ru'
+ */
+function setLang(lang) {
+  localStorage.setItem('cnLang', lang);
+  applyLang();
+}
+
+/**
+ * applyLang() — scan DOM and update all translated elements.
+ * Safe to call multiple times.
+ */
+function applyLang() {
+  const lang = getLang();
+  const dict = lang === 'ru' ? RU : null; // null = restore original
+
+  // ── 1. [data-i18n] — full textContent replacement ────────
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    // Capture original on first pass
+    if (el.dataset.i18nOrig === undefined) {
+      el.dataset.i18nOrig = el.textContent.trim();
+    }
+    const key = el.dataset.i18n;
+    el.textContent = (dict && dict[key] !== undefined)
+      ? dict[key]
+      : el.dataset.i18nOrig;
+  });
+
+  // ── 2. [data-i18n-text] — text node only (preserves icons/badges) ─
+  document.querySelectorAll('[data-i18n-text]').forEach(el => {
+    // Capture original text nodes
+    if (el.dataset.i18nOrigText === undefined) {
+      let raw = '';
+      el.childNodes.forEach(n => {
+        if (n.nodeType === Node.TEXT_NODE) raw += n.textContent;
+      });
+      el.dataset.i18nOrigText = raw.trim();
+    }
+    const key   = el.dataset.i18nText;
+    const newTx = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nOrigText;
+    // Replace first text node, clear rest
+    let done = false;
+    el.childNodes.forEach(n => {
+      if (n.nodeType !== Node.TEXT_NODE) return;
+      if (!done) { n.textContent = ' ' + newTx; done = true; }
+      else n.textContent = '';
+    });
+    if (!done) el.appendChild(document.createTextNode(' ' + newTx));
+  });
+
+  // ── 3. [data-i18n-ph] — placeholder ─────────────────────
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    if (el.dataset.i18nPhOrig === undefined) el.dataset.i18nPhOrig = el.placeholder;
+    const key = el.dataset.i18nPh;
+    el.placeholder = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nPhOrig;
+  });
+
+  // ── 4. Update lang toggle button ─────────────────────────
+  const btn = document.getElementById('lang-toggle-btn');
+  if (btn) {
+    btn.textContent = lang === 'ru' ? '🇷🇺 РУ' : '🇦🇲 ՀՅ';
+    btn.title = lang === 'ru' ? 'Переключить язык' : 'Փоխел lezune';
+  }
+
+  // ── 5. Update lang selector buttons ──────────────────────
+  document.querySelectorAll('.cn-lang-btn').forEach(b => {
+    b.classList.toggle('cn-lang-active', b.dataset.lang === lang);
+  });
+
+  // ── 6. html[lang] ────────────────────────────────────────
+  document.documentElement.lang = lang === 'hy' ? 'hy' : 'ru';
+}
+
+// Auto-apply on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyLang);
+} else {
+  setTimeout(applyLang, 0);
+}
