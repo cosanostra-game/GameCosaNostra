@@ -793,7 +793,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">email</i>
-                <input class="auth-input" type="email" id="reg-email" placeholder="Gmail հասցե" autocomplete="email">
+                <input class="auth-input" type="email" id="reg-email" placeholder="Gmail հասցե" data-i18n-ph="auth.emailPh" autocomplete="email">
             </div>
             <div class="auth-input-wrap">
                 <i class="material-icons">lock</i>
@@ -805,7 +805,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <label class="auth-autologin">
                 <input type="checkbox" id="reg-remember" checked>
-                <span>Հիշել ինձ (ավտոմատ մուտք)</span>
+                <span data-i18n="auth.remember">Հիշել ինձ (ավտոմատ մուտք)</span>
             </label>
             <button class="auth-btn" onclick="authRegister()" data-i18n="auth.registerBtn">Գրանցվել և Խաղալ</button>
         </div>
@@ -1037,7 +1037,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <section id="page-garage" class="page">
         <h1><i class="material-icons">warehouse</i> <span data-i18n="page.garage">Ավտոտնակ</span></h1>
         <div class="garage-header">
-            <div style="font-size:16px;font-weight:600;">Տեղեր: <span id="garage-cap-display" style="color:var(--text-l);">0 / 10</span></div>
+            <div style="font-size:16px;font-weight:600;"><span data-i18n="garage.slots">Տեղեր</span>: <span id="garage-cap-display" style="color:var(--text-l);">0 / 10</span></div>
             <button onclick="upgradeGarage()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;" data-i18n="btn.expand">Ընդլայնել +5 ($2,500)</button>
         </div>
         <div id="garage-list" class="cards-grid"></div>
@@ -1046,7 +1046,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <!-- ═══════════════ INVENTORY / ARMORY PAGE ═══════════════ -->
     <section id="page-inventory" class="page">
         <h1><i class="material-icons">security</i> <span data-i18n="page.inventory">Զինանոց (Inventory)</span></h1>
-        <p style="color:var(--text);margin-bottom:24px;">Զենքերն ու զրահները ազդում են հանցագործ. հաջողության % և կորցրած HP-ի վրա:</p>
+        <p style="color:var(--text);margin-bottom:24px;" data-i18n="inv.desc">Զենքերն ու զրահները ազդում են հանցագործ. հաջողության % և կորցրած HP-ի վրա:</p>
 
         <!-- Equipped items banner -->
         <div class="garage-header" style="margin-bottom:24px;flex-wrap:wrap;gap:12px;">
@@ -1057,7 +1057,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <span id="inv-equipped-armor" style="font-size:14px;font-weight:800;color:#0a84ff;">— Ոչ —</span>
             </div>
             <div style="font-size:13px;color:var(--text);">
-                Բ. բ. <b id="inv-crime-bonus" style="color:var(--ok);">+0%</b> &nbsp;|&nbsp; HP Պաշտ. <b id="inv-hp-bonus" style="color:var(--accent);">-0 HP</b>
+                <span data-i18n="inv.crimeBonus">Բ. բ.</span> <b id="inv-crime-bonus" style="color:var(--ok);">+0%</b> &nbsp;|&nbsp; <span data-i18n="inv.hpProt">HP Պաշտ.</span> <b id="inv-hp-bonus" style="color:var(--accent);">-0 HP</b>
             </div>
         </div>
 
@@ -1068,17 +1068,17 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
         <!-- SHOP VIEW -->
         <div id="inv-shop-view">
-            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:18px 0 10px;">⚔️ Զենքեր</p>
+            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:18px 0 10px;" data-i18n="inv.weapons">⚔️ Զենքեր</p>
             <div class="cards-grid" id="inv-weapons-shop"></div>
-            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:24px 0 10px;">🛡️ Զրահ ու Հագուստ</p>
+            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:24px 0 10px;" data-i18n="inv.armor">🛡️ Զրահ ու Հագուստ</p>
             <div class="cards-grid" id="inv-armor-shop"></div>
         </div>
 
         <!-- OWNED VIEW -->
         <div id="inv-owned-view" style="display:none;">
-            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:18px 0 10px;">⚔️ Ունեցած Զենքեր</p>
+            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:18px 0 10px;" data-i18n="inv.myWeapons">⚔️ Ունեցած Զենքեր</p>
             <div class="cards-grid" id="inv-weapons-owned"></div>
-            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:24px 0 10px;">🛡️ Ունեցած Զրահ</p>
+            <p style="color:var(--text);font-size:13px;text-transform:uppercase;font-weight:700;margin:24px 0 10px;" data-i18n="inv.myArmor">🛡️ Ունեցած Զրահ</p>
             <div class="cards-grid" id="inv-armor-owned"></div>
         </div>
     </section>
@@ -1141,7 +1141,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <section id="page-business" class="page">
         <h1><i class="material-icons">work</i> <span data-i18n="page.business">Բիզնես և Լվացք</span></h1>
         <div class="garage-header">
-            <div style="font-size:16px;font-weight:600;">Բիզնես Սլոտներ: <span id="biz-slots-display" style="color:var(--text-l);">0 / 5</span></div>
+            <div style="font-size:16px;font-weight:600;"><span data-i18n="biz.slotsLabel">Բիզնես Սլոտներ</span>: <span id="biz-slots-display" style="color:var(--text-l);">0 / 5</span></div>
             <button onclick="upgradeBizSlots()" style="width:auto;padding:10px 24px; background:var(--panel); border:1px solid var(--border); color:var(--text-l); box-shadow:none;" data-i18n="btn.expand2">Ընդլայնել ($100,000)</button>
         </div>
         <div class="sub-tabs">
@@ -1172,7 +1172,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             </div>
             <div class="card">
                 <h3><i class="material-icons">nightlife</i> <span data-i18n="biz.strip">Ստրիպ Կլուբ 🔞</span></h3>
-                <p>Ստվերային ժամանց, կեղտ փողեր։ Հեղ.: 40+ | Եկամուտ. <b style="color:#af52de;">Կեղտ փողի</b> ձևով։ Max Lv: 15</p>
+                <p data-i18n="biz.strip.desc">Ստվերային ժամանց, կեղտ փողեր։ Հեղ.: 40+ | Եկամուտ. <b style="color:#af52de;">Կեղտ փողի</b> ձևով։ Max Lv: 15</p>
                 <p style="font-weight:700; color:var(--text-l); margin-bottom:14px;" data-i18n="biz.price200">Արժեք: $200,000</p>
                 <input type="text" id="stripBizName" placeholder="Կլուբի Անվանում..." data-i18n-ph="biz.clubNamePh">
                 <button style="background:#af52de;" onclick="buyStripClub()" data-i18n="btn.found">Հիմնել</button>
@@ -1181,8 +1181,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
         <!-- MONEY LAUNDERING SECTION -->
         <div class="card" style="margin-top:24px; border:1px solid rgba(175,82,222,0.4);">
-            <h3><i class="material-icons" style="color:#af52de;">volunteer_activism</i> Բարեգործական Ֆոնդ <span style="font-size:12px;color:var(--text);font-weight:400;">(Փողերի Լվացք)</span></h3>
-            <p style="margin-bottom:12px;">Ստրիպ կլուբի և զենքի արտ. եկամուտները «կեղտ» են։ Ֆոնդի միջոցով կարող ես մաքրել դրանք — 30% կտրեցվի «բարեգործության» անուն տակ։</p>
+            <h3><i class="material-icons" style="color:#af52de;">volunteer_activism</i> <span data-i18n="biz.launderTitle">Բարեգործական Ֆոնդ</span> <span style="font-size:12px;color:var(--text);font-weight:400;" data-i18n="biz.launderSub">(Փողերի Լվացք)</span></h3>
+            <p style="margin-bottom:12px;" data-i18n="biz.launderDesc">Ստրիպ կլուբի և զենքի արտ. եկամուտները «կեղտ» են։ Ֆոնդի միջոցով կարող ես մաքրել դրանք — 30% կտրեցվի «բարեգործության» անուն տակ։</p>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
                 <span style="font-size:15px;color:var(--text);"><span data-i18n="biz.dirtyMoney">🚫💰 Կեղտ Փող:</span></span>
                 <span id="dirtyMoneyDisplay" style="font-size:20px;font-weight:800;color:#af52de;">$0</span>
@@ -1304,7 +1304,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <p style="color:var(--text); margin-bottom: 24px;"><span data-i18n="stash.desc">Այս գումարը պաշտպանված է ոստիկանական առգրավումներից կամ այլ կորուստներից։</span></p>
         <div class="cards-grid">
             <div class="form-box">
-                <p style="font-size:16px;margin-bottom:20px;text-align:center;color:var(--text);">Պահեստավորված</p>
+                <p style="font-size:16px;margin-bottom:20px;text-align:center;color:var(--text);" data-i18n="stash.stored">Պահեստավորված</p>
                 <h2 style="color:var(--text-l);font-size:36px;text-align:center;margin-bottom:24px;">$<span id="stashDisplay">0</span></h2>
                 <input type="number" id="stashInAmt" placeholder="Մուտքագրել ($)..." data-i18n-ph="stash.inPh">
                 <button style="background:var(--ok); margin-bottom: 16px;" onclick="stashAction('in')" data-i18n="btn.hide">Թաքցնել</button>
@@ -1316,7 +1316,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <section id="page-hospital" class="page">
         <h1><i class="material-icons">local_hospital</i> <span data-i18n="page.hospital">Հիվանդանոց</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Առողջություն (HP): <span id="hp-hosp" style="color:var(--text-l); font-weight:bold;">100</span> / 100</p>
+        <p style="color:var(--text); margin-bottom: 24px;"><span data-i18n="hosp.hp">Առողջություն (HP):</span> <span id="hp-hosp" style="color:var(--text-l); font-weight:bold;">100</span> / 100</p>
         <div class="cards-grid">
             <div class="card">
                 <h3><i class="material-icons">vaccines</i> <span data-i18n="hosp.light">Թեթև Բուժում</span></h3>
@@ -1339,14 +1339,14 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="cards-grid">
             <div class="card">
                 <h3><i class="material-icons">monitor_heart</i> <span data-i18n="train.phys">Ֆիզիկական Պատրաստվածություն</span></h3>
-                <p>+5 Առավելագույն HP (Max HP: <span id="max-hp-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
+                <p><span data-i18n="train.physDesc">+5 Առավելագույն HP</span> (Max HP: <span id="max-hp-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="train.price500">Արժեք: $500</p>
                 <button onclick="trainSkill('hp')" data-i18n="btn.train">Վարժվել</button>
             </div>
             <div class="card">
                 <h3><i class="material-icons">bolt</i> <span data-i18n="train.mental">Մտավոր Պատրաստվածություն</span></h3>
-                <p>+5 Առավելագույն Էներգիա (Max Nrg: <span id="max-energy-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
-                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $500</p>
+                <p><span data-i18n="train.mentDesc">+5 Առավելագույն Էներգիա</span> (Max Nrg: <span id="max-energy-display" style="color:var(--text-l);font-weight:bold;">100</span>)</p>
+                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="train.price500">Արժեք: $500</p>
                 <button style="background:#0a84ff;" onclick="trainSkill('energy')" data-i18n="btn.train">Վարժվել</button>
             </div>
         </div>
@@ -1354,13 +1354,13 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <section id="page-reputation" class="page">
         <h1><i class="material-icons">handshake</i> <span data-i18n="page.reputation">Համբավ</span></h1>
-        <p style="color:var(--text); margin-bottom: 24px;">Քո հեղինակությունը քաղաքում։ Բարձր համբավը նվազեցնում է ձերբակալման ռիսկը և բացում է նոր բիզնեսներ։</p>
+        <p style="color:var(--text); margin-bottom: 24px;" data-i18n="rep.desc">Քո հեղինակությունը քաղաքում։ Բարձր համբավը նվազեցնում է ձերբակալման ռիսկը և բացում է նոր բիզնեսներ։</p>
         <div class="form-box" style="max-width:500px;">
             <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);">Մակարդակ: <span id="rep-level" style="color:var(--warn)">50</span>/100</h2>
             <div class="card" style="border: 1px solid var(--border); box-shadow:none;">
-                <h3><i class="material-icons">payments</i> Բարեգործություն / Կաշառք Քաղաքապետարանին</h3>
-                <p>Նվիրաբերելով գումար, դուք գնում եք քաղաքի լռությունը: +5 Համբավ</p>
-                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">Արժեք: $2,000</p>
+                <h3><i class="material-icons">payments</i> <span data-i18n="rep.donation">Բարեգործություն / Կաշառք Քաղաքապետարանին</span></h3>
+                <p data-i18n="rep.donDesc">Նվիրաբերելով գումար, դուք գնում եք քաղաքի լռությունը: +5 Համբավ</p>
+                <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;" data-i18n="rep.donPrice">Արժեք: $2,000</p>
                 <button style="background:var(--ok);" onclick="donateReputation()" data-i18n="btn.donate">Վճարել</button>
             </div>
         </div>
@@ -1392,7 +1392,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#af52de;margin-bottom:16px;">hourglass_bottom</i>
                 <h3 style="justify-content:center;" data-i18n="stats.time">Խաղացած ժամանակ</h3>
-                <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-time">0 րոպե</p>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;" id="stat-time">0 <span data-i18n="stats.timeUnit">րոպե</span></p>
             </div>
         </div>
     </section>
@@ -1487,7 +1487,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <section id="page-families" class="page">
         <h1><i class="material-icons">groups</i> <span data-i18n="page.families">Ընտանիքներ</span></h1>
-        <p style="color:var(--text);margin-bottom:20px;">Քաղաքի 5 հայտնի մաֆիոզ ընտանիքները, որոնք կիսել են տարածքը։ Հասիր <b style="color:var(--accent);">Մաֆիոզ</b> կոչումին և ունեցիր <b style="color:var(--ok);">$250,000</b> — ստեղծիր 6-րդ ընտանիքը։</p>
+        <p style="color:var(--text);margin-bottom:20px;" data-i18n="families.desc">Քաղաքի 5 հայտնի մաֆիոզ ընտանիքները, որոնք կիսել են տարածքը։ Հասիր <b style="color:var(--accent);">Մաֆիոզ</b> կոչումին և ունեցիր <b style="color:var(--ok);">$250,000</b> — ստեղծիր 6-րդ ընտանիքը։</p>
         <div id="families-npc-list" class="cards-grid"></div>
         <div id="my-family-section" style="margin-top:24px;"></div>
     </section>
@@ -1512,13 +1512,13 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <div class="profile-badge"><i class="material-icons" style="font-size:14px;">military_tech</i><span id="profile-hero-rank">Դատարկապորտ</span></div>
                 <div class="profile-hero-actions">
                     <button class="profile-action-btn" onclick="openEditProfileModal()">
-                        <i class="material-icons" style="font-size:16px;">edit</i> Խմբագրել
+                        <i class="material-icons" style="font-size:16px;">edit</i> <span data-i18n="btn.edit">Խմբագրել</span>
                     </button>
                     <button class="profile-action-btn" onclick="authLogout()">
-                        <i class="material-icons" style="font-size:16px;">logout</i> Ելք
+                        <i class="material-icons" style="font-size:16px;">logout</i> <span data-i18n="btn.logout">Ելք</span>
                     </button>
                     <button class="profile-action-btn danger" onclick="deleteCurrentProfile()">
-                        <i class="material-icons" style="font-size:16px;">delete_forever</i> Ջնջել Պրոֆիլը
+                        <i class="material-icons" style="font-size:16px;">delete_forever</i> <span data-i18n="btn.deleteProfile">Ջնջել Պրոֆիլը</span>
                     </button>
                 </div>
             </div>
@@ -1597,7 +1597,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <div class="card" style="max-width:700px;margin:0 auto;">
         <h2 style="margin-bottom:18px;font-size:20px;color:var(--text-l);">
             <i class="material-icons" style="vertical-align:middle;color:var(--accent);">people</i>
-            Ընկերներ
+            <span data-i18n="friends.title">Ընկերներ</span>
         </h2>
 
         <!-- Search -->
@@ -1615,18 +1615,16 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div id="friends-requests-section" style="display:none;">
             <div class="friends-section-title">
                 <i class="material-icons" style="font-size:16px;color:var(--accent);">mark_email_unread</i>
-                Ստացված Հայտեր
+                <span data-i18n="friends.incoming">Ստացված Հայտեր</span>
             </div>
             <div id="friends-requests-list"></div>
         </div>
 
         <!-- Friends list -->
         <div class="friends-section-title">
-            <i class="material-icons" style="font-size:16px;color:var(--ok);">group</i><span data-i18n="friends.requests">
-            Ընկերների Ցուցակ
-        </span></div>
+            <i class="material-icons" style="font-size:16px;color:var(--ok);">group</i><span data-i18n="friends.list">Ընկերների Ցուցակ</span></div>
         <div id="friends-list-container">
-            <div class="friends-empty">Բեռնվում է...</div>
+            <div class="friends-empty" data-i18n="loading">Բեռնվում է...</div>
         </div>
     </div>
 </section>

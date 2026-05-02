@@ -488,9 +488,68 @@ if (document.readyState === 'loading') {
   setTimeout(applyLang, 0);
 }
 
-// ── HY dict additions for new keys ───────────────────────────────
-// (These have Armenian originals in DOM, HY dict only needed for t() calls)
-Object.assign(HY, {
+// ── Final additions ───────────────────────────────────────────────
+Object.assign(RU, {
+  // Auth
+  'auth.emailPh':     'Электронная почта',
+  'auth.remember':    'Запомнить меня (автовход)',
+
+  // Garage
+  'garage.slots':     'Места',
+
+  // Inventory
+  'inv.desc':         'Оружие и броня влияют на % успеха в преступлениях и на потерю HP.',
+  'inv.crimeBonus':   'Бонус прест.',
+  'inv.hpProt':       'Защита HP',
+  'inv.weapons':      '⚔️ Оружие',
+  'inv.armor':        '🛡️ Броня и Одежда',
+  'inv.myWeapons':    '⚔️ Моё Оружие',
+  'inv.myArmor':      '🛡️ Моя Броня',
+
+  // Business
+  'biz.slotsLabel':   'Слоты Бизнеса',
+  'biz.strip.desc':   'Теневой досуг, грязные деньги. Реп.: 40+ | Доход: в виде <b style="color:#af52de;">грязных денег</b>. Max Lv: 15',
+  'biz.launderTitle': 'Благотворительный Фонд',
+  'biz.launderSub':   '(Отмывание Денег)',
+  'biz.launderDesc':  'Доходы стриптиз-клуба и оружейного завода — «грязные». Через фонд их можно отмыть — 30% уйдёт на «благотворительность».',
+
+  // Stash
+  'stash.stored':     'Хранится',
+
+  // Hospital
+  'hosp.hp':          'Здоровье (HP):',
+
+  // Training
+  'train.physDesc':   '+5 Максимальный HP',
+  'train.mentDesc':   '+5 Максимальная Энергия',
+
+  // Reputation
+  'rep.desc':         'Ваша репутация в городе. Высокая репутация снижает риск ареста и открывает новые бизнесы.',
+  'rep.donation':     'Благотворительность / Взятка мэрии',
+  'rep.donDesc':      'Жертвуя деньги, покупаете молчание города. +5 Репутация',
+  'rep.donPrice':     'Стоимость: $2,000',
+
+  // Stats
+  'stats.timeUnit':   'мин.',
+
+  // Families
+  'families.desc':    'Пять известных мафиозных семей, поделивших город. Достигни звания <b style="color:var(--accent);">Мафиози</b> и накопи <b style="color:var(--ok);">$250,000</b> — создай 6-ю семью.',
+
+  // Profile
+  'btn.edit':         'Редактировать',
+  'btn.logout':       'Выход',
+  'btn.deleteProfile':'Удалить профиль',
+
+  // Friends
+  'friends.title':    'Друзья',
+  'friends.incoming': 'Входящие заявки',
+  'friends.list':     'Список друзей',
+  'friends.requests': 'Входящие заявки',
+
+  // General
+  'loading':          'Загрузка...',
+});
+
   'pre.loading':   'Բեռնում...',
   'btn.commit':    'Կատարել',
   'btn.extort':    'Շորթել',
