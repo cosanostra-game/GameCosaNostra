@@ -3167,6 +3167,9 @@ function switchTab(id, el) {
     if (id === 'main')        updateUI();
     if (id === 'friends')     renderFriendsPage();
     if (id === 'messages')    initMessagesPage();
+    // Scroll to top when switching sections
+    const mc = document.querySelector('.main-content');
+    if (mc) mc.scrollTop = 0;
     playTone('coin', .05);
 }
 
