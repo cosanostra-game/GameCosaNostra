@@ -1082,6 +1082,12 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
    MOBILE TOP APP BAR  (hidden on desktop)
 ════════════════════════════════════════════════ */
 #mobile-top-bar { display: none; }
+/* Mobile-only overlay elements: hidden on desktop, revealed by media query */
+#mob-dropdown,
+#mob-dd-backdrop,
+#mob-more-drawer,
+#mob-drawer-backdrop { display: none; }
+
 
 @media (max-width: 800px) {
   /* ── Show Top App Bar ── */
@@ -1147,6 +1153,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
   /* ── Profile Dropdown ── */
   #mob-dropdown {
+    display: block;
     position: fixed;
     top: 62px; right: 10px;
     background: var(--panel-solid);
@@ -1205,6 +1212,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
   /* ── More Drawer (bottom sheet) ── */
   #mob-more-drawer {
+    display: block;
     position: fixed;
     left: 0; right: 0; bottom: 0;
     z-index: 900;
