@@ -727,6 +727,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         .cn-lang-btn:hover { border-color: var(--accent) !important; transform: translateY(-1px); }
         .cn-lang-btn.cn-lang-active { border-color: var(--accent) !important; background: rgba(255,59,48,0.15) !important; box-shadow: 0 0 0 3px rgba(255,59,48,.18); }
         #lang-toggle-btn { font-size:13px; letter-spacing:.5px; }
+
 /* ============================================================
    RESPONSIVE / MOBILE MEDIA QUERIES
    Covers: index.html + landing.html
@@ -1340,6 +1341,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     min-width: 0 !important;
   }
 }
+
 </style>
 </head>
 <body data-theme="dark">
@@ -1447,19 +1449,19 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <img id="mob-dd-img" src="" style="display:none;" alt="">
         </div>
         <div>
-            <div class="mob-dd-name" id="mob-dd-name">Խaghacox</div>
-            <div class="mob-dd-rank" id="mob-dd-rank">Datarkaport</div>
+            <div class="mob-dd-name" id="mob-dd-name">Խաղացող</div>
+            <div class="mob-dd-rank" id="mob-dd-rank">Դատarkaport</div>
         </div>
     </div>
     <div class="mob-dd-item" onclick="switchTab('profile',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
-        <i class="material-icons">account_circle</i> Iм Profilĕ
+        <i class="material-icons">account_circle</i> Իմ Պրոֆիլը
     </div>
     <div class="mob-dd-item" onclick="switchTab('settings',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
-        <i class="material-icons">settings</i> Kargatavorumner
+        <i class="material-icons">settings</i> Կարգավորումներ
     </div>
     <div class="mob-dd-divider"></div>
     <div class="mob-dd-item mob-dd-danger" onclick="authLogout()">
-        <i class="material-icons">logout</i> Elq (Logout)
+        <i class="material-icons">logout</i> Ելք (Logout)
     </div>
 </div>
 <div id="mob-dd-backdrop" onclick="closeMobDropdown()"></div>
@@ -1468,16 +1470,16 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 <div id="mob-more-drawer">
     <div class="mob-drawer-grip"></div>
     <div class="mob-drawer-hdr">
-        <span>Barrer Bajinnerĕ</span>
+        <span>Բոլոր Բաժինները</span>
         <button class="mob-drawer-close-btn" onclick="closeMobDrawer()"><i class="material-icons">close</i></button>
     </div>
 
-    <div class="mob-drawer-section">Himnakanĕ</div>
+    <div class="mob-drawer-section">Հիmnakan</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="switchTab('cars',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Avtoarevangyum</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('garage',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Avtotnak</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('inventory',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Zinанос</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('dealership',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Avtosalon</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('cars',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Ավtoարevangym</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('garage',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Ավtotnak</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('inventory',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Zinanos</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('dealership',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Ávtosalon</span></div>
     </div>
 
     <div class="mob-drawer-section">Finansner</div>
@@ -1569,10 +1571,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <li><a onclick="switchTab('leaderboard',this)"><i class="material-icons">emoji_events</i><span class="menu-label" data-i18n="menu.leaderboard">Լիդերբորդ</span></a></li>
         <li><a onclick="switchTab('settings',this)"><i class="material-icons">settings</i><span class="menu-label" data-i18n="menu.settings">Կարգավորումներ</span></a></li>
         <li><a onclick="switchTab('profile',this)"><i class="material-icons">account_circle</i><span class="menu-label" data-i18n="menu.profile">Իմ Պրոֆիլը</span></a></li>
-        <!-- MOBILE MORE BUTTON -->
-        <li id="mob-more-li" style="display:none;"><button class="mob-more-nav-btn" onclick="openMobDrawer()"><i class="material-icons">apps</i><span>Ավ­ելին</span></button></li>
     </ul>
-
 
     <div class="daily-bonus-btn" id="daily-bonus-btn" onclick="claimDailyBonus()">
         <i class="material-icons">redeem</i>
@@ -3729,9 +3728,6 @@ function updateUI() {
     _set('my-biz-count',    player.businesses.length);
     _set('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
     _set('sidebar-rank-val', player.rank);
-    // ── Mobile rank chip ──
-    const mobRankChip = document.getElementById('mob-rank-chip'); if (mobRankChip) mobRankChip.textContent = player.rank;
-    const mobDdRank = document.getElementById('mob-dd-rank'); if (mobDdRank) mobDdRank.textContent = player.rank;
     _set('main-welcome-rank', '⭐ ' + player.rank);
     _set('stashDisplay',    player.stash.toLocaleString());
 
@@ -5996,7 +5992,6 @@ window._chatSocketInit = function() {
         </div>
     </div>
 </div>
-
 
 <script>
 // ═══════════════════════════════════════════════
