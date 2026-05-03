@@ -727,7 +727,355 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         .cn-lang-btn:hover { border-color: var(--accent) !important; transform: translateY(-1px); }
         .cn-lang-btn.cn-lang-active { border-color: var(--accent) !important; background: rgba(255,59,48,0.15) !important; box-shadow: 0 0 0 3px rgba(255,59,48,.18); }
         #lang-toggle-btn { font-size:13px; letter-spacing:.5px; }
+/* ============================================================
+   RESPONSIVE / MOBILE MEDIA QUERIES
+   Covers: index.html + landing.html
+   Breakpoints: 900 | 800 | 650 | 480 | 380
+   ============================================================ */
 
+/* ── 900px: Tablet & wide-phone landscape ────────────────── */
+@media (max-width: 900px) {
+  /* Index */
+  .wiki-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 20px;
+  }
+  .infobox { order: -1; }
+  .hero-stats { display: none; }
+  .hero-inner { padding: 0 20px; }
+  .two-col {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .nav-links { display: none; }
+  footer { padding: 36px 20px; }
+  .promo-band { padding: 52px 20px; }
+  .section-full { padding: 0 20px 36px; }
+  .faction-row {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .feature-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  /* Modal — index */
+  .modal {
+    width: calc(100% - 32px);
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+/* ── 800px: Mobile landscape / small tablet portrait ─────── */
+@media (max-width: 800px) {
+  /* ---- Body / shell ---- */
+  body {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* ---- Sidebar → bottom app bar ---- */
+  .sidebar {
+    width: 100% !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    z-index: 1000;
+    padding: 0 !important;
+    border-top: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.35);
+  }
+
+  /* Hide non-nav sidebar elements */
+  .logo,
+  .sidebar-player,
+  .daily-bonus-btn,
+  .sidebar-toggle,
+  .menu-section-title,
+  .sidebar-footer {
+    display: none !important;
+  }
+
+  /* Nav menu → horizontal icon bar */
+  .menu {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex: 1 !important;
+    height: 60px !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 0 !important;
+  }
+  .menu::-webkit-scrollbar { display: none; }
+
+  .menu li {
+    list-style: none;
+    flex: 1 0 auto;
+    min-width: 56px;
+    max-width: 80px;
+    display: flex;
+  }
+
+  .menu li a {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 8px !important;
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    width: 100%;
+    gap: 3px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 0 !important;
+  }
+
+  .menu li a .menu-icon,
+  .menu li a i,
+  .menu li a svg {
+    font-size: 18px !important;
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0;
+  }
+
+  /* ---- Main content area ---- */
+  .main-content {
+    padding-bottom: 70px !important; /* clear bottom bar */
+    height: auto !important;
+    min-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* ---- Topbar ---- */
+  .topbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px 14px !important;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-left,
+  .topbar-right,
+  .topbar-center {
+    width: 100%;
+  }
+
+  /* ---- Stat boxes ---- */
+  .stat-box {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .stat {
+    flex: 1 1 calc(50% - 8px) !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* ---- Cards / grids ---- */
+  .cards-grid,
+  .list-am-grid,
+  .feature-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* ---- Two-col (index) ---- */
+  .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* ---- Chat layout ---- */
+  .chat-layout {
+    flex-direction: column !important;
+    height: calc(100dvh - 70px) !important;
+  }
+  .chat-contacts {
+    width: 100% !important;
+    height: 160px !important;
+    flex-shrink: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .chat-contacts-list {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 8px;
+    padding: 8px;
+    align-items: center;
+  }
+  .chat-contacts-list::-webkit-scrollbar { display: none; }
+
+  .chat-main {
+    flex: 1 !important;
+    min-height: 0 !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Modals ---- */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+  .modal-box {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 90dvh !important;
+    overflow-y: auto !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 20px 16px 32px !important;
+  }
+  .modal-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+  }
+  .modal-overlay,
+  .modal-backdrop {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+}
+
+/* ── 650px: Standard phones portrait ────────────────────── */
+@media (max-width: 650px) {
+  /* ---- Chat (override) ---- */
+  .chat-layout {
+    height: calc(100dvh - 70px) !important;
+    flex-direction: column !important;
+  }
+  .chat-contacts {
+    width: 100% !important;
+    height: 140px !important;
+  }
+
+  /* ---- Topbar tighter ---- */
+  .topbar {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  /* ---- Stats single column ---- */
+  .stat {
+    flex: 1 1 calc(50% - 6px) !important;
+  }
+
+  /* ---- Page section padding ---- */
+  .section-full { padding: 0 12px 28px !important; }
+  .wiki-layout  { padding: 20px 12px !important; }
+
+  /* ---- Faction row: 2 columns ---- */
+  .faction-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+/* ── 480px: Small phones ─────────────────────────────────── */
+@media (max-width: 480px) {
+  /* ---- Bottom bar slightly taller for thumb targets ---- */
+  .sidebar {
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+  }
+  .menu { height: 58px !important; }
+  .main-content { padding-bottom: 68px !important; }
+
+  .menu li a {
+    font-size: 8.5px !important;
+    padding: 5px 6px !important;
+  }
+  .menu li a .menu-icon,
+  .menu li a i,
+  .menu li a svg {
+    font-size: 17px !important;
+  }
+
+  /* ---- Stats always full row ---- */
+  .stat { flex: 1 1 calc(50% - 4px) !important; }
+
+  /* ---- Modals ---- */
+  .modal-box {
+    padding: 16px 12px 28px !important;
+    max-height: 92dvh !important;
+  }
+
+  /* ---- Typography scale-down ---- */
+  .topbar { padding: 8px 10px !important; }
+
+  /* ---- Faction row: 2 col still, smaller gap ---- */
+  .faction-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .cards-grid,
+  .list-am-grid {
+    gap: 10px !important;
+  }
+
+  .chat-contacts { height: 120px !important; }
+}
+
+/* ── 380px: Very small / budget phones ──────────────────── */
+@media (max-width: 380px) {
+  .menu li { min-width: 48px; }
+  .menu li a {
+    font-size: 8px !important;
+    padding: 4px 4px !important;
+    gap: 2px !important;
+  }
+  .menu li a .menu-icon,
+  .menu li a i,
+  .menu li a svg {
+    font-size: 16px !important;
+  }
+
+  .stat { flex: 1 1 100% !important; }
+
+  .faction-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .modal-box { padding: 14px 10px 24px !important; }
+}
 </style>
 </head>
 <body data-theme="dark">
@@ -3124,7 +3472,7 @@ function checkRank() {
 // Cached page/menu elements — built once on first switchTab call
 let _tabPages = null;
 let _tabMenuLinks = null;
-let _activeTabId = null;
+let _activeTabId = 'main';
 
 function switchTab(id, el) {
     if (id === _activeTabId) return; // already active — skip
