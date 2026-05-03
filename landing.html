@@ -1076,6 +1076,270 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
   .modal-box { padding: 14px 10px 24px !important; }
 }
+
+/* ════════════════════════════════════════════════
+   MOBILE TOP APP BAR  (hidden on desktop)
+════════════════════════════════════════════════ */
+#mobile-top-bar { display: none; }
+
+@media (max-width: 800px) {
+  /* ── Show Top App Bar ── */
+  #mobile-top-bar {
+    display: flex;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    z-index: 600;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px 0 16px;
+    background: var(--panel);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 16px rgba(0,0,0,.35);
+    gap: 10px;
+  }
+
+  .mob-top-logo {
+    font-size: 17px; font-weight: 800; color: var(--text-l);
+    letter-spacing: 1px; font-family: 'Montserrat', sans-serif;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .mob-top-logo span { color: var(--accent); }
+
+  .mob-rank-chip {
+    flex: 1;
+    text-align: center;
+    background: rgba(255,59,48,.14);
+    border: 1px solid rgba(255,59,48,.3);
+    color: var(--accent);
+    font-size: 11px; font-weight: 700;
+    padding: 5px 10px; border-radius: 20px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 140px; margin: 0 auto;
+  }
+
+  /* Avatar trigger */
+  .mob-avatar-btn {
+    background: transparent; border: none; padding: 0;
+    width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; box-shadow: none; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mob-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff;
+    overflow: hidden; border: 2px solid var(--accent);
+    background: var(--accent); font-family: 'Montserrat', sans-serif;
+    user-select: none; position: relative;
+    box-shadow: 0 0 0 3px rgba(255,59,48,.22);
+    transition: box-shadow .2s;
+  }
+  .mob-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; inset: 0; border-radius: 50%;
+  }
+  .mob-avatar-btn:active .mob-avatar { box-shadow: 0 0 0 5px rgba(255,59,48,.4); }
+
+  /* ── Profile Dropdown ── */
+  #mob-dropdown {
+    position: fixed;
+    top: 62px; right: 10px;
+    background: var(--panel-solid);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    min-width: 190px;
+    z-index: 700;
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    overflow: hidden;
+    transform: scale(0.88) translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all .22s cubic-bezier(.16,1,.3,1);
+    transform-origin: top right;
+  }
+  #mob-dropdown.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mob-dd-user {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mob-dd-user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: #fff;
+    overflow: hidden; background: var(--accent); flex-shrink: 0; position: relative;
+  }
+  .mob-dd-user-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; border-radius: 50%; }
+  .mob-dd-name { font-size: 13px; font-weight: 700; color: var(--text-l); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .mob-dd-rank { font-size: 10px; color: var(--accent); font-weight: 600; margin-top: 1px; }
+
+  .mob-dd-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 18px;
+    font-size: 14px; font-weight: 600; color: var(--text-l);
+    cursor: pointer; transition: background .14s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-dd-item i { font-size: 20px; color: var(--text); flex-shrink: 0; }
+  .mob-dd-item:active { background: rgba(255,59,48,.08); }
+  .mob-dd-divider { height: 1px; background: var(--border); }
+  .mob-dd-danger { color: var(--accent) !important; }
+  .mob-dd-danger i { color: var(--accent) !important; }
+
+  #mob-dd-backdrop {
+    position: fixed; inset: 0;
+    z-index: 699; display: none;
+  }
+  #mob-dd-backdrop.active { display: block; }
+
+  /* ── More Drawer (bottom sheet) ── */
+  #mob-more-drawer {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 900;
+    background: var(--panel);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    padding: 0 12px calc(70px + env(safe-area-inset-bottom, 12px)) 12px;
+    transform: translateY(100%);
+    transition: transform .32s cubic-bezier(.4,0,.2,1);
+    max-height: 78dvh;
+    overflow-y: auto;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.5);
+    scrollbar-width: none;
+  }
+  #mob-more-drawer::-webkit-scrollbar { display: none; }
+  #mob-more-drawer.open { transform: translateY(0); }
+
+  #mob-drawer-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    z-index: 899;
+    display: none;
+  }
+  #mob-drawer-backdrop.active { display: block; }
+
+  .mob-drawer-grip {
+    width: 40px; height: 4px;
+    background: var(--border); border-radius: 4px;
+    margin: 12px auto 16px;
+  }
+  .mob-drawer-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px; margin-bottom: 14px;
+    font-size: 15px; font-weight: 700; color: var(--text-l);
+  }
+  .mob-drawer-close-btn {
+    width: 32px; height: 32px; padding: 0;
+    background: var(--border); border-radius: 50%;
+    border: none; color: var(--text-l);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; box-shadow: none; cursor: pointer;
+  }
+  .mob-drawer-section {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--text); font-weight: 700;
+    padding: 10px 4px 6px; margin-bottom: 2px;
+  }
+  .mob-drawer-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-bottom: 8px;
+  }
+  .mob-drawer-cell {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 5px;
+    padding: 13px 6px 11px;
+    background: var(--panel-solid);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative; overflow: hidden;
+  }
+  .mob-drawer-cell:active { transform: scale(0.93); background: rgba(255,59,48,.1); }
+  .mob-drawer-cell.active { border-color: var(--accent); background: rgba(255,59,48,.12); }
+  .mob-drawer-cell.active i,
+  .mob-drawer-cell.active .mob-dc-label { color: var(--accent); }
+  .mob-drawer-cell i { font-size: 22px; color: var(--text-l); }
+  .mob-dc-label { font-size: 9.5px; color: var(--text); font-weight: 600; line-height: 1.2; text-align: center; }
+  .mob-dc-badge {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--accent); color: #fff;
+    font-size: 9px; font-weight: 800;
+    padding: 1px 5px; border-radius: 8px;
+    min-width: 16px; text-align: center;
+  }
+
+  /* ── "More" button in bottom nav ── */
+  .mob-more-nav-btn {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 8px !important;
+    font-size: 9px !important;
+    gap: 3px !important;
+    color: var(--text) !important;
+    cursor: pointer;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 60px;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 0 !important;
+    font-weight: 600 !important;
+    transition: color .15s;
+  }
+  .mob-more-nav-btn i { font-size: 20px !important; width: 20px !important; }
+  .mob-more-nav-btn:hover { filter: none !important; transform: none !important; background: none !important; color: var(--accent) !important; }
+  .mob-more-nav-btn:active { transform: none !important; }
+
+  /* ── Compensate for top bar ── */
+  .main-content { padding-top: 56px !important; }
+
+  /* ── Hide sb-profile from bottom bar ── */
+  .sb-profile { display: none !important; }
+
+  /* ── Hide avatar in topbar (moved to mobile top bar) ── */
+  .topbar-avatar { display: none !important; }
+
+  /* ── Tighten topbar on mobile ── */
+  .topbar {
+    border-radius: 0 !important;
+    padding: 10px 14px !important;
+    gap: 8px !important;
+  }
+
+  /* ── Show only priority nav items + hide rest ── */
+  .menu li { display: none !important; }
+  .menu li[data-mob-show] {
+    display: flex !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  /* Show the More button in mobile bottom nav */
+  #mob-more-li {
+    display: flex !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+}
 </style>
 </head>
 <body data-theme="dark">
@@ -1161,6 +1425,91 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════
+     MOBILE TOP APP BAR (visible only on mobile)
+═══════════════════════════════════════════════════ -->
+<div id="mobile-top-bar">
+    <div class="mob-top-logo">COSA <span>NOSTRA</span></div>
+    <div class="mob-rank-chip" id="mob-rank-chip">Դatarkaport</div>
+    <button class="mob-avatar-btn" onclick="toggleMobDropdown()" aria-label="Profile menu">
+        <div class="mob-avatar" id="mob-avatar-el">
+            <span id="mob-avatar-initials">Ա</span>
+            <img id="mob-avatar-img" src="" style="display:none;" alt="">
+        </div>
+    </button>
+</div>
+
+<!-- MOBILE PROFILE DROPDOWN -->
+<div id="mob-dropdown">
+    <div class="mob-dd-user">
+        <div class="mob-dd-user-avatar" id="mob-dd-avatar">
+            <span id="mob-dd-initials">Ա</span>
+            <img id="mob-dd-img" src="" style="display:none;" alt="">
+        </div>
+        <div>
+            <div class="mob-dd-name" id="mob-dd-name">Խaghacox</div>
+            <div class="mob-dd-rank" id="mob-dd-rank">Datarkaport</div>
+        </div>
+    </div>
+    <div class="mob-dd-item" onclick="switchTab('profile',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
+        <i class="material-icons">account_circle</i> Iм Profilĕ
+    </div>
+    <div class="mob-dd-item" onclick="switchTab('settings',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
+        <i class="material-icons">settings</i> Kargatavorumner
+    </div>
+    <div class="mob-dd-divider"></div>
+    <div class="mob-dd-item mob-dd-danger" onclick="authLogout()">
+        <i class="material-icons">logout</i> Elq (Logout)
+    </div>
+</div>
+<div id="mob-dd-backdrop" onclick="closeMobDropdown()"></div>
+
+<!-- MOBILE MORE DRAWER (all menu items as a bottom sheet) -->
+<div id="mob-more-drawer">
+    <div class="mob-drawer-grip"></div>
+    <div class="mob-drawer-hdr">
+        <span>Barrer Bajinnerĕ</span>
+        <button class="mob-drawer-close-btn" onclick="closeMobDrawer()"><i class="material-icons">close</i></button>
+    </div>
+
+    <div class="mob-drawer-section">Himnakanĕ</div>
+    <div class="mob-drawer-grid">
+        <div class="mob-drawer-cell" onclick="switchTab('cars',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Avtoarevangyum</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('garage',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Avtotnak</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('inventory',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Zinанос</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('dealership',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Avtosalon</span></div>
+    </div>
+
+    <div class="mob-drawer-section">Finansner</div>
+    <div class="mob-drawer-grid">
+        <div class="mob-drawer-cell" onclick="switchTab('business',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">work</i><span class="mob-dc-label">Biznes</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('crypto',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">currency_bitcoin</i><span class="mob-dc-label">Kripto</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('estate',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">business</i><span class="mob-dc-label">Anshn.Guyq</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('stash',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">inventory_2</i><span class="mob-dc-label">Gaytni Pahest</span></div>
+    </div>
+
+    <div class="mob-drawer-section">Yndhatak</div>
+    <div class="mob-drawer-grid">
+        <div class="mob-drawer-cell" onclick="switchTab('prison',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">lock</i><span class="mob-dc-label">Bant</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('hospital',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">local_hospital</i><span class="mob-dc-label">Hivandanoc</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('training',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">fitness_center</i><span class="mob-dc-label">Varzhetsyum</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('reputation',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">handshake</i><span class="mob-dc-label">Hambav</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('families',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">groups</i><span class="mob-dc-label">Yntaniqner</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('friends',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">people</i><span class="mob-dc-label">Ynkerner</span></div>
+    </div>
+
+    <div class="mob-drawer-section">Havayelyal</div>
+    <div class="mob-drawer-grid">
+        <div class="mob-drawer-cell" onclick="switchTab('quests',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label">Orva Khndir</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('daynight',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label">Gisher/Tserek</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('events',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label">Iradartsutyunner</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('stats',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label">Vichakagrutyun</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('leaderboard',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label">Liderboard</span></div>
+        <div class="mob-drawer-cell" onclick="switchTab('profile',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">account_circle</i><span class="mob-dc-label">Profilĕ</span></div>
+    </div>
+</div>
+<div id="mob-drawer-backdrop" onclick="closeMobDrawer()"></div>
+
 <nav class="sidebar" id="sidebar">
     <div class="logo">
         <div class="logo-text">Cosa <span>Nostra</span></div>
@@ -1188,17 +1537,17 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
     <ul class="menu">
         <div class="menu-section-title" data-i18n="section.main">Հիմնական</div>
-        <li><a onclick="switchTab('main',this)" class="active"><i class="material-icons">home</i><span class="menu-label" data-i18n="menu.main">Գլխավոր</span></a></li>
-        <li><a onclick="switchTab('crimes',this)"><i class="material-icons">my_location</i><span class="menu-label" data-i18n="menu.crimes">Հանցագործություններ</span></a></li>
+        <li data-mob-show><a onclick="switchTab('main',this)" class="active"><i class="material-icons">home</i><span class="menu-label" data-i18n="menu.main">Գլխավոր</span></a></li>
+        <li data-mob-show><a onclick="switchTab('crimes',this)"><i class="material-icons">my_location</i><span class="menu-label" data-i18n="menu.crimes">Հանցագործություններ</span></a></li>
         <li><a onclick="switchTab('cars',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="menu.cars">Ավտոառևանգում</span></a></li>
         <li><a onclick="switchTab('garage',this)"><i class="material-icons">warehouse</i><span class="menu-label" data-i18n="menu.garage">Ավտոտնակ</span></a></li>
         <li><a onclick="switchTab('inventory',this)"><i class="material-icons">security</i><span class="menu-label" data-i18n="menu.inventory">Զինանոց</span></a></li>
         <li><a onclick="switchTab('dealership',this)"><i class="material-icons">directions_car</i><span class="menu-label" data-i18n="menu.dealership">Ավտոսալոն</span></a></li>
         
         <div class="menu-section-title" data-i18n="section.finance">Ֆինանսներ և Գույք</div>
-        <li><a onclick="switchTab('bank',this)"><i class="material-icons">account_balance</i><span class="menu-label" data-i18n="menu.bank">Բանկ</span></a></li>
+        <li data-mob-show><a onclick="switchTab('bank',this)"><i class="material-icons">account_balance</i><span class="menu-label" data-i18n="menu.bank">Բանկ</span></a></li>
         <li><a onclick="switchTab('business',this)"><i class="material-icons">work</i><span class="menu-label" data-i18n="menu.business">Բիզնես</span></a></li>
-        <li><a onclick="switchTab('casino',this)"><i class="material-icons">casino</i><span class="menu-label" data-i18n="menu.casino">Կազինո</span></a></li>
+        <li data-mob-show><a onclick="switchTab('casino',this)"><i class="material-icons">casino</i><span class="menu-label" data-i18n="menu.casino">Կազինո</span></a></li>
         <li><a onclick="switchTab('crypto',this)"><i class="material-icons">currency_bitcoin</i><span class="menu-label" data-i18n="menu.crypto">Կրիպտո</span></a></li>
         <li><a onclick="switchTab('estate',this)"><i class="material-icons">business</i><span class="menu-label" data-i18n="menu.estate">Անշ. Գույք</span></a></li>
         <li><a onclick="switchTab('stash',this)"><i class="material-icons">inventory_2</i><span class="menu-label" data-i18n="menu.stash">Գաղտնի Պահեստ</span></a></li>
@@ -1210,7 +1559,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <li><a onclick="switchTab('reputation',this)"><i class="material-icons">handshake</i><span class="menu-label" data-i18n="menu.reputation">Համբավ</span></a></li>
         <li><a onclick="switchTab('families',this)"><i class="material-icons">groups</i><span class="menu-label" data-i18n="menu.families">Ընտանիքներ</span></a></li>
         <li><a onclick="switchTab('friends',this)" id="friends-menu-link"><i class="material-icons">people</i><span class="menu-label" data-i18n="menu.friends">Ընկերներ</span><span class="new-badge" id="friend-req-badge" style="display:none;">0</span></a></li>
-        <li><a onclick="switchTab('messages',this)" id="messages-menu-link"><i class="material-icons">chat</i><span class="menu-label" data-i18n="menu.messages">Հաղորդագրություններ</span><span class="new-badge" id="msg-unread-badge" style="display:none;">0</span></a></li>
+        <li data-mob-show><a onclick="switchTab('messages',this)" id="messages-menu-link"><i class="material-icons">chat</i><span class="menu-label" data-i18n="menu.messages">Հաղորդագրություններ</span><span class="new-badge" id="msg-unread-badge" style="display:none;">0</span></a></li>
 
         <div class="menu-section-title" data-i18n="section.extra">Հավելյալ</div>
         <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label" data-i18n="menu.quests">Օրվա Խնդիրներ</span></a></li>
@@ -1220,7 +1569,10 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <li><a onclick="switchTab('leaderboard',this)"><i class="material-icons">emoji_events</i><span class="menu-label" data-i18n="menu.leaderboard">Լիդերբորդ</span></a></li>
         <li><a onclick="switchTab('settings',this)"><i class="material-icons">settings</i><span class="menu-label" data-i18n="menu.settings">Կարգավորումներ</span></a></li>
         <li><a onclick="switchTab('profile',this)"><i class="material-icons">account_circle</i><span class="menu-label" data-i18n="menu.profile">Իմ Պրոֆիլը</span></a></li>
+        <!-- MOBILE MORE BUTTON -->
+        <li id="mob-more-li" style="display:none;"><button class="mob-more-nav-btn" onclick="openMobDrawer()"><i class="material-icons">apps</i><span>Ավ­ելին</span></button></li>
     </ul>
+
 
     <div class="daily-bonus-btn" id="daily-bonus-btn" onclick="claimDailyBonus()">
         <i class="material-icons">redeem</i>
@@ -2197,6 +2549,25 @@ function refreshAvatarUI(name, email) {
     const sn = document.getElementById('sb-profile-name'); if (sn) sn.textContent = name;
 
     setAvatarEl(document.getElementById('topbar-avatar-el'), initials, color, img);
+
+    // ── Mobile Top Bar sync ──
+    const mobAvEl = document.getElementById('mob-avatar-el');
+    if (mobAvEl) {
+        if (color) mobAvEl.style.background = color;
+        const mobSp = mobAvEl.querySelector('span');
+        const mobIm = mobAvEl.querySelector('img');
+        if (img) { if (mobSp) mobSp.style.display='none'; if (mobIm){mobIm.src=img;mobIm.style.display='block';} }
+        else { if (mobSp){mobSp.textContent=initials;mobSp.style.display='';} if (mobIm) mobIm.style.display='none'; }
+    }
+    const mobDdAvEl = document.getElementById('mob-dd-avatar');
+    if (mobDdAvEl) {
+        if (color) mobDdAvEl.style.background = color;
+        const ddSp = mobDdAvEl.querySelector('span');
+        const ddIm = mobDdAvEl.querySelector('img');
+        if (img) { if (ddSp) ddSp.style.display='none'; if (ddIm){ddIm.src=img;ddIm.style.display='block';} }
+        else { if (ddSp){ddSp.textContent=initials;ddSp.style.display='';} if (ddIm) ddIm.style.display='none'; }
+    }
+    const mobDdName = document.getElementById('mob-dd-name'); if (mobDdName) mobDdName.textContent = name;
     setAvatarEl(document.getElementById('main-page-avatar-el'), initials, color, img);
     const mwn = document.getElementById('main-welcome-name'); if (mwn) mwn.textContent = name;
 
@@ -3358,6 +3729,9 @@ function updateUI() {
     _set('my-biz-count',    player.businesses.length);
     _set('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
     _set('sidebar-rank-val', player.rank);
+    // ── Mobile rank chip ──
+    const mobRankChip = document.getElementById('mob-rank-chip'); if (mobRankChip) mobRankChip.textContent = player.rank;
+    const mobDdRank = document.getElementById('mob-dd-rank'); if (mobDdRank) mobDdRank.textContent = player.rank;
     _set('main-welcome-rank', '⭐ ' + player.rank);
     _set('stashDisplay',    player.stash.toLocaleString());
 
@@ -5622,6 +5996,42 @@ window._chatSocketInit = function() {
         </div>
     </div>
 </div>
+
+
+// ═══════════════════════════════════════════════
+//   MOBILE TOP APP BAR — JS
+// ═══════════════════════════════════════════════
+function toggleMobDropdown() {
+    const dd  = document.getElementById('mob-dropdown');
+    const bk  = document.getElementById('mob-dd-backdrop');
+    const isOpen = dd.classList.contains('open');
+    if (isOpen) { closeMobDropdown(); }
+    else { dd.classList.add('open'); bk.classList.add('active'); }
+}
+function closeMobDropdown() {
+    document.getElementById('mob-dropdown').classList.remove('open');
+    document.getElementById('mob-dd-backdrop').classList.remove('active');
+}
+function openMobDrawer() {
+    closeMobDropdown();
+    document.getElementById('mob-more-drawer').classList.add('open');
+    document.getElementById('mob-drawer-backdrop').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobDrawer() {
+    document.getElementById('mob-more-drawer').classList.remove('open');
+    document.getElementById('mob-drawer-backdrop').classList.remove('active');
+    document.body.style.overflow = '';
+}
+// Show "More" li only on mobile
+(function() {
+    const moreBtn = document.getElementById('mob-more-li');
+    function updateMoreBtn() {
+        if (moreBtn) moreBtn.style.display = window.innerWidth <= 800 ? '' : 'none';
+    }
+    updateMoreBtn();
+    window.addEventListener('resize', updateMoreBtn);
+})();
 
 <!-- socket.io — loaded last (non-blocking) -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
