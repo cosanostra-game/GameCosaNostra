@@ -14,80 +14,28 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
+    
     <style>
-      #map-leaflet {
-        height: 540px;
+      #game-map-canvas {
+        width: 100%; height: 520px;
         border-radius: 16px;
-        border: 2px solid rgba(255,200,0,0.25);
-        box-shadow: 0 0 0 1px rgba(255,200,0,0.08), 0 8px 40px rgba(0,0,0,0.6), inset 0 0 80px rgba(0,0,0,0.3);
-        position: relative;
-        overflow: hidden;
+        border: 2px solid rgba(255,200,0,0.2);
+        box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,200,0,0.06);
+        cursor: grab; display: block; touch-action: none;
       }
-      /* GTA-style scan-line overlay on map */
-      #map-leaflet::after {
-        content: '';
-        position: absolute; inset: 0; z-index: 1000; pointer-events: none;
-        background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
-        border-radius: 14px;
-      }
-      /* Dark vignette corners */
-      #map-leaflet::before {
-        content: '';
-        position: absolute; inset: 0; z-index: 999; pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
-        border-radius: 14px;
-      }
+      #game-map-canvas:active { cursor: grabbing; }
       .map-legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-      .map-legend-item {
-        display:flex; align-items:center; gap:6px; font-size:12px;
-        color: rgba(255,220,100,0.8);
-        background: rgba(0,0,0,0.55);
-        border: 1px solid rgba(255,200,0,0.15);
-        border-radius:8px; padding:5px 10px;
-        font-family: 'Courier New', monospace;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
-      .map-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow: 0 0 6px currentColor; }
-      .map-biz-panel {
-        background: rgba(0,0,0,0.6);
-        border: 1px solid rgba(255,200,0,0.15);
-        border-radius: 12px; padding: 14px; margin-top: 12px;
-        backdrop-filter: blur(10px);
-      }
-      .map-biz-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,200,0,0.08); font-size:13px; color:rgba(220,200,160,0.9); }
+      .map-legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:rgba(220,200,140,0.75); background:rgba(0,0,0,0.4); border:1px solid rgba(255,200,0,0.12); border-radius:6px; padding:5px 10px; font-family:'Courier New',monospace; letter-spacing:0.5px; text-transform:uppercase; }
+      .map-legend-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+      .map-biz-panel { background:rgba(0,0,0,0.45); border:1px solid rgba(255,200,0,0.12); border-radius:12px; padding:14px; margin-top:12px; backdrop-filter:blur(8px); }
+      .map-biz-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,200,0,0.07); font-size:13px; color:rgba(220,200,160,0.85); }
       .map-biz-row:last-child { border-bottom:none; }
       .map-biz-icon { font-size:18px; width:26px; text-align:center; }
-      /* Leaflet popup game-style */
-      .leaflet-popup-content-wrapper {
-        background: rgba(10,8,5,0.95) !important;
-        border: 1px solid rgba(255,200,0,0.3) !important;
-        border-radius: 10px !important;
-        color: #e8dcc8 !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,200,0,0.1) !important;
-        font-family: 'Courier New', monospace !important;
-      }
-      .leaflet-popup-tip { background: rgba(10,8,5,0.95) !important; }
-      .leaflet-popup-close-button { color: rgba(255,200,0,0.6) !important; font-size: 18px !important; }
-      /* Map heading style */
-      .map-hud-title {
-        font-family: 'Courier New', monospace;
-        font-size: 11px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: rgba(255,200,0,0.5);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .map-hud-title::before, .map-hud-title::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,200,0,0.2), transparent);
-      }
+      .map-controls { display:flex; gap:8px; margin-bottom:10px; align-items:center; }
+      .map-zoom-btn { background:rgba(0,0,0,0.5); border:1px solid rgba(255,200,0,0.2); color:rgba(255,200,0,0.8); width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; transition:.15s; user-select:none; }
+      .map-zoom-btn:hover { background:rgba(255,200,0,0.15); }
+      .map-hud-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+      .map-hud-title { font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,200,0,0.45); }
     </style>
     </noscript>
     <style>
@@ -2273,25 +2221,33 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <!-- ═══════════════ MAP PAGE ═══════════════ -->
     <section id="page-map" class="page">
       <h1><i class="material-icons">map</i> <span data-i18n="page.map">Լոս Անջելեսի Քարտեզ</span></h1>
-      <p style="color:var(--text);margin-bottom:16px;" data-i18n="map.desc">Քաղաքի վրա տեսնում ես քո դիրքը, բիզնեսներն ու ընտանիքի կայանը։</p>
+      <p style="color:var(--text);margin-bottom:16px;" data-i18n="map.desc">Քաղաքի վրա տեսնում ես քո դիրքը, բիզնեսներն ու կարևոր վայրերը։</p>
 
-      <div class="map-hud-title">⬡ LOS ANGELES — CITY MAP ⬡</div>
-      <div id="map-leaflet"></div>
+      <div class="map-hud-bar">
+        <div class="map-hud-title">⬡ LOS ANGELES — CITY MAP ⬡</div>
+        <div class="map-controls">
+          <div class="map-zoom-btn" onclick="gameMapZoom(1.25)">+</div>
+          <div class="map-zoom-btn" onclick="gameMapZoom(0.8)">−</div>
+          <div class="map-zoom-btn" onclick="gameMapReset()" title="Reset">⌖</div>
+        </div>
+      </div>
+
+      <canvas id="game-map-canvas"></canvas>
 
       <div class="map-legend">
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff3b30;"></div> <span data-i18n="map.legend.player">Դու</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#0a84ff;"></div> <span data-i18n="map.legend.restaurant">Ռեստoран</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffcc00;"></div> <span data-i18n="map.legend.casino">Ընдhataкya Khaghatun</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#af52de;"></div> <span data-i18n="map.legend.strip">Strip Klub</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff9500;"></div> <span data-i18n="map.legend.arms">Zenqi Artadramaс</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#30d158;"></div> <span data-i18n="map.legend.estate">Anshn. Guyq</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff2d55;"></div> <span data-i18n="map.legend.hospital">Հիվանդանոց</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#636366;"></div> <span data-i18n="map.legend.prison">Բանտ</span></div>
-        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffd60a;"></div> <span data-i18n="map.legend.bank">Բանկ</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff3b30;box-shadow:0 0 5px #ff3b30;"></div> <span>Դու</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff2d55;box-shadow:0 0 5px #ff2d55;"></div> <span>Հիվանդանոց</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#8e8e93;box-shadow:0 0 5px #8e8e93;"></div> <span>Բանտ</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffd60a;box-shadow:0 0 5px #ffd60a;"></div> <span>Բանկ</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#0a84ff;"></div> <span>Ռեստoran</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffcc00;"></div> <span>Казино</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#af52de;"></div> <span>Strip Club</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff9500;"></div> <span>Зenqi</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#30d158;"></div> <span>Anshн. Guyq</span></div>
       </div>
 
       <div class="map-biz-panel" id="map-biz-list">
-        <div style="color:var(--text);font-size:13px;" data-i18n="map.no_biz">Բиznes chuneq dеr. Gnel bznes bac el.</div>
+        <div style="color:var(--text);font-size:13px;">Biznes chuneq der. Gnel bznes bac el.</div>
       </div>
     </section>
 
@@ -6142,240 +6098,420 @@ function closeMobDrawer() {
 </script>
 
 
-<!-- Leaflet.js map -->
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════
-//   CITY MAP — Los Angeles, Leaflet + OpenStreetMap
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//   GAME MAP — Custom Canvas, GTA/Forza style, zero dependencies
+// ═══════════════════════════════════════════════════════════════
 
-let _mapInstance   = null;
-let _playerMarker  = null;
-let _bizMarkers    = [];
-const _mapCenter   = [34.0522, -118.2437]; // Downtown LA
+(function() {
 
-// ── Fixed LA locations per business type ──────────────
-const _BIZ_LOCS = {
-  restaurant:  { coords: [34.0522, -118.2437], color: '#0a84ff',  emoji: '🍽️',  label: 'Ռеstoran'       },
-  casino:      { coords: [34.0928, -118.3287], color: '#ffcc00',  emoji: '🎰',  label: 'Yndhatakya Khag.'},
-  arms:        { coords: [33.8958, -118.2201], color: '#ff9500',  emoji: '🔫',  label: 'Zenqi Art.'     },
-  strip:       { coords: [34.0905, -118.3870], color: '#af52de',  emoji: '💃',  label: 'Strip Klub'     },
-  estate:      { coords: [34.0736, -118.4004], color: '#30d158',  emoji: '🏠',  label: 'Anshn. Guyq'    },
-};
-// Per-neighbourhood offsets for multiple same-type businesses
-const _OFFSETS = [
-  [0,0],[0.004,-0.004],[-0.004,0.004],[0.005,0.005],[-0.005,-0.005],
-  [0.008,0],[0,0.008],[-0.008,0],[0,-0.008],[0.006,-0.006],
+// ── Map state ────────────────────────────────────────────────────
+let _canvas, _ctx, _raf;
+let _scale  = 1;
+let _ox = 0, _oy = 0;   // pan offset (world units)
+let _drag   = false;
+let _dragSX, _dragSY, _dragOX, _dragOY;
+let _blipT  = 0;
+let _mapReady = false;
+
+const W = 800, H = 520;   // virtual world size
+
+// ── LA district layout (all coords in virtual 0-800 space) ──────
+const DISTRICTS = [
+  // background ocean
+  { poly:[[0,0],[800,0],[800,520],[0,520]], fill:'#0d1117' },
+  // Downtown core
+  { poly:[[310,200],[490,200],[490,340],[310,340]], fill:'#1a1f2e', label:'DOWNTOWN', lx:400, ly:270 },
+  // Hollywood
+  { poly:[[200,140],[350,140],[350,210],[200,210]], fill:'#1c1a28', label:'HOLLYWOOD', lx:275, ly:175 },
+  // Beverly Hills
+  { poly:[[120,220],[260,220],[260,310],[120,310]], fill:'#181f1a', label:'BEVERLY HILLS', lx:190, ly:265 },
+  // East LA
+  { poly:[[490,210],[620,210],[620,360],[490,360]], fill:'#1f1a1a', label:'EAST LA', lx:555, ly:285 },
+  // South Central
+  { poly:[[280,340],[500,340],[500,460],[280,460]], fill:'#1a1820', label:'SOUTH CENTRAL', lx:390, ly:400 },
+  // Venice/Beach
+  { poly:[[60,300],[140,300],[140,420],[60,420]], fill:'#0f1e22', label:'VENICE', lx:100, ly:360 },
+  // Compton
+  { poly:[[380,420],[520,420],[520,490],[380,490]], fill:'#1a1618', label:'COMPTON', lx:450, ly:455 },
+  // Burbank
+  { poly:[[340,80],[500,80],[500,155],[340,155]], fill:'#1b1f1b', label:'BURBANK', lx:420, ly:118 },
+  // San Fernando
+  { poly:[[130,60],[340,60],[340,140],[130,140]], fill:'#181b1a', label:'SAN FERNANDO', lx:235, ly:100 },
+  // Long Beach area
+  { poly:[[300,460],[530,460],[530,520],[300,520]], fill:'#0f1820', label:'LONG BEACH', lx:415, ly:490 },
 ];
 
-function _svgMarker(color, emoji, size=36) {
-  const glowId = 'glow_' + color.replace('#','');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size+8}" height="${size+16}" viewBox="0 0 ${size+8} ${size+16}">
-    <defs>
-      <filter id="${glowId}" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="${color}" flood-opacity="0.8"/>
-        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.6)" flood-opacity="1"/>
-      </filter>
-    </defs>
-    <polygon points="${(size+8)/2-7},${size+6} ${(size+8)/2+7},${size+6} ${(size+8)/2},${size+14}"
-      fill="${color}" filter="url(#${glowId})"/>
-    <circle cx="${(size+8)/2}" cy="${size/2+4}" r="${size/2}"
-      fill="rgba(0,0,0,0.85)" stroke="${color}" stroke-width="2.5" filter="url(#${glowId})"/>
-    <text x="${(size+8)/2}" y="${size/2+4+6}" text-anchor="middle"
-      dominant-baseline="middle" font-size="${size*0.42}">${emoji}</text>
-  </svg>`;
-  return L.divIcon({
-    html: svg,
-    className: '',
-    iconSize:   [size+8, size+16],
-    iconAnchor: [(size+8)/2, size+16],
-    popupAnchor:[0, -(size+10)],
+// ── Roads ────────────────────────────────────────────────────────
+const HIGHWAYS = [
+  // I-405 (vertical left)
+  { pts:[[110,0],[115,100],[120,200],[130,310],[140,420],[150,520]], w:5, c:'#e8b84b' },
+  // I-110 (vertical center)
+  { pts:[[400,0],[400,80],[400,200],[395,340],[390,440],[385,520]], w:5, c:'#e8b84b' },
+  // I-10 (horizontal)
+  { pts:[[0,290],[100,292],[200,290],[320,288],[440,285],[560,283],[680,280],[800,278]], w:5, c:'#e8b84b' },
+  // I-5 (diagonal)
+  { pts:[[470,0],[475,80],[480,160],[490,220],[510,350],[530,450],[550,520]], w:5, c:'#e8b84b' },
+  // US-101
+  { pts:[[0,180],[80,175],[160,165],[240,155],[320,148],[400,145],[500,155],[580,170],[650,190],[720,215],[800,235]], w:4, c:'#d4a030' },
+];
+
+const ROADS_MAJOR = [
+  // Wilshire Blvd (horizontal)
+  [[0,250],[800,252]], [[0,260],[800,262]],
+  // Sunset Blvd
+  [[0,200],[100,198],[200,195],[300,192],[400,190],[500,195],[600,200],[700,210],[800,218]],
+  // Vertical streets Downtown
+  [[350,0],[350,520]], [[380,0],[380,520]], [[420,0],[420,520]], [[450,0],[450,520]],
+  // Cross streets
+  [[0,320],[800,318]], [[0,360],[800,358]], [[0,400],[800,398]], [[0,170],[800,172]],
+  [[0,130],[800,132]], [[100,0],[102,520]], [[200,0],[202,520]], [[550,0],[552,520]], [[650,0],[652,520]],
+];
+
+// ── Fixed city locations ─────────────────────────────────────────
+const CITY_LOCS = [
+  { x:395, y:270, color:'#ff2d55', emoji:'✚', label:'Հիվանդanoc', tab:'hospital',
+    ring: true, desc:'LA County Medical Center' },
+  { x:430, y:240, color:'#a0a0a8', emoji:'⛓', label:'Բanт',       tab:'prison',
+    ring: true, desc:'Twin Towers Jail' },
+  { x:355, y:255, color:'#ffd60a', emoji:'$',  label:'Բanк',       tab:'bank',
+    ring: true, desc:'Central Bank of LA' },
+];
+
+// Player position
+const PLAYER = { x:190, y:265, color:'#ff3b30' };
+
+// ── Business marker definitions ──────────────────────────────────
+const BIZ_DEF = {
+  restaurant: { x:400,y:268, color:'#0a84ff',  emoji:'🍴' },
+  casino:     { x:330,y:230, color:'#ffcc00',  emoji:'♦' },
+  arms:       { x:460,y:330, color:'#ff9500',  emoji:'⚡' },
+  strip:      { x:250,y:185, color:'#af52de',  emoji:'★' },
+  estate:     { x:180,y:260, color:'#30d158',  emoji:'⌂' },
+};
+
+// ── Offsets for stacking same-type businesses ─────────────────────
+const OFFSETS = [[0,0],[12,-10],[-10,12],[14,14],[-14,-12],[20,0],[0,20],[-20,0],[0,-20],[16,-16]];
+
+// ── Init canvas ───────────────────────────────────────────────────
+function initGameMap() {
+  if (_mapReady) { _canvas && gameMapDraw(); return; }
+  _canvas = document.getElementById('game-map-canvas');
+  if (!_canvas) return;
+
+  // Set pixel resolution
+  _canvas.width  = _canvas.offsetWidth  || 800;
+  _canvas.height = _canvas.offsetHeight || 520;
+  _ctx = _canvas.getContext('2d');
+
+  // Center view on downtown
+  _ox = (_canvas.width  - W) / 2;
+  _oy = (_canvas.height - H) / 2;
+
+  // Pan / drag
+  _canvas.addEventListener('mousedown',  _onDown);
+  _canvas.addEventListener('mousemove',  _onMove);
+  _canvas.addEventListener('mouseup',    _onUp);
+  _canvas.addEventListener('mouseleave', _onUp);
+  _canvas.addEventListener('wheel',      _onWheel, { passive:true });
+  _canvas.addEventListener('touchstart', _onTDown, { passive:true });
+  _canvas.addEventListener('touchmove',  _onTMove, { passive:false });
+  _canvas.addEventListener('touchend',   _onUp);
+  _canvas.addEventListener('click',      _onClick);
+
+  _mapReady = true;
+  if (_raf) cancelAnimationFrame(_raf);
+  _loop();
+}
+
+// ── Animation loop ────────────────────────────────────────────────
+function _loop() {
+  _blipT = (Date.now() % 2000) / 2000;
+  gameMapDraw();
+  _raf = requestAnimationFrame(_loop);
+}
+
+// ── Main draw ─────────────────────────────────────────────────────
+function gameMapDraw() {
+  if (!_ctx) return;
+  const cw = _canvas.width, ch = _canvas.height;
+  _ctx.clearRect(0, 0, cw, ch);
+
+  _ctx.save();
+  _ctx.translate(_ox, _oy);
+  _ctx.scale(_scale, _scale);
+
+  // 1. Districts
+  DISTRICTS.forEach(d => {
+    _ctx.beginPath();
+    d.poly.forEach((p,i) => i ? _ctx.lineTo(p[0],p[1]) : _ctx.moveTo(p[0],p[1]));
+    _ctx.closePath();
+    _ctx.fillStyle = d.fill;
+    _ctx.fill();
+    if (d.label) {
+      _ctx.font = `600 ${10/_scale > 14 ? 14 : 10}px "Courier New"`;
+      _ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      _ctx.textAlign = 'center';
+      _ctx.fillText(d.label, d.lx, d.ly);
+    }
+  });
+
+  // 2. District borders
+  DISTRICTS.slice(1).forEach(d => {
+    _ctx.beginPath();
+    d.poly.forEach((p,i) => i ? _ctx.lineTo(p[0],p[1]) : _ctx.moveTo(p[0],p[1]));
+    _ctx.closePath();
+    _ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    _ctx.lineWidth = 1 / _scale;
+    _ctx.stroke();
+  });
+
+  // 3. Minor roads grid (subtle)
+  _ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  _ctx.lineWidth = 0.5 / _scale;
+  for (let x = 0; x < W; x += 20) { _ctx.beginPath(); _ctx.moveTo(x,0); _ctx.lineTo(x,H); _ctx.stroke(); }
+  for (let y = 0; y < H; y += 20) { _ctx.beginPath(); _ctx.moveTo(0,y); _ctx.lineTo(W,y); _ctx.stroke(); }
+
+  // 4. Major roads
+  _ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  _ctx.lineWidth = 1.5 / _scale;
+  ROADS_MAJOR.forEach(pts => {
+    _ctx.beginPath();
+    pts.forEach((p,i) => i ? _ctx.lineTo(p[0],p[1]) : _ctx.moveTo(p[0],p[1]));
+    _ctx.stroke();
+  });
+
+  // 5. Highways
+  HIGHWAYS.forEach(h => {
+    // Glow
+    _ctx.shadowColor = h.c;
+    _ctx.shadowBlur  = 6 / _scale;
+    _ctx.strokeStyle = h.c;
+    _ctx.lineWidth   = h.w / _scale;
+    _ctx.lineCap = 'round';
+    _ctx.lineJoin = 'round';
+    _ctx.beginPath();
+    h.pts.forEach((p,i) => i ? _ctx.lineTo(p[0],p[1]) : _ctx.moveTo(p[0],p[1]));
+    _ctx.stroke();
+    _ctx.shadowBlur = 0;
+  });
+  _ctx.shadowBlur = 0;
+
+  // 6. Business markers (player-owned)
+  const bizzes = (typeof player !== 'undefined' && player.businesses) ? player.businesses : [];
+  const typeCount = {};
+  bizzes.forEach(biz => {
+    let key = 'restaurant';
+    const n = (biz.type || biz.name || '').toLowerCase();
+    if (n.includes('casino') || n.includes('khag')) key = 'casino';
+    else if (n.includes('arms') || n.includes('zen'))  key = 'arms';
+    else if (n.includes('strip') || n.includes('klub')) key = 'strip';
+    else if (n.includes('estate') || n.includes('anshn')) key = 'estate';
+    const def = BIZ_DEF[key];
+    const idx = typeCount[key] || 0;
+    typeCount[key] = idx + 1;
+    const off = OFFSETS[idx % OFFSETS.length];
+    _drawBlip(_ctx, def.x + off[0], def.y + off[1], def.color, def.emoji, 9, false);
+  });
+
+  // 7. Fixed city locations with pulse ring
+  CITY_LOCS.forEach(loc => {
+    if (loc.ring) {
+      const pulse = Math.sin(_blipT * Math.PI * 2) * 0.5 + 0.5;
+      _ctx.beginPath();
+      _ctx.arc(loc.x, loc.y, 14 + pulse * 8, 0, Math.PI * 2);
+      _ctx.strokeStyle = loc.color + '55';
+      _ctx.lineWidth = 1.5 / _scale;
+      _ctx.stroke();
+    }
+    _drawBlip(_ctx, loc.x, loc.y, loc.color, loc.emoji, 11, true);
+    // Label
+    _ctx.font = `bold ${9/_scale > 11 ? 11 : 9}px "Courier New"`;
+    _ctx.fillStyle = loc.color;
+    _ctx.textAlign = 'center';
+    _ctx.fillText(loc.label, loc.x, loc.y + 20);
+  });
+
+  // 8. Player blip (pulsing red)
+  const pp = Math.sin(_blipT * Math.PI * 2) * 0.5 + 0.5;
+  _ctx.beginPath();
+  _ctx.arc(PLAYER.x, PLAYER.y, 10 + pp * 6, 0, Math.PI * 2);
+  _ctx.strokeStyle = 'rgba(255,59,48,0.4)';
+  _ctx.lineWidth = 2 / _scale;
+  _ctx.stroke();
+  _drawBlip(_ctx, PLAYER.x, PLAYER.y, '#ff3b30', '▲', 10, true);
+  _ctx.font = `bold ${9/_scale > 11 ? 11 : 9}px "Courier New"`;
+  _ctx.fillStyle = '#ff3b30';
+  _ctx.textAlign = 'center';
+  const pname = (typeof player !== 'undefined' && player.name) ? player.name : 'Դու';
+  _ctx.fillText(pname, PLAYER.x, PLAYER.y + 20);
+
+  // Compass
+  _drawCompass(_ctx, W - 40, 40);
+
+  _ctx.restore();
+
+  // Scan-line overlay (outside transform)
+  _ctx.save();
+  for (let y = 0; y < ch; y += 4) {
+    _ctx.fillStyle = 'rgba(0,0,0,0.06)';
+    _ctx.fillRect(0, y, cw, 1);
+  }
+  // Vignette
+  const vig = _ctx.createRadialGradient(cw/2, ch/2, ch*0.3, cw/2, ch/2, ch*0.75);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+  _ctx.fillStyle = vig;
+  _ctx.fillRect(0, 0, cw, ch);
+  _ctx.restore();
+}
+
+function _drawBlip(ctx, x, y, color, emoji, r, glow) {
+  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 8 / _scale; }
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+  ctx.lineWidth = 1 / _scale;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.font = `${r * 1.1}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#fff';
+  ctx.fillText(emoji, x, y + 0.5);
+  ctx.textBaseline = 'alphabetic';
+}
+
+function _drawCompass(ctx, x, y) {
+  ctx.save();
+  ctx.font = `bold 11px "Courier New"`;
+  ctx.fillStyle = 'rgba(255,200,0,0.6)';
+  ctx.textAlign = 'center';
+  ctx.fillText('N', x, y - 14);
+  ctx.fillStyle = 'rgba(255,200,0,0.3)';
+  ctx.fillText('S', x, y + 18);
+  ctx.fillText('W', x - 16, y + 4);
+  ctx.fillText('E', x + 16, y + 4);
+  ctx.beginPath();
+  ctx.arc(x, y, 12, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,200,0,0.25)';
+  ctx.lineWidth = 1 / _scale;
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ── Pan / zoom controls ───────────────────────────────────────────
+function _onDown(e) { _drag=true; _dragSX=e.clientX; _dragSY=e.clientY; _dragOX=_ox; _dragOY=_oy; }
+function _onMove(e) {
+  if (!_drag) return;
+  _ox = _dragOX + (e.clientX - _dragSX);
+  _oy = _dragOY + (e.clientY - _dragSY);
+}
+function _onUp() { _drag = false; }
+function _onWheel(e) {
+  const f = e.deltaY < 0 ? 1.1 : 0.91;
+  const cx = _canvas.width / 2, cy = _canvas.height / 2;
+  _ox = cx - (cx - _ox) * f;
+  _oy = cy - (cy - _oy) * f;
+  _scale = Math.min(3, Math.max(0.4, _scale * f));
+}
+
+// Touch
+let _t1x, _t1y;
+function _onTDown(e) {
+  if (e.touches.length === 1) {
+    _drag=true; _t1x=e.touches[0].clientX; _t1y=e.touches[0].clientY;
+    _dragOX=_ox; _dragOY=_oy;
+  }
+}
+function _onTMove(e) {
+  if (_drag && e.touches.length === 1) {
+    e.preventDefault();
+    _ox = _dragOX + (e.touches[0].clientX - _t1x);
+    _oy = _dragOY + (e.touches[0].clientY - _t1y);
+  }
+}
+
+// Click on blips → navigate
+function _onClick(e) {
+  const rect = _canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left - _ox) / _scale;
+  const my = (e.clientY - rect.top  - _oy) / _scale;
+  CITY_LOCS.forEach(loc => {
+    const d = Math.hypot(mx - loc.x, my - loc.y);
+    if (d < 18 && loc.tab) {
+      if (typeof switchTab === 'function') switchTab(loc.tab, null);
+    }
   });
 }
 
-function _playerIcon() {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-    <defs>
-      <filter id="playerGlow">
-        <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ff3b30" flood-opacity="1"/>
-        <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#ff3b30" flood-opacity="0.5"/>
-      </filter>
-    </defs>
-    <circle cx="24" cy="24" r="22" fill="rgba(255,59,48,0.12)" stroke="rgba(255,59,48,0.4)" stroke-width="1"/>
-    <circle cx="24" cy="24" r="14" fill="rgba(0,0,0,0.85)" stroke="#ff3b30" stroke-width="2.5" filter="url(#playerGlow)"/>
-    <polygon points="24,11 29,21 39,23 31,31 33,42 24,37 15,42 17,31 9,23 19,21"
-      fill="#ff3b30" opacity="0" />
-    <text x="24" y="29" text-anchor="middle" font-size="14">👤</text>
-  </svg>`;
-  return L.divIcon({
-    html: svg,
-    className: '',
-    iconSize:   [48, 48],
-    iconAnchor: [24, 24],
-    popupAnchor:[0, -28],
-  });
-}
+// Public controls
+window.gameMapZoom = function(f) {
+  if (!_canvas) return;
+  const cx = _canvas.width/2, cy = _canvas.height/2;
+  _ox = cx - (cx - _ox) * f;
+  _oy = cy - (cy - _oy) * f;
+  _scale = Math.min(3, Math.max(0.4, _scale * f));
+};
+window.gameMapReset = function() {
+  if (!_canvas) return;
+  _scale = 1;
+  _ox = (_canvas.width  - W) / 2;
+  _oy = (_canvas.height - H) / 2;
+};
 
-function initMap() {
-  if (_mapInstance) return;
-  const el = document.getElementById('map-leaflet');
-  if (!el) return;
-
-  _mapInstance = L.map('map-leaflet', {
-    center: _mapCenter,
-    zoom:   12,
-    zoomControl: true,
-    attributionControl: true,
-  });
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(_mapInstance);
-
-  // Player marker — Beverly Hills home base
-  _playerMarker = L.marker([34.0736, -118.4004], { icon: _playerIcon(), zIndexOffset: 1000 })
-    .addTo(_mapInstance)
-    .bindPopup(() => {
-      const name = (typeof player !== 'undefined' && player.name) ? player.name : 'Դու';
-      const rank = (typeof player !== 'undefined' && player.rank) ? player.rank : '';
-      return `<b>👤 ${name}</b><br><span style="color:#888;">${rank}</span><br><small>Beverly Hills · Կayaran</small>`;
-    });
-
-  // ── Fixed city locations: Hospital, Prison, Bank ──────────────
-  const _CITY_LOCS = [
-    {
-      coords:  [34.0574, -118.2079],
-      color:   '#ff2d55',
-      emoji:   '🏥',
-      title:   'LA County + USC Medical Center',
-      label:   'Հիվանդանոց',
-      tab:     'hospital',
-      detail:  'Բուժվելու համար այցելիր հիվանդանոց',
-      gtaIcon: '✚',
-    },
-    {
-      coords:  [34.0504, -118.2327],
-      color:   '#8e8e93',
-      emoji:   '⛓️',
-      title:   'Twin Towers Correctional Facility',
-      label:   'Բանտ',
-      tab:     'prison',
-      detail:  'Ձերբակալվածների ժամանակավոր բնակավայր',
-      gtaIcon: '⛓',
-    },
-    {
-      coords:  [34.0506, -118.2589],
-      color:   '#ffd60a',
-      emoji:   '🏦',
-      title:   'Central Bank of Los Angeles',
-      label:   'Կենտրոնական Բանկ',
-      tab:     'bank',
-      detail:  'Ավանդներ, վարկեր, փոխանցումներ',
-      gtaIcon: '$',
-    },
-  ];
-
-  _CITY_LOCS.forEach(loc => {
-    const popupContent = `
-      <div style="min-width:175px;font-family:'Courier New',monospace;">
-        <div style="font-size:11px;letter-spacing:2px;color:${loc.color};text-transform:uppercase;margin-bottom:4px;">${loc.gtaIcon} ${loc.label}</div>
-        <div style="font-size:11px;color:#888;margin-bottom:2px;">${loc.title}</div>
-        <div style="font-size:11px;color:#aaa;margin-bottom:10px;">${loc.detail}</div>
-        <button onclick="switchTab('${loc.tab}',null);setTimeout(()=>document.querySelector('.leaflet-popup-close-button')&&document.querySelector('.leaflet-popup-close-button').click(),50)"
-          style="width:100%;padding:7px 0;background:${loc.color};color:#000;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;">
-          ԱՆՑՆԵԼ ▶
-        </button>
-      </div>
-    `;
-    L.marker(loc.coords, { icon: _svgMarker(loc.color, loc.emoji, 40), zIndexOffset: 900 })
-      .addTo(_mapInstance)
-      .bindPopup(popupContent, { maxWidth: 220 });
-  });
-
-  renderMapBusinesses();
-}
-
+// Business list (sidebar panel)
 function renderMapBusinesses() {
-  if (!_mapInstance) return;
-
-  // Clear old biz markers
-  _bizMarkers.forEach(m => _mapInstance.removeLayer(m));
-  _bizMarkers = [];
-
+  const bizListEl = document.getElementById('map-biz-list');
+  if (!bizListEl) return;
   const businesses = (typeof player !== 'undefined' && player.businesses) ? player.businesses : [];
-  const bizListEl  = document.getElementById('map-biz-list');
-
-  // Count per type for offset stacking
-  const _typeCount = {};
-
   if (businesses.length === 0) {
-    if (bizListEl) bizListEl.innerHTML = `<div style="color:var(--text);font-size:13px;text-align:center;padding:8px;">Բiznes dëռ chuneq. <a onclick="switchTab('business',null)" style="color:var(--accent);cursor:pointer;">Bac el →</a></div>`;
+    bizListEl.innerHTML = `<div style="color:var(--text);font-size:13px;text-align:center;padding:8px;">
+      Biznes dеr chuneq. <a onclick="switchTab('business',null)" style="color:var(--accent);cursor:pointer;">Bac el →</a></div>`;
     return;
   }
-
-  let listHTML = '';
-
-  businesses.forEach(biz => {
-    // Map biz.type → key
-    let typeKey = 'restaurant';
-    const n = (biz.type || biz.name || '').toLowerCase();
-    if (n.includes('casino') || n.includes('khag'))  typeKey = 'casino';
-    else if (n.includes('arms') || n.includes('zen') || n.includes('oruzh')) typeKey = 'arms';
-    else if (n.includes('strip') || n.includes('klub'))  typeKey = 'strip';
-    else if (n.includes('estate') || n.includes('anshn')) typeKey = 'estate';
-
-    const def = _BIZ_LOCS[typeKey];
-    const idx = _typeCount[typeKey] || 0;
-    _typeCount[typeKey] = idx + 1;
-
-    const off = _OFFSETS[idx % _OFFSETS.length] || [0,0];
-    const coords = [def.coords[0] + (off[0]||0), def.coords[1] + (off[1]||0)];
-
-    const marker = L.marker(coords, { icon: _svgMarker(def.color, def.emoji, 34) })
-      .addTo(_mapInstance)
-      .bindPopup(`
-        <b>${def.emoji} ${biz.name || def.label}</b><br>
-        <span style="color:#888;font-size:12px;">Lv ${biz.level || 1}</span><br>
-        <span style="color:#30d158;font-size:12px;">+$${((biz.income || 0) * (biz.level || 1)).toLocaleString()}/cycle</span>
-      `);
-
-    _bizMarkers.push(marker);
-
-    listHTML += `<div class="map-biz-row">
-      <span class="map-biz-icon">${def.emoji}</span>
-      <span style="flex:1;">${biz.name || def.label}</span>
-      <span style="font-size:12px;color:var(--text);">Lv ${biz.level || 1}</span>
+  const BIZ_ICONS = { restaurant:'🍴', casino:'🎰', arms:'🔫', strip:'💃', estate:'🏠' };
+  bizListEl.innerHTML = businesses.map(biz => {
+    let key = 'restaurant';
+    const n = (biz.type||biz.name||'').toLowerCase();
+    if (n.includes('casino')) key='casino';
+    else if (n.includes('arms')||n.includes('zen')) key='arms';
+    else if (n.includes('strip')) key='strip';
+    else if (n.includes('estate')) key='estate';
+    return `<div class="map-biz-row">
+      <span class="map-biz-icon">${BIZ_ICONS[key]||'🏢'}</span>
+      <span style="flex:1;">${biz.name||key}</span>
+      <span style="font-size:12px;color:var(--text);">Lv ${biz.level||1}</span>
       <span style="font-size:12px;color:#30d158;margin-left:10px;">+$${((biz.income||0)*(biz.level||1)).toLocaleString()}</span>
     </div>`;
-  });
-
-  if (bizListEl) bizListEl.innerHTML = listHTML;
-
-  // Fit map to show all markers
-  if (_bizMarkers.length > 0) {
-    const allMarkers = [_playerMarker, ..._bizMarkers].filter(Boolean);
-    const group = L.featureGroup(allMarkers);
-    _mapInstance.fitBounds(group.getBounds().pad(0.15));
-  }
+  }).join('');
 }
 
-// Hook into switchTab to init/refresh map when tab opens
-const _origSwitchTab = window.switchTab;
+// Hook into switchTab
+const _origSwitchTab2 = window.switchTab;
 window.switchTab = function(tab, el) {
-  if (typeof _origSwitchTab === 'function') _origSwitchTab(tab, el);
+  if (typeof _origSwitchTab2 === 'function') _origSwitchTab2(tab, el);
   if (tab === 'map') {
     setTimeout(() => {
-      initMap();
-      if (_mapInstance) {
-        _mapInstance.invalidateSize();
-        renderMapBusinesses();
-      }
-    }, 80);
+      initGameMap();
+      renderMapBusinesses();
+    }, 60);
   }
 };
+
+// Also init if map page is somehow visible on load
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('page-map') &&
+      document.getElementById('page-map').classList.contains('active')) {
+    initGameMap();
+  }
+});
+
+})(); // end IIFE
 </script>
+
 
 <!-- socket.io — loaded last (non-blocking) -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
