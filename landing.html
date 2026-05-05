@@ -14,6 +14,17 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+      #map-leaflet { height: 480px; border-radius: 12px; border: 1.5px solid var(--border); }
+      .map-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+      .map-legend-item { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:6px 12px; }
+      .map-legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+      .map-biz-panel { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:16px; }
+      .map-biz-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:14px; color:var(--text-l); }
+      .map-biz-row:last-child { border-bottom:none; }
+      .map-biz-icon { font-size:20px; width:28px; text-align:center; }
+    </style>
     </noscript>
     <style>
         /* Fallback until Montserrat loads */
@@ -1575,6 +1586,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
         <div class="menu-section-title" data-i18n="section.extra">Հավելյալ</div>
         <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label" data-i18n="menu.quests">Օրվա Խնդիրներ</span></a></li>
+        <li><a onclick="switchTab('map',this)"><i class="material-icons">map</i><span class="menu-label" data-i18n="menu.map">Քաղաքի Քարտեզ</span></a></li>
         <li><a onclick="switchTab('daynight',this)"><i class="material-icons">dark_mode</i><span class="menu-label" data-i18n="menu.daynight">Գիշեր/Ցերեկ</span></a></li>
         <li><a onclick="switchTab('events',this)"><i class="material-icons">bolt</i><span class="menu-label" data-i18n="menu.events">Իրադարձություններ</span></a></li>
         <li><a onclick="switchTab('stats',this)"><i class="material-icons">pie_chart</i><span class="menu-label" data-i18n="menu.stats">Վիճակագրություն</span></a></li>
@@ -2192,6 +2204,30 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
                 <button style="background:var(--accent);margin-top:10px;" onclick="resetGame()" data-i18n="btn.reset">Ջնջել</button>
             </div>
         </div>
+    </section>
+
+    <!-- ═══════════════ MAP PAGE ═══════════════ -->
+    <section id="page-map" class="page">
+      <h1><i class="material-icons">map</i> <span data-i18n="page.map">Լոս Անջելեսի Քարտեզ</span></h1>
+      <p style="color:var(--text);margin-bottom:16px;" data-i18n="map.desc">Քաղաքի վրա տեսնում ես քո դիրքը, բիզնեսներն ու ընտանիքի կայանը։</p>
+
+      <div id="map-leaflet"></div>
+
+      <div class="map-legend">
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff3b30;"></div> <span data-i18n="map.legend.player">Դու</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#0a84ff;"></div> <span data-i18n="map.legend.restaurant">Ռեստoран</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffcc00;"></div> <span data-i18n="map.legend.casino">Ընдhataкya Khaghatun</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#af52de;"></div> <span data-i18n="map.legend.strip">Strip Klub</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff9500;"></div> <span data-i18n="map.legend.arms">Zenqi Artadramaс</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#30d158;"></div> <span data-i18n="map.legend.estate">Anshn. Guyq</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff2d55;"></div> <span data-i18n="map.legend.hospital">Հիվանդանոց</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#636366;"></div> <span data-i18n="map.legend.prison">Բանտ</span></div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ffd60a;"></div> <span data-i18n="map.legend.bank">Բանկ</span></div>
+      </div>
+
+      <div class="map-biz-panel" id="map-biz-list">
+        <div style="color:var(--text);font-size:13px;" data-i18n="map.no_biz">Բиznes chuneq dеr. Gnel bznes bac el.</div>
+      </div>
     </section>
 
     <section id="page-families" class="page">
@@ -6040,6 +6076,208 @@ function closeMobDrawer() {
 })();
 </script>
 
+
+<!-- Leaflet.js map -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/sp8=" crossorigin=""></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//   CITY MAP — Los Angeles, Leaflet + OpenStreetMap
+// ═══════════════════════════════════════════════════════
+
+let _mapInstance   = null;
+let _playerMarker  = null;
+let _bizMarkers    = [];
+const _mapCenter   = [34.0522, -118.2437]; // Downtown LA
+
+// ── Fixed LA locations per business type ──────────────
+const _BIZ_LOCS = {
+  restaurant:  { coords: [34.0522, -118.2437], color: '#0a84ff',  emoji: '🍽️',  label: 'Ռеstoran'       },
+  casino:      { coords: [34.0928, -118.3287], color: '#ffcc00',  emoji: '🎰',  label: 'Yndhatakya Khag.'},
+  arms:        { coords: [33.8958, -118.2201], color: '#ff9500',  emoji: '🔫',  label: 'Zenqi Art.'     },
+  strip:       { coords: [34.0905, -118.3870], color: '#af52de',  emoji: '💃',  label: 'Strip Klub'     },
+  estate:      { coords: [34.0736, -118.4004], color: '#30d158',  emoji: '🏠',  label: 'Anshn. Guyq'    },
+};
+// Per-neighbourhood offsets for multiple same-type businesses
+const _OFFSETS = [
+  [0,0],[0.004,-0.004],[−0.004,0.004],[0.005,0.005],[−0.005,−0.005],
+  [0.008,0],[0,0.008],[−0.008,0],[0,−0.008],[0.006,−0.006],
+];
+
+function _svgMarker(color, emoji, size=36) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size+8}" viewBox="0 0 ${size} ${size+8}">
+    <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter>
+    <circle cx="${size/2}" cy="${size/2}" r="${size/2-2}" fill="${color}" filter="url(#sh)" stroke="#fff" stroke-width="2"/>
+    <text x="${size/2}" y="${size/2+5}" text-anchor="middle" font-size="${size*0.44}">${emoji}</text>
+    <polygon points="${size/2-5},${size-4} ${size/2+5},${size-4} ${size/2},${size+6}" fill="${color}"/>
+  </svg>`;
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize:   [size, size+8],
+    iconAnchor: [size/2, size+8],
+    popupAnchor:[0, -(size+8)],
+  });
+}
+
+function _playerIcon() {
+  return _svgMarker('#ff3b30', '👤', 40);
+}
+
+function initMap() {
+  if (_mapInstance) return;
+  const el = document.getElementById('map-leaflet');
+  if (!el) return;
+
+  _mapInstance = L.map('map-leaflet', {
+    center: _mapCenter,
+    zoom:   12,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(_mapInstance);
+
+  // Player marker — Beverly Hills home base
+  _playerMarker = L.marker([34.0736, -118.4004], { icon: _playerIcon(), zIndexOffset: 1000 })
+    .addTo(_mapInstance)
+    .bindPopup(() => {
+      const name = (typeof player !== 'undefined' && player.name) ? player.name : 'Դու';
+      const rank = (typeof player !== 'undefined' && player.rank) ? player.rank : '';
+      return `<b>👤 ${name}</b><br><span style="color:#888;">${rank}</span><br><small>Beverly Hills · Կayaran</small>`;
+    });
+
+  // ── Fixed city locations: Hospital, Prison, Bank ──────────────
+  const _CITY_LOCS = [
+    {
+      coords:  [34.0574, -118.2079],
+      color:   '#ff2d55',
+      emoji:   '🏥',
+      title:   'LA County + USC Medical Center',
+      label:   'Հիվանդանոց',
+      tab:     'hospital',
+      detail:  'Բուժվելու համար այցելիր հիվանդանոց',
+    },
+    {
+      coords:  [34.0504, -118.2327],
+      color:   '#636366',
+      emoji:   '⛓️',
+      title:   'Twin Towers Correctional Facility',
+      label:   'Բանտ',
+      tab:     'prison',
+      detail:  'Ձերբակալվածների ժամանակավոր բնակավայր',
+    },
+    {
+      coords:  [34.0506, -118.2589],
+      color:   '#ffd60a',
+      emoji:   '🏦',
+      title:   'Central Bank of LA',
+      label:   'Կենտրոնական Բանկ',
+      tab:     'bank',
+      detail:  'Ավանդներ, վարկեր, փոխանցումներ',
+    },
+  ];
+
+  _CITY_LOCS.forEach(loc => {
+    L.marker(loc.coords, { icon: _svgMarker(loc.color, loc.emoji, 38), zIndexOffset: 900 })
+      .addTo(_mapInstance)
+      .bindPopup(`
+        <div style="min-width:160px;">
+          <b style="font-size:14px;">${loc.emoji} ${loc.label}</b><br>
+          <span style="color:#888;font-size:12px;">${loc.title}</span><br>
+          <span style="font-size:12px;color:#aaa;">${loc.detail}</span><br>
+          <button onclick="switchTab('${loc.tab}',null);document.querySelector('.leaflet-popup-close-button').click()"
+            style="margin-top:8px;padding:5px 12px;background:${loc.color};color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">
+            Անցնել →
+          </button>
+        </div>
+      `);
+  });
+
+  renderMapBusinesses();
+}
+
+function renderMapBusinesses() {
+  if (!_mapInstance) return;
+
+  // Clear old biz markers
+  _bizMarkers.forEach(m => _mapInstance.removeLayer(m));
+  _bizMarkers = [];
+
+  const businesses = (typeof player !== 'undefined' && player.businesses) ? player.businesses : [];
+  const bizListEl  = document.getElementById('map-biz-list');
+
+  // Count per type for offset stacking
+  const _typeCount = {};
+
+  if (businesses.length === 0) {
+    if (bizListEl) bizListEl.innerHTML = `<div style="color:var(--text);font-size:13px;text-align:center;padding:8px;">Բiznes dëռ chuneq. <a onclick="switchTab('business',null)" style="color:var(--accent);cursor:pointer;">Bac el →</a></div>`;
+    return;
+  }
+
+  let listHTML = '';
+
+  businesses.forEach(biz => {
+    // Map biz.type → key
+    let typeKey = 'restaurant';
+    const n = (biz.type || biz.name || '').toLowerCase();
+    if (n.includes('casino') || n.includes('khag'))  typeKey = 'casino';
+    else if (n.includes('arms') || n.includes('zen') || n.includes('oruzh')) typeKey = 'arms';
+    else if (n.includes('strip') || n.includes('klub'))  typeKey = 'strip';
+    else if (n.includes('estate') || n.includes('anshn')) typeKey = 'estate';
+
+    const def = _BIZ_LOCS[typeKey];
+    const idx = _typeCount[typeKey] || 0;
+    _typeCount[typeKey] = idx + 1;
+
+    const off = _OFFSETS[idx % _OFFSETS.length] || [0,0];
+    const coords = [def.coords[0] + (off[0]||0), def.coords[1] + (off[1]||0)];
+
+    const marker = L.marker(coords, { icon: _svgMarker(def.color, def.emoji, 34) })
+      .addTo(_mapInstance)
+      .bindPopup(`
+        <b>${def.emoji} ${biz.name || def.label}</b><br>
+        <span style="color:#888;font-size:12px;">Lv ${biz.level || 1}</span><br>
+        <span style="color:#30d158;font-size:12px;">+$${((biz.income || 0) * (biz.level || 1)).toLocaleString()}/cycle</span>
+      `);
+
+    _bizMarkers.push(marker);
+
+    listHTML += `<div class="map-biz-row">
+      <span class="map-biz-icon">${def.emoji}</span>
+      <span style="flex:1;">${biz.name || def.label}</span>
+      <span style="font-size:12px;color:var(--text);">Lv ${biz.level || 1}</span>
+      <span style="font-size:12px;color:#30d158;margin-left:10px;">+$${((biz.income||0)*(biz.level||1)).toLocaleString()}</span>
+    </div>`;
+  });
+
+  if (bizListEl) bizListEl.innerHTML = listHTML;
+
+  // Fit map to show all markers
+  if (_bizMarkers.length > 0) {
+    const allMarkers = [_playerMarker, ..._bizMarkers].filter(Boolean);
+    const group = L.featureGroup(allMarkers);
+    _mapInstance.fitBounds(group.getBounds().pad(0.15));
+  }
+}
+
+// Hook into switchTab to init/refresh map when tab opens
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab, el) {
+  if (typeof _origSwitchTab === 'function') _origSwitchTab(tab, el);
+  if (tab === 'map') {
+    setTimeout(() => {
+      initMap();
+      if (_mapInstance) {
+        _mapInstance.invalidateSize();
+        renderMapBusinesses();
+      }
+    }, 80);
+  }
+};
+</script>
 
 <!-- socket.io — loaded last (non-blocking) -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>

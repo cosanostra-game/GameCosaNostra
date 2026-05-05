@@ -807,3 +807,29 @@ Object.assign(HY, {
   'page.garage_empty':        'Avtotnak datark e',
   'page.no_activity':         'Gortsuneut\'yun chka',
 });
+
+// ── Map page translations ──────────────────────────────────────────
+Object.assign(RU, {
+  'menu.map':            '🗺️ Карта города',
+  'page.map':            'Карта Лос-Анджелеса',
+  'map.desc':            'На карте видны твоя позиция, бизнесы и база семьи.',
+  'map.legend.player':   'Ты',
+  'map.legend.restaurant':'Ресторан',
+  'map.legend.casino':   'Подп. Казино',
+  'map.legend.strip':    'Стриптиз Клуб',
+  'map.legend.arms':     'Оруж. Завод',
+  'map.legend.estate':   'Недвижимость',
+  'map.no_biz':          'Бизнесов ещё нет. Открой в разделе Бизнес.',
+});
+Object.assign(HY, {
+  'menu.map':            '🗺️ Kaghaki Kartez',
+  'page.map':            'Լos Anjelesin Kartez',
+  'map.desc':            'Kartezum tesnum es ko dirqy, biznesnerdy ev entaniqy.',
+  'map.legend.player':   'Du',
+  'map.legend.restaurant':'Restoran',
+  'map.legend.casino':   'Yndh. Khaghatun',
+  'map.legend.strip':    'Strip Klub',
+  'map.legend.arms':     'Zenqi Artadramaс',
+  'map.legend.estate':   'Anshn. Guyq',
+  'map.no_biz':          'Biznes chuneq der. Bac el Biznes baxnum.',
+});
