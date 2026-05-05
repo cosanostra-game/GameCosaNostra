@@ -14,16 +14,80 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
     <style>
-      #map-leaflet { height: 480px; border-radius: 12px; border: 1.5px solid var(--border); }
-      .map-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-      .map-legend-item { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text); background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:6px 12px; }
-      .map-legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-      .map-biz-panel { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:16px; }
-      .map-biz-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:14px; color:var(--text-l); }
+      #map-leaflet {
+        height: 540px;
+        border-radius: 16px;
+        border: 2px solid rgba(255,200,0,0.25);
+        box-shadow: 0 0 0 1px rgba(255,200,0,0.08), 0 8px 40px rgba(0,0,0,0.6), inset 0 0 80px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+      }
+      /* GTA-style scan-line overlay on map */
+      #map-leaflet::after {
+        content: '';
+        position: absolute; inset: 0; z-index: 1000; pointer-events: none;
+        background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+        border-radius: 14px;
+      }
+      /* Dark vignette corners */
+      #map-leaflet::before {
+        content: '';
+        position: absolute; inset: 0; z-index: 999; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+        border-radius: 14px;
+      }
+      .map-legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+      .map-legend-item {
+        display:flex; align-items:center; gap:6px; font-size:12px;
+        color: rgba(255,220,100,0.8);
+        background: rgba(0,0,0,0.55);
+        border: 1px solid rgba(255,200,0,0.15);
+        border-radius:8px; padding:5px 10px;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .map-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow: 0 0 6px currentColor; }
+      .map-biz-panel {
+        background: rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,200,0,0.15);
+        border-radius: 12px; padding: 14px; margin-top: 12px;
+        backdrop-filter: blur(10px);
+      }
+      .map-biz-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,200,0,0.08); font-size:13px; color:rgba(220,200,160,0.9); }
       .map-biz-row:last-child { border-bottom:none; }
-      .map-biz-icon { font-size:20px; width:28px; text-align:center; }
+      .map-biz-icon { font-size:18px; width:26px; text-align:center; }
+      /* Leaflet popup game-style */
+      .leaflet-popup-content-wrapper {
+        background: rgba(10,8,5,0.95) !important;
+        border: 1px solid rgba(255,200,0,0.3) !important;
+        border-radius: 10px !important;
+        color: #e8dcc8 !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,200,0,0.1) !important;
+        font-family: 'Courier New', monospace !important;
+      }
+      .leaflet-popup-tip { background: rgba(10,8,5,0.95) !important; }
+      .leaflet-popup-close-button { color: rgba(255,200,0,0.6) !important; font-size: 18px !important; }
+      /* Map heading style */
+      .map-hud-title {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255,200,0,0.5);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .map-hud-title::before, .map-hud-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,200,0,0.2), transparent);
+      }
     </style>
     </noscript>
     <style>
@@ -2211,6 +2275,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
       <h1><i class="material-icons">map</i> <span data-i18n="page.map">Լոս Անջելեսի Քարտեզ</span></h1>
       <p style="color:var(--text);margin-bottom:16px;" data-i18n="map.desc">Քաղաքի վրա տեսնում ես քո դիրքը, բիզնեսներն ու ընտանիքի կայանը։</p>
 
+      <div class="map-hud-title">⬡ LOS ANGELES — CITY MAP ⬡</div>
       <div id="map-leaflet"></div>
 
       <div class="map-legend">
@@ -6078,7 +6143,7 @@ function closeMobDrawer() {
 
 
 <!-- Leaflet.js map -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/sp8=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
 //   CITY MAP — Los Angeles, Leaflet + OpenStreetMap
@@ -6099,28 +6164,56 @@ const _BIZ_LOCS = {
 };
 // Per-neighbourhood offsets for multiple same-type businesses
 const _OFFSETS = [
-  [0,0],[0.004,-0.004],[−0.004,0.004],[0.005,0.005],[−0.005,−0.005],
-  [0.008,0],[0,0.008],[−0.008,0],[0,−0.008],[0.006,−0.006],
+  [0,0],[0.004,-0.004],[-0.004,0.004],[0.005,0.005],[-0.005,-0.005],
+  [0.008,0],[0,0.008],[-0.008,0],[0,-0.008],[0.006,-0.006],
 ];
 
 function _svgMarker(color, emoji, size=36) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size+8}" viewBox="0 0 ${size} ${size+8}">
-    <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter>
-    <circle cx="${size/2}" cy="${size/2}" r="${size/2-2}" fill="${color}" filter="url(#sh)" stroke="#fff" stroke-width="2"/>
-    <text x="${size/2}" y="${size/2+5}" text-anchor="middle" font-size="${size*0.44}">${emoji}</text>
-    <polygon points="${size/2-5},${size-4} ${size/2+5},${size-4} ${size/2},${size+6}" fill="${color}"/>
+  const glowId = 'glow_' + color.replace('#','');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size+8}" height="${size+16}" viewBox="0 0 ${size+8} ${size+16}">
+    <defs>
+      <filter id="${glowId}" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="${color}" flood-opacity="0.8"/>
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.6)" flood-opacity="1"/>
+      </filter>
+    </defs>
+    <polygon points="${(size+8)/2-7},${size+6} ${(size+8)/2+7},${size+6} ${(size+8)/2},${size+14}"
+      fill="${color}" filter="url(#${glowId})"/>
+    <circle cx="${(size+8)/2}" cy="${size/2+4}" r="${size/2}"
+      fill="rgba(0,0,0,0.85)" stroke="${color}" stroke-width="2.5" filter="url(#${glowId})"/>
+    <text x="${(size+8)/2}" y="${size/2+4+6}" text-anchor="middle"
+      dominant-baseline="middle" font-size="${size*0.42}">${emoji}</text>
   </svg>`;
   return L.divIcon({
     html: svg,
     className: '',
-    iconSize:   [size, size+8],
-    iconAnchor: [size/2, size+8],
-    popupAnchor:[0, -(size+8)],
+    iconSize:   [size+8, size+16],
+    iconAnchor: [(size+8)/2, size+16],
+    popupAnchor:[0, -(size+10)],
   });
 }
 
 function _playerIcon() {
-  return _svgMarker('#ff3b30', '👤', 40);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+    <defs>
+      <filter id="playerGlow">
+        <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#ff3b30" flood-opacity="1"/>
+        <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#ff3b30" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <circle cx="24" cy="24" r="22" fill="rgba(255,59,48,0.12)" stroke="rgba(255,59,48,0.4)" stroke-width="1"/>
+    <circle cx="24" cy="24" r="14" fill="rgba(0,0,0,0.85)" stroke="#ff3b30" stroke-width="2.5" filter="url(#playerGlow)"/>
+    <polygon points="24,11 29,21 39,23 31,31 33,42 24,37 15,42 17,31 9,23 19,21"
+      fill="#ff3b30" opacity="0" />
+    <text x="24" y="29" text-anchor="middle" font-size="14">👤</text>
+  </svg>`;
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize:   [48, 48],
+    iconAnchor: [24, 24],
+    popupAnchor:[0, -28],
+  });
 }
 
 function initMap() {
@@ -6135,8 +6228,9 @@ function initMap() {
     attributionControl: true,
   });
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(_mapInstance);
 
@@ -6159,41 +6253,45 @@ function initMap() {
       label:   'Հիվանդանոց',
       tab:     'hospital',
       detail:  'Բուժվելու համար այցելիր հիվանդանոց',
+      gtaIcon: '✚',
     },
     {
       coords:  [34.0504, -118.2327],
-      color:   '#636366',
+      color:   '#8e8e93',
       emoji:   '⛓️',
       title:   'Twin Towers Correctional Facility',
       label:   'Բանտ',
       tab:     'prison',
       detail:  'Ձերբակալվածների ժամանակավոր բնակավայր',
+      gtaIcon: '⛓',
     },
     {
       coords:  [34.0506, -118.2589],
       color:   '#ffd60a',
       emoji:   '🏦',
-      title:   'Central Bank of LA',
+      title:   'Central Bank of Los Angeles',
       label:   'Կենտրոնական Բանկ',
       tab:     'bank',
       detail:  'Ավանդներ, վարկեր, փոխանցումներ',
+      gtaIcon: '$',
     },
   ];
 
   _CITY_LOCS.forEach(loc => {
-    L.marker(loc.coords, { icon: _svgMarker(loc.color, loc.emoji, 38), zIndexOffset: 900 })
+    const popupContent = `
+      <div style="min-width:175px;font-family:'Courier New',monospace;">
+        <div style="font-size:11px;letter-spacing:2px;color:${loc.color};text-transform:uppercase;margin-bottom:4px;">${loc.gtaIcon} ${loc.label}</div>
+        <div style="font-size:11px;color:#888;margin-bottom:2px;">${loc.title}</div>
+        <div style="font-size:11px;color:#aaa;margin-bottom:10px;">${loc.detail}</div>
+        <button onclick="switchTab('${loc.tab}',null);setTimeout(()=>document.querySelector('.leaflet-popup-close-button')&&document.querySelector('.leaflet-popup-close-button').click(),50)"
+          style="width:100%;padding:7px 0;background:${loc.color};color:#000;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;">
+          ԱՆՑՆԵԼ ▶
+        </button>
+      </div>
+    `;
+    L.marker(loc.coords, { icon: _svgMarker(loc.color, loc.emoji, 40), zIndexOffset: 900 })
       .addTo(_mapInstance)
-      .bindPopup(`
-        <div style="min-width:160px;">
-          <b style="font-size:14px;">${loc.emoji} ${loc.label}</b><br>
-          <span style="color:#888;font-size:12px;">${loc.title}</span><br>
-          <span style="font-size:12px;color:#aaa;">${loc.detail}</span><br>
-          <button onclick="switchTab('${loc.tab}',null);document.querySelector('.leaflet-popup-close-button').click()"
-            style="margin-top:8px;padding:5px 12px;background:${loc.color};color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">
-            Անցնել →
-          </button>
-        </div>
-      `);
+      .bindPopup(popupContent, { maxWidth: 220 });
   });
 
   renderMapBusinesses();
