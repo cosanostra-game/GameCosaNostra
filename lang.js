@@ -416,7 +416,28 @@ const LANG_DICT = {
   'train.mental':             { ru: 'Умственная Подготовка' },
   'train.phys':               { ru: 'Физическая Подготовка' },
   'train.physDesc':           { ru: '+5 Максимального HP' },
-  'train.price500':           { ru: 'Стоимость: $500' },
+  // ── Placeholder keys (data-i18n-ph) ─────────────────────────────
+  'auth.emailPh':       { ru: 'Электронная почта' },
+  'auth.passPh':        { ru: 'Пароль' },
+  'auth.nickPh':        { ru: 'Ваш никнейм' },
+  'auth.newPassPh':     { ru: 'Пароль (мин. 6)' },
+  'auth.confPassPh':    { ru: 'Повторите пароль' },
+  'bank.accPh':         { ru: 'Номер счёта (AM123456)' },
+  'bank.amtPh':         { ru: 'Сумма...' },
+  'bank.loanPh':        { ru: 'Сумма (макс. $50,000)' },
+  'biz.namePh':         { ru: 'Название...' },
+  'biz.casinoNamePh':   { ru: 'Название казино...' },
+  'biz.clubNamePh':     { ru: 'Название клуба...' },
+  'biz.launderPh':      { ru: 'Отмыть ($)...' },
+  'casino.betPh':       { ru: 'Ставка ($)...' },
+  'crypto.amtPh':       { ru: 'Количество' },
+  'filter.min':         { ru: 'Мин. цена ($)' },
+  'filter.max':         { ru: 'Макс. цена ($)' },
+  'filter.minShort':    { ru: 'Мин. ($)' },
+  'filter.maxShort':    { ru: 'Макс. ($)' },
+  'friends.searchPh':   { ru: 'Введите nickname...' },
+  'stash.inPh':         { ru: 'Положить ($)...' },
+  'stash.outPh':        { ru: 'Достать ($)...' },
 };
 
 // ── Snapshot of original Armenian DOM text ──────────────────────
@@ -434,6 +455,11 @@ function _snapshotHy() {
       _hySnap[key] = tn.length ? tn[tn.length - 1].textContent.trim()
                                : el.textContent.trim();
     }
+  });
+  // Snapshot Armenian placeholder text
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (!_hySnap[key]) _hySnap[key] = el.placeholder || '';
   });
 }
 
@@ -463,6 +489,12 @@ window.applyLang = function() {
         el.textContent = val;
       }
     }
+  });
+  // ── Apply placeholder translations ──────────────────────
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    const val = window.t(key);
+    if (val) el.placeholder = val;
   });
   const btn = document.getElementById('lang-toggle-btn');
   if (btn) btn.textContent = window.LANG_CURRENT === 'hy' ? '🇷🇺 Ρус' : '🇦🇲 Հայ';
