@@ -10,7 +10,7 @@ const connectDB  = require('./connect');
 
 const authRoutes   = require('./auth');
 const gameRoutes   = require('./game');
-const familyRoutes = require('./family');
+const familyRoutes = require('./Family');
 
 const app        = express();
 const httpServer = http.createServer(app);
