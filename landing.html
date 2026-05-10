@@ -3186,6 +3186,7 @@ async function authLogin() {
 function authSuccess(user) {
     currentUser      = user;
     currentUserEmail = user.email;
+    window._myUserId = user.id || user._id || ''; // ← family boss check-ի համար
 
     document.getElementById('auth-screen').classList.remove('show');
     if (typeof player !== 'undefined') {
@@ -4847,84 +4848,221 @@ function launderAll() {
 //   FAMILIES
 // ==========================================
 const mafiaFamilies = [
-    new NPCFamily({ name:"Bambino",   boss:"Don Carmine Bambino",  territory:"Հյուսիսային Թաղ",    power:85, members:42, color:"#ff9f0a" }),
-    new NPCFamily({ name:"Banano",    boss:"Don Luigi Banano",     territory:"Հարավային Թաղ",      power:72, members:35, color:"#0a84ff" }),
-    new NPCFamily({ name:"Gambino",   boss:"Don Carlo Gambino",    territory:"Կենտրոնական Թաղ", power:95, members:58, color:"#ff3b30" }),
-    new NPCFamily({ name:"Chenovese", boss:"Don Vito Chenovese",   territory:"Արևելյան Թաղ",   power:78, members:40, color:"#32d74b" }),
-    new NPCFamily({ name:"Colombo",   boss:"Don Joe Colombo",      territory:"Արևմտյան Թաղ",   power:68, members:31, color:"#bf5af2" }),
+    new NPCFamily({ name:"Genovese", boss:"Don Liborio Bellomo",  territory:"Հյուսիսային Թաղ",  power:98, members:250, color:"#ff9f0a" }),
+    new NPCFamily({ name:"Gambino",  boss:"Don Domenico Cefalù", territory:"Կentrakakan Թagh",  power:92, members:200, color:"#ff3b30" }),
+    new NPCFamily({ name:"Lucchese", boss:"Don Steven Crea Sr.",  territory:"Արevelyan Թagh",   power:80, members:160, color:"#0a84ff" }),
+    new NPCFamily({ name:"Bonanno",  boss:"Don Michael Mancuso", territory:"Արevmtyan Թagh",   power:75, members:130, color:"#32d74b" }),
+    new NPCFamily({ name:"Colombo",  boss:"Don Andrew Russo",    territory:"Հaravayin Թagh",   power:65, members:90,  color:"#bf5af2" }),
 ];
 
 function renderFamilies() {
     const npcList = document.getElementById('families-npc-list');
     if (!npcList) return;
 
+    // NPC families grid
     let html = '';
-        // Uses NPCFamily.toCard() — see NPCFamily class above
     mafiaFamilies.forEach(f => { html += f.toCard(); });
     npcList.innerHTML = html;
 
-    // My family section
+    // My family section — load from server
     const mySection = document.getElementById('my-family-section');
     if (!mySection) return;
 
-    const canCreate = player.rank === 'Մաֆիոզ' || player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
-    if (!player.family) {
-        mySection.innerHTML = `<div class="card" style="border:1px solid ${canCreate?'var(--ok)':'var(--border)'}; text-align:center;">
-            <i class="material-icons" style="font-size:42px;margin-bottom:16px;color:${canCreate?'var(--ok)':'var(--text)'};">add_business</i>
-            <h3 style="justify-content:center; color:${canCreate?'var(--ok)':'var(--text)'};">Ստեղծիր 6-րդ Ընտանիքը</h3>
-            <p style="margin-bottom:16px;">Պահանջվում է կոչում <b style="color:var(--accent);">Մաֆիոզ</b> + <b style="color:var(--ok);">$250,000</b></p>
-            ${canCreate ? `<input type="text" id="familyNameInput" placeholder="Ընտ. անուն (հայ./անգ.)..." style="max-width:240px;margin-bottom:14px;">
-            <br><button style="background:var(--ok);width:auto;padding:14px 32px;" onclick="createMyFamily()">🏰 Հիմնել Ընտ.</button>` 
-            : `<p style="color:var(--accent);font-weight:700;">Ներկայիս կոչում: ${player.rank}</p>`}
-        </div>`;
-    } else {
-        let f = player.family;
-        mySection.innerHTML = `<div class="card" style="border:2px solid var(--ok);">
-            <h3 style="color:var(--ok);"><i class="material-icons">shield</i> ⭐ Իմ Ընտ.: ${f.name}</h3>
-            <p style="margin-bottom:8px;"><b>Բոսս:</b> ${player.name||'Դուք'}</p>
-            <p style="margin-bottom:8px;"><b>Անդամ:</b> ${f.members} | <b>Ուժ:</b> ${f.power}</p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
-                <button style="background:var(--ok);width:auto;padding:12px 22px;" onclick="upgradeFamilyPower()">💪 Ուժ +10 ($50,000)</button>
-                <button style="background:#0a84ff;width:auto;padding:12px 22px;" onclick="recruitFamilyMember()">👤 Անդամ +1 ($10,000)</button>
+    const canCreate = ['Մاֆиoz','Kapo','Capo','Don','Godfather'].some(r =>
+        (player.rank||'').toLowerCase().includes(r.toLowerCase())
+    ) || player.rank === 'Մafioz' || player.rank === 'Մаfiоз';
+
+    // Show family invites first
+    _renderFamilyInvites(mySection, canCreate);
+}
+
+async function _renderFamilyInvites(mySection, canCreate) {
+    // Load pending invites
+    let invites = [];
+    try { invites = await apiGetFamilyInvites(); } catch(e) {}
+
+    let inviteHtml = '';
+    if (invites && invites.length > 0) {
+        inviteHtml = invites.map(inv => `
+        <div class="card" style="border:2px solid var(--warn);margin-bottom:12px;">
+            <h3 style="color:var(--warn);"><i class="material-icons">mail</i> Yntaniqayin Hraver</h3>
+            <p style="margin-bottom:12px;"><b style="color:var(--text-l);">${inv.familyName}</b> yntaniqy hravel e kez (Boss: ${inv.bossName})</p>
+            <div style="display:flex;gap:10px;">
+                <button style="background:var(--ok);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','accept')">✓ Kamel</button>
+                <button style="background:var(--accent);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','decline')">✕ Morjvel</button>
             </div>
+        </div>`).join('');
+    }
+
+    // Load own family
+    let family = null;
+    try { family = await apiGetMyFamily(); } catch(e) {}
+
+    if (!family) {
+        mySection.innerHTML = inviteHtml + `
+        <div class="card" style="border:1px solid ${canCreate?'var(--ok)':'var(--border)'}; text-align:center;">
+            <i class="material-icons" style="font-size:42px;margin-bottom:16px;color:${canCreate?'var(--ok)':'var(--text)'};">add_business</i>
+            <h3 style="justify-content:center; color:${canCreate?'var(--ok)':'var(--text)'};">Steghtsir 6-rd Yntaniqy</h3>
+            <p style="margin-bottom:16px;">Pahanjanvum e <b style="color:var(--accent);">Mafioz</b> koch + <b style="color:var(--ok);">$250,000</b></p>
+            ${canCreate ? `
+            <input type="text" id="familyNameInput" placeholder="Yntaniqi anun..." style="max-width:240px;margin-bottom:14px;">
+            <br>
+            <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:8px;">
+                <label style="font-size:13px;color:var(--text);">Graven:</label>
+                <input type="color" id="familyColorInput" value="#ff3b30" style="width:40px;height:36px;border:none;background:none;cursor:pointer;">
+            </div>
+            <br>
+            <button style="background:var(--ok);width:auto;padding:14px 32px;margin-top:12px;" onclick="createMyFamilyAPI()">🏰 Himnel Yntaniq</button>
+            ` : `<p style="color:var(--accent);font-weight:700;">Nerkayin koch: ${player.rank}</p>`}
         </div>`;
+        return;
+    }
+
+    // Has family — show full card
+    const isBoss   = String(family.bossId) === String(window._myUserId || '');
+    const myRole   = isBoss ? '👑 Boss' : '🔫 Soldier';
+    const total    = (family.members ? family.members.length : 0) + 1;
+    const realMembers = (family.members || []).filter(m => m.account !== '—').slice(0,10);
+
+    const membersHtml = realMembers.length > 0
+        ? realMembers.map(m => `<div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;">
+            <span>👤</span>
+            <span style="flex:1;color:var(--text-l);">${m.name}</span>
+            <span style="font-family:monospace;font-size:12px;color:var(--text);">${m.account}</span>
+            ${isBoss ? `<button onclick="kickFamilyMember('${m.userId}')" style="background:var(--accent);width:auto;padding:4px 10px;font-size:12px;">Hanel</button>` : ''}
+          </div>`).join('')
+        : '<p style="color:var(--text);font-size:13px;">Iravakan andamner chka deռ</p>';
+
+    // Invite form (boss only)
+    const inviteForm = isBoss ? `
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+            <h4 style="color:var(--text-l);margin-bottom:10px;">📨 Hravel Ynker</h4>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input type="text" id="familyInviteAccount" placeholder="AM123456 hashvehamar..." style="flex:1;min-width:180px;">
+                <button style="background:#0a84ff;width:auto;padding:12px 18px;" onclick="inviteToFamilyAPI()">📨 Hravel</button>
+            </div>
+        </div>` : '';
+
+    const leaveLabel = isBoss ? '💀 Nercnel Yntaniq' : '🚪 Durs gal';
+
+    mySection.innerHTML = inviteHtml + `
+    <div class="card" style="border:2px solid ${family.color||'var(--ok)'};">
+        <h3 style="color:${family.color||'var(--ok)'};">
+            <i class="material-icons">shield</i> ⭐ ${family.name} Yntaniq
+            <span style="font-size:12px;font-weight:400;margin-left:8px;color:var(--text);">${myRole}</span>
+        </h3>
+        <p style="margin-bottom:6px;"><b>Boss:</b> ${family.bossName}</p>
+        <div style="display:flex;gap:18px;margin:10px 0 14px;flex-wrap:wrap;">
+            <div style="text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:${family.color||'var(--ok)'};">${family.power}</div>
+                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ujh</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:var(--text-l);">${total}</div>
+                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Andamner</div>
+            </div>
+        </div>
+        <div style="margin-bottom:14px;">
+            <h4 style="color:var(--text-l);margin-bottom:8px;">Iravakan andamner</h4>
+            ${membersHtml}
+        </div>
+        ${isBoss ? `
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button style="background:var(--ok);width:auto;padding:12px 20px;" onclick="familyUpgradePowerAPI()">💪 Ujh +10 ($50,000)</button>
+            <button style="background:#5e5ce6;width:auto;padding:12px 20px;" onclick="familyRecruitAPI()">👤 Andam +1 ($10,000)</button>
+        </div>` : ''}
+        ${inviteForm}
+        <div style="margin-top:14px;">
+            <button style="background:var(--accent);width:auto;padding:10px 18px;" onclick="leaveFamilyAPI()">${leaveLabel}</button>
+        </div>
+    </div>`;
+}
+async function createMyFamilyAPI() {
+    const name  = (document.getElementById('familyNameInput')||{}).value;
+    const color = (document.getElementById('familyColorInput')||{value:'#ff3b30'}).value;
+    if (!name || !name.trim()) return showNotification('Matutsek Yntanqy anun', false);
+    const btn = document.querySelector('#my-family-section button');
+    if (btn) { btn.disabled = true; btn.textContent = 'Steghtsavrm e...'; }
+    try {
+        await apiCreateFamily(name.trim(), color);
+        showNotification(`🏰 ${name.trim()} yntaniqy himmnvec!`, true);
+        playTone && playTone('upgrade', .35);
+        spawnFloatMoney && spawnFloatMoney(250000, false);
+        player.money -= 250000;
+        updateUI();
+        renderFamilies();
+    } catch(err) {
+        showNotification('✕ ' + err.message, false);
+        if (btn) { btn.disabled = false; btn.textContent = '🏰 Himnel Yntaniq'; }
     }
 }
 
-function createMyFamily() {
-    let name = (document.getElementById('familyNameInput')||{}).value;
-    if (!name || !name.trim()) return showNotification(t('notif.enter_family_name'), false);
-    name = name.trim();
-    const canCreate = player.rank === 'Մաֆիոզ' || player.rank === 'Կապո' || player.rank === 'Դոն' || player.rank === 'Կնքահայր';
-    if (!canCreate) return showNotification(t('notif.rank_req_mafioso'), false);
-    if (player.money < 250000) return showNotification(t('notif.no_250k'), false);
-    if (mafiaFamilies.find(f=>f.name.toLowerCase()===name.toLowerCase())) return showNotification(t('notif.family_name_taken'), false);
-    player.money -= 250000;
-    player.family = new PlayerFamily({ name, members: 5, power: 15 });
-    showNotification(`🏰 ${name} ընտ. հիմնվեց!`, true);
-    playTone('upgrade', .35);
-    spawnFloatMoney(250000, false);
-    updateUI();
-    renderFamilies();
+async function inviteToFamilyAPI() {
+    const acc = (document.getElementById('familyInviteAccount')||{}).value;
+    if (!acc || !acc.trim()) return showNotification('Matutsek AM hashvehamar', false);
+    try {
+        const res = await apiInviteToFamily(acc.trim().toUpperCase());
+        showNotification('📨 ' + res.message, true);
+        document.getElementById('familyInviteAccount').value = '';
+    } catch(err) {
+        showNotification('✕ ' + err.message, false);
+    }
 }
-function upgradeFamilyPower() {
-    if (!player.family) return;
-    if (player.money < 50000) return showNotification(t('notif.no_50k'), false);
-    player.money -= 50000;
-    player.family.power += 10;
-    showNotification(t('notif.family_pow') + ` +10 → ${player.family.power}`, true);
-    playTone('upgrade', .2);
-    updateUI(); renderFamilies();
+
+async function respondFamilyInvite(familyId, action) {
+    try {
+        const res = await apiRespondFamilyInvite(familyId, action);
+        showNotification(res.message, action === 'accept');
+        if (action === 'accept' && res.family) {
+            player.money = (player.money || 0); // no cost for member
+        }
+        renderFamilies();
+    } catch(err) {
+        showNotification('✕ ' + err.message, false);
+    }
 }
-function recruitFamilyMember() {
-    if (!player.family) return;
-    if (player.money < 10000) return showNotification(t('notif.no_10k'), false);
-    player.money -= 10000;
-    player.family.members += 1;
-    showNotification(`👤 ${t('notif.family_mem')} → ${player.family.members}`, true);
-    playTone('coin', .2);
-    updateUI(); renderFamilies();
+
+async function familyUpgradePowerAPI() {
+    try {
+        const res = await apiFamilyUpgradePower();
+        player.money -= 50000;
+        showNotification('💪 Ujhy ' + res.power, true);
+        playTone && playTone('upgrade', .2);
+        updateUI(); renderFamilies();
+    } catch(err) { showNotification('✕ ' + err.message, false); }
 }
+
+async function familyRecruitAPI() {
+    try {
+        const res = await apiFamilyRecruit();
+        player.money -= 10000;
+        showNotification(`👤 Nor andam! Chak ${res.totalMembers}`, true);
+        playTone && playTone('coin', .2);
+        updateUI(); renderFamilies();
+    } catch(err) { showNotification('✕ ' + err.message, false); }
+}
+
+async function leaveFamilyAPI() {
+    const msg = confirm('Vstarelu ek?');
+    if (!msg) return;
+    try {
+        const res = await apiLeaveFamily();
+        showNotification(res.message, true);
+        renderFamilies();
+    } catch(err) { showNotification('✕ ' + err.message, false); }
+}
+
+async function kickFamilyMember(userId) {
+    try {
+        await apiKickFamilyMember(userId);
+        showNotification('👤 Andamy hanel eq', true);
+        renderFamilies();
+    } catch(err) { showNotification('✕ ' + err.message, false); }
+}
+
+// Legacy local functions (kept for backward compat, now delegate to API)
+function createMyFamily() { createMyFamilyAPI(); }
+
 
 // ==========================================
 //   WEAPONS & INVENTORY DATA
@@ -6429,6 +6567,16 @@ window._chatSocketInit = function() {
             showNotification('💬 ' + escHtml(data.fromName || '?') + ': ' + escHtml((data.text || '').substring(0, 60)), true);
         }
     });
+};
+
+// ── Family real-time callbacks ──────────────────────────────────
+window.onFamilyInviteReceived = function(data) {
+    // Re-render families tab if it's open
+    const familiesPage = document.getElementById('page-families');
+    if (familiesPage && familiesPage.classList.contains('active')) {
+        renderFamilies();
+    }
+    // Badge or notification already shown from api.js socket handler
 };
 </script>
 

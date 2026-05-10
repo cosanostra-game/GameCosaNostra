@@ -28,6 +28,17 @@ const gameSaveSchema = new mongoose.Schema(
       },
     ],
 
+    // Ընտ. հրավերներ — ստացված, սպասվող (real-time fallback)
+    familyInvites: [
+      {
+        familyId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Family' },
+        familyName: { type: String },
+        bossId:     { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        bossName:   { type: String },
+        sentAt:     { type: Date, default: Date.now },
+      },
+    ],
+
     // Ընկերության հայտեր — ստացված, սպասվող
     friendRequests: [
       {

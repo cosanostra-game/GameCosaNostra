@@ -9,7 +9,6 @@ const getToken   = ()  => localStorage.getItem(TOKEN_KEY);
 const saveToken  = (t) => localStorage.setItem(TOKEN_KEY, t);
 const clearToken = ()  => localStorage.removeItem(TOKEN_KEY);
 
-// ── FIX: Error-ին status կոդ կցել, որ catch-ում ճիշտ detect անենք ──
 async function apiRequest(endpoint, method = 'GET', body = null) {
   const headers = { 'Content-Type': 'application/json' };
   const token = getToken();
@@ -21,8 +20,7 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
   const res  = await fetch(`${API_BASE}/api${endpoint}`, config);
   const data = await res.json();
   if (!res.ok) {
-    // FIX: status-ն error object-ին կցում ենք, ոչ թե string-ի մեջ թաղում
-    const err = new Error(data.message || 'Սerverի sxal');
+    const err = new Error(data.message || 'Serverի sxal');
     err.status = res.status;
     throw err;
   }
@@ -56,18 +54,12 @@ async function apiUpdateProfile(updates) {
 async function apiLoadGame() {
   try {
     const data = await apiRequest('/game/save');
-
-    // Offline-ի ժամանակ կուտակված pending transfer-ներ — ցույց տալ load-ի ժամանակ
     if (data.pendingTransfers && data.pendingTransfers.length > 0) {
       _handlePendingTransfers(data.pendingTransfers);
       apiRequest('/game/transfers/clear', 'POST').catch(() => {});
     }
-
     return data.playerData;
   } catch (err) {
-    // FIX: err.status === 404 — ճիշտ check HTTP կոդի վրա, ոչ թե string-ի
-    // Հին կոդը `err.message.includes('404')` — երբeq true չէր դaронум,
-    // քանի որ message-ն server-ի text-ն է ('Save գtнvac che'), ոչ թե '404':
     if (err.status === 404) return null;
     throw err;
   }
@@ -84,18 +76,127 @@ async function apiTransferMoney(toAccount, amount) {
   return apiRequest('/game/transfer', 'POST', { toAccount, amount });
 }
 
+// ── Family ────────────────────────────────────────────────────────
+async function apiGetMyFamily()                          { return (await apiRequest('/family/my')).family; }
+async function apiCreateFamily(name, color)              { return (await apiRequest('/family/create', 'POST', { name, color })).family; }
+async function apiInviteToFamily(toAccount)              { return apiRequest('/family/invite', 'POST', { toAccount }); }
+async function apiRespondFamilyInvite(familyId, action)  { return apiRequest('/family/invite/respond', 'POST', { familyId, action }); }
+async function apiGetFamilyInvites()                     { return (await apiRequest('/family/invites')).invites; }
+async function apiFamilyUpgradePower()                   { return apiRequest('/family/upgrade-power', 'POST'); }
+async function apiFamilyRecruit()                        { return apiRequest('/family/recruit', 'POST'); }
+async function apiLeaveFamily()                          { return apiRequest('/family/leave', 'DELETE'); }
+async function apiKickFamilyMember(userId)               { return apiRequest(`/family/kick/${userId}`, 'DELETE'); }
+
+// ── Family list (bolor yntaniqnery — paterazm haytararelu hamar) ──
+async function apiFamilyList() {
+  return (await apiRequest('/family/list')).families;
+}
+
+// ── War system ────────────────────────────────────────────────────
+
+/**
+ * Paterazm haytararel.
+ * @param {string} enemyFamilyId  - Tshnamiyntaniqy MongoDB _id
+ * @returns {{ success, message, attackerHP, defenderHP, warStake }}
+ */
+async function apiDeclareWar(enemyFamilyId) {
+  return apiRequest('/family/war/declare', 'POST', { enemyFamilyId });
+}
+
+/**
+ * Harcum — boss-y kkam yntaniqy andamy karogh e kanchet.
+ * Cooldown: 10 rope mtqatsutyunic hetо.
+ * @returns {{ success, damage, attackerHP, defenderHP, warEnded, winner?, message }}
+ */
+async function apiWarAttack() {
+  return apiRequest('/family/war/attack', 'POST');
+}
+
+/**
+ * Paterazmi vichak — qo yntaniqy HP-ery ev thshnamiyntaniqy HP-ery.
+ * @returns {{ success, war: { role, enemyFamilyName, myHP, enemyHP, warStake, recentAttacks } | null }}
+ */
+async function apiGetWarStatus() {
+  return apiRequest('/family/war/status');
+}
+
+/**
+ * Kapitulyatsiya — boss-y ankumnery inknamiayn paterazm kapitulyatsiana.
+ * Haxhogy thshnaminy.
+ */
+async function apiSurrender() {
+  return apiRequest('/family/war/surrender', 'POST');
+}
+
 // ── Socket.IO — Real-time ─────────────────────────────────────────
 let _socket = null;
 
 function initSocket() {
   const token = getToken();
   if (!token) return;
-
   if (_socket && _socket.connected) return;
 
   _socket = io(API_BASE, {
-    auth: { token },
+    auth:       { token },
     transports: ['websocket', 'polling'],
+  });
+
+  // ── Existing events ──────────────────────────────────────────
+  _socket.on('familyInvite', (data) => {
+    const msg = `🏰 Yntaniqayin hraver: <b>${data.familyName}</b> (Boss՝ ${data.bossName})`;
+    if (typeof showNotification === 'function') showNotification(msg, true);
+    if (typeof window.onFamilyInviteReceived === 'function') window.onFamilyInviteReceived(data);
+  });
+
+  _socket.on('familyMemberJoined', (data) => {
+    const msg = `👤 ${data.memberName} miatsav ${data.familyName} yntaniqy!`;
+    if (typeof showNotification === 'function') showNotification(msg, true);
+    if (typeof renderFamilies === 'function') renderFamilies();
+  });
+
+  _socket.on('bankTransfer', (data) => {
+    const msg = `🏦 Bankayin mutoq +$${Number(data.amount).toLocaleString()} ← ${data.fromName} (${data.fromAccount})`;
+    if (typeof showNotification === 'function') showNotification(msg, true);
+    else alert(msg);
+    if (typeof player !== 'undefined') {
+      player.bank = data.newBalance;
+      if (typeof updateUI === 'function') updateUI();
+    }
+    if (typeof window.onBankTransferReceived === 'function') window.onBankTransferReceived(data);
+  });
+
+  // ── War events ───────────────────────────────────────────────
+
+  // Qo yntaniqin paterazm haytararvec
+  _socket.on('warDeclared', (data) => {
+    const msg = `⚔️ <b>${data.attackerFamilyName}</b>-ы (Boss՝ ${data.attackerBossName}) paterazm e haytararel qo yntaniqin dem!`;
+    if (typeof showNotification === 'function') showNotification(msg, true);
+    if (typeof window.onWarDeclared === 'function') window.onWarDeclared(data);
+    // Refresh war UI if open
+    if (typeof renderWarStatus === 'function') renderWarStatus();
+  });
+
+  // Harchum klinel
+  _socket.on('warAttack', (data) => {
+    const sideArm = data.side === 'attacker' ? '⚔️' : '🛡️';
+    const msg = `${sideArm} <b>${data.attackerName}</b> harcvec <b>${data.damage}</b> vnasvacq!  [${data.attackerHP} vs ${data.defenderHP}]`;
+    if (typeof showNotification === 'function') showNotification(msg, false);
+    if (typeof window.onWarAttack === 'function') window.onWarAttack(data);
+    if (typeof renderWarStatus === 'function') renderWarStatus();
+  });
+
+  // Paterazm avartvel
+  _socket.on('warEnded', (data) => {
+    const isWinner = data.winnerName === (
+      typeof player !== 'undefined' && player.familyName ? player.familyName : null
+    );
+    const emoji = isWinner ? '🏆' : '💀';
+    const msg   = `${emoji} Paterazm avartvec! Haxhog՝ <b>${data.winnerName}</b>` +
+                  (data.prize > 0 ? ` (+$${data.prize.toLocaleString()})` : '');
+    if (typeof showNotification === 'function') showNotification(msg, true);
+    if (typeof window.onWarEnded === 'function') window.onWarEnded(data);
+    if (typeof renderWarStatus === 'function') renderWarStatus();
+    if (typeof renderFamilies === 'function') renderFamilies();
   });
 
   _socket.on('connect', () => {
@@ -104,24 +205,6 @@ function initSocket() {
 
   _socket.on('connect_error', (err) => {
     console.warn('Socket connect error:', err.message);
-  });
-
-  _socket.on('bankTransfer', (data) => {
-    const msg = `🏦 Բankayin mutoq  +$${Number(data.amount).toLocaleString()}  ←  ${data.fromName} (${data.fromAccount})`;
-    if (typeof showNotification === 'function') {
-      showNotification(msg, true);
-    } else {
-      alert(msg);
-    }
-
-    if (typeof window !== 'undefined' && typeof player !== 'undefined') {
-      player.bank = data.newBalance;
-      if (typeof updateUI === 'function') updateUI();
-    }
-
-    if (typeof window.onBankTransferReceived === 'function') {
-      window.onBankTransferReceived(data);
-    }
   });
 }
 
@@ -132,16 +215,13 @@ function disconnectSocket() {
   }
 }
 
-// ── Internal: pending notifications (offline fallback) ────────────
+// ── Internal: pending offline notifications ───────────────────────
 function _handlePendingTransfers(transfers) {
   transfers.slice(-5).forEach((t, i) => {
     setTimeout(() => {
-      const msg = `🏦 Bancayin mutoq  +$${Number(t.amount).toLocaleString()}  ←  ${t.fromName} (${t.fromAccount})`;
-      if (typeof showNotification === 'function') {
-        showNotification(msg, true);
-      } else {
-        alert(msg);
-      }
+      const msg = `🏦 Bankayin mutoq +$${Number(t.amount).toLocaleString()} ← ${t.fromName} (${t.fromAccount})`;
+      if (typeof showNotification === 'function') showNotification(msg, true);
+      else alert(msg);
     }, i * 2000);
   });
 }

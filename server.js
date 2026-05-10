@@ -8,8 +8,9 @@ const jwt        = require('jsonwebtoken');
 const cors       = require('cors');
 const connectDB  = require('./connect');
 
-const authRoutes = require('./auth');
-const gameRoutes = require('./game');
+const authRoutes   = require('./auth');
+const gameRoutes   = require('./game');
+const familyRoutes = require('./family');
 
 const app        = express();
 const httpServer = http.createServer(app);
@@ -67,6 +68,7 @@ if (process.env.NODE_ENV !== 'production') {
 // ─── Routes ───────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/family', familyRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
