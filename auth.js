@@ -5,14 +5,12 @@ const User    = require('./User');
 
 const router = express.Router();
 
-// ── Helper: generate JWT ──────────────────────────────────────────
 function signToken(userId) {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '30d',
   });
 }
 
-// ── Middleware: protect (verify JWT) ─────────────────────────────
 async function protect(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
@@ -35,7 +33,6 @@ async function protect(req, res, next) {
   }
 }
 
-// ── POST /api/auth/register ───────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, avatarColor } = req.body;
@@ -58,19 +55,7 @@ router.post('/register', async (req, res) => {
 
     const token = signToken(user._id);
 
-    res.status(201).json({
-      success: true,
-      token,
-      user: {
-        id:          user._id,
-        name:        user.name,
-        email:       user.email,
-        avatarColor: user.avatarColor,
-        avatarImg:   user.avatarImg,
-        bio:         user.bio,
-        createdAt:   user.createdAt,
-      },
-    });
+    res.status(201).json({ success: true, token, user });
   } catch (err) {
     console.error('Register error:', err);
     if (err.name === 'ValidationError') {
@@ -81,7 +66,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ── POST /api/auth/login ──────────────────────────────────────────
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -91,57 +75,28 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
-    if (!user) {
-      return res.status(401).json({ success: false, message: 'Email-ը կամ գաղտնաբառը սխալ է' });
-    }
+    if (!user) return res.status(401).json({ success: false, message: 'Email-ը կամ գաղտնաբառը սխալ է' });
 
     const isMatch = await user.checkPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Email-ը կամ գաղտնաբառը սխալ է' });
-    }
+    if (!isMatch) return res.status(401).json({ success: false, message: 'Email-ը կամ գաղտնաբառը սխալ է' });
 
     const token = signToken(user._id);
 
-    res.json({
-      success: true,
-      token,
-      user: {
-        id:          user._id,
-        name:        user.name,
-        email:       user.email,
-        avatarColor: user.avatarColor,
-        avatarImg:   user.avatarImg,
-        bio:         user.bio,
-        createdAt:   user.createdAt,
-      },
-    });
+    res.json({ success: true, token, user });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
 });
 
-// ── GET /api/auth/me ──────────────────────────────────────────────
 router.get('/me', protect, async (req, res) => {
   try {
-    res.json({
-      success: true,
-      user: {
-        id:          req.user._id,
-        name:        req.user.name,
-        email:       req.user.email,
-        avatarColor: req.user.avatarColor,
-        avatarImg:   req.user.avatarImg,
-        bio:         req.user.bio,
-        createdAt:   req.user.createdAt,
-      },
-    });
+    res.json({ success: true, user: req.user });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Սերվերի սխալ' });
   }
 });
 
-// ── PATCH /api/auth/profile ───────────────────────────────────────
 router.patch('/profile', protect, async (req, res) => {
   try {
     const allowed = ['name', 'avatarColor', 'avatarImg', 'bio'];
@@ -151,7 +106,6 @@ router.patch('/profile', protect, async (req, res) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
     });
 
-    // Password change (optional)
     if (req.body.password) {
       if (req.body.password.length < 6) {
         return res.status(400).json({ success: false, message: 'Գաղտնաբառը պետք է լինի առնվազն 6 նիշ' });
@@ -161,20 +115,9 @@ router.patch('/profile', protect, async (req, res) => {
 
     const user = await User.findById(req.user._id).select('+password');
     Object.assign(user, updates);
-    await user.save(); // triggers pre-save hash if password changed
+    await user.save();
 
-    res.json({
-      success: true,
-      user: {
-        id:          user._id,
-        name:        user.name,
-        email:       user.email,
-        avatarColor: user.avatarColor,
-        avatarImg:   user.avatarImg,
-        bio:         user.bio,
-        createdAt:   user.createdAt,
-      },
-    });
+    res.json({ success: true, user });
   } catch (err) {
     console.error('Profile update error:', err);
     if (err.name === 'ValidationError') {
@@ -185,7 +128,6 @@ router.patch('/profile', protect, async (req, res) => {
   }
 });
 
-// ── DELETE /api/auth/account ──────────────────────────────────────
 router.delete('/account', protect, async (req, res) => {
   try {
     const GameSave = require('./GameSave');

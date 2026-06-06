@@ -1,6 +1,4 @@
 // api.js — Frontend API helper + Socket.IO real-time
-// Ogtagorcum: <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-//             <script src="api.js"></script>
 
 const API_BASE  = 'https://cosa-nostra.onrender.com';
 const TOKEN_KEY = 'cosaNostra_JWT';
@@ -20,7 +18,7 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
   const res  = await fetch(`${API_BASE}/api${endpoint}`, config);
   const data = await res.json();
   if (!res.ok) {
-    const err = new Error(data.message || 'Serverի sxal');
+    const err = new Error(data.message || 'Սերվերի սխալ');
     err.status = res.status;
     throw err;
   }
@@ -87,43 +85,24 @@ async function apiFamilyRecruit()                        { return apiRequest('/f
 async function apiLeaveFamily()                          { return apiRequest('/family/leave', 'DELETE'); }
 async function apiKickFamilyMember(userId)               { return apiRequest(`/family/kick/${userId}`, 'DELETE'); }
 
-// ── Family list (bolor yntaniqnery — paterazm haytararelu hamar) ──
+// ── Family list ──
 async function apiFamilyList() {
   return (await apiRequest('/family/list')).families;
 }
 
 // ── War system ────────────────────────────────────────────────────
-
-/**
- * Paterazm haytararel.
- * @param {string} enemyFamilyId  - Tshnamiyntaniqy MongoDB _id
- * @returns {{ success, message, attackerHP, defenderHP, warStake }}
- */
 async function apiDeclareWar(enemyFamilyId) {
   return apiRequest('/family/war/declare', 'POST', { enemyFamilyId });
 }
 
-/**
- * Harcum — boss-y kkam yntaniqy andamy karogh e kanchet.
- * Cooldown: 10 rope mtqatsutyunic hetо.
- * @returns {{ success, damage, attackerHP, defenderHP, warEnded, winner?, message }}
- */
 async function apiWarAttack() {
   return apiRequest('/family/war/attack', 'POST');
 }
 
-/**
- * Paterazmi vichak — qo yntaniqy HP-ery ev thshnamiyntaniqy HP-ery.
- * @returns {{ success, war: { role, enemyFamilyName, myHP, enemyHP, warStake, recentAttacks } | null }}
- */
 async function apiGetWarStatus() {
   return apiRequest('/family/war/status');
 }
 
-/**
- * Kapitulyatsiya — boss-y ankumnery inknamiayn paterazm kapitulyatsiana.
- * Haxhogy thshnaminy.
- */
 async function apiSurrender() {
   return apiRequest('/family/war/surrender', 'POST');
 }
@@ -141,21 +120,27 @@ function initSocket() {
     transports: ['websocket', 'polling'],
   });
 
-  // ── Existing events ──────────────────────────────────────────
   _socket.on('familyInvite', (data) => {
-    const msg = `🏰 Yntaniqayin hraver: <b>${data.familyName}</b> (Boss՝ ${data.bossName})`;
+    const msg = (window.t ? t('notif.familyInvite') : '🏰 Ընտանեկան հրավեր: <b>{family}</b> (Բոսս՝ {boss})')
+                .replace('{family}', data.familyName)
+                .replace('{boss}', data.bossName);
     if (typeof showNotification === 'function') showNotification(msg, true);
     if (typeof window.onFamilyInviteReceived === 'function') window.onFamilyInviteReceived(data);
   });
 
   _socket.on('familyMemberJoined', (data) => {
-    const msg = `👤 ${data.memberName} miatsav ${data.familyName} yntaniqy!`;
+    const msg = (window.t ? t('notif.memberJoined') : '👤 {member}-ը միացավ {family} ընտանիքին!')
+                .replace('{member}', data.memberName)
+                .replace('{family}', data.familyName);
     if (typeof showNotification === 'function') showNotification(msg, true);
     if (typeof renderFamilies === 'function') renderFamilies();
   });
 
   _socket.on('bankTransfer', (data) => {
-    const msg = `🏦 Bankayin mutoq +$${Number(data.amount).toLocaleString()} ← ${data.fromName} (${data.fromAccount})`;
+    const msg = (window.t ? t('notif.bankTransfer') : '🏦 Բանկային մուտք +${amount} ← {from} ({account})')
+                .replace('{amount}', Number(data.amount).toLocaleString())
+                .replace('{from}', data.fromName)
+                .replace('{account}', data.fromAccount);
     if (typeof showNotification === 'function') showNotification(msg, true);
     else alert(msg);
     if (typeof player !== 'undefined') {
@@ -167,45 +152,47 @@ function initSocket() {
 
   // ── War events ───────────────────────────────────────────────
 
-  // Qo yntaniqin paterazm haytararvec
   _socket.on('warDeclared', (data) => {
-    const msg = `⚔️ <b>${data.attackerFamilyName}</b>-ы (Boss՝ ${data.attackerBossName}) paterazm e haytararel qo yntaniqin dem!`;
+    const msg = (window.t ? t('notif.warDeclared') : '⚔️ <b>{attacker}</b>-ը (Բոսս՝ {boss}) պատերազմ է հայտարարել ձեր ընտանիքի դեմ:')
+                .replace('{attacker}', data.attackerFamilyName)
+                .replace('{boss}', data.attackerBossName);
     if (typeof showNotification === 'function') showNotification(msg, true);
     if (typeof window.onWarDeclared === 'function') window.onWarDeclared(data);
-    // Refresh war UI if open
     if (typeof renderWarStatus === 'function') renderWarStatus();
   });
 
-  // Harchum klinel
   _socket.on('warAttack', (data) => {
     const sideArm = data.side === 'attacker' ? '⚔️' : '🛡️';
-    const msg = `${sideArm} <b>${data.attackerName}</b> harcvec <b>${data.damage}</b> vnasvacq!  [${data.attackerHP} vs ${data.defenderHP}]`;
+    const msg = (window.t ? t('notif.warAttack') : '{icon} <b>{attacker}</b>-ը հասցրեց <b>{damage}</b> վնաս: [{myHp} vs {enemyHp}]')
+                .replace('{icon}', sideArm)
+                .replace('{attacker}', data.attackerName)
+                .replace('{damage}', data.damage)
+                .replace('{myHp}', data.attackerHP)
+                .replace('{enemyHp}', data.defenderHP);
     if (typeof showNotification === 'function') showNotification(msg, false);
     if (typeof window.onWarAttack === 'function') window.onWarAttack(data);
     if (typeof renderWarStatus === 'function') renderWarStatus();
   });
 
-  // Paterazm avartvel
   _socket.on('warEnded', (data) => {
     const isWinner = data.winnerName === (
       typeof player !== 'undefined' && player.familyName ? player.familyName : null
     );
     const emoji = isWinner ? '🏆' : '💀';
-    const msg   = `${emoji} Paterazm avartvec! Haxhog՝ <b>${data.winnerName}</b>` +
-                  (data.prize > 0 ? ` (+$${data.prize.toLocaleString()})` : '');
+    const prizeStr = data.prize > 0 ? ` (+$${data.prize.toLocaleString()})` : '';
+    const msg = (window.t ? t('notif.warEnded') : '{icon} Պատերազմն ավարտվեց: Հաղթող՝ <b>{winner}</b> {prize}')
+                .replace('{icon}', emoji)
+                .replace('{winner}', data.winnerName)
+                .replace('{prize}', prizeStr);
+
     if (typeof showNotification === 'function') showNotification(msg, true);
     if (typeof window.onWarEnded === 'function') window.onWarEnded(data);
     if (typeof renderWarStatus === 'function') renderWarStatus();
     if (typeof renderFamilies === 'function') renderFamilies();
   });
 
-  _socket.on('connect', () => {
-    console.log('🔌 Socket connected:', _socket.id);
-  });
-
-  _socket.on('connect_error', (err) => {
-    console.warn('Socket connect error:', err.message);
-  });
+  _socket.on('connect', () => { console.log('🔌 Socket connected:', _socket.id); });
+  _socket.on('connect_error', (err) => { console.warn('Socket connect error:', err.message); });
 }
 
 function disconnectSocket() {
@@ -215,11 +202,13 @@ function disconnectSocket() {
   }
 }
 
-// ── Internal: pending offline notifications ───────────────────────
 function _handlePendingTransfers(transfers) {
   transfers.slice(-5).forEach((t, i) => {
     setTimeout(() => {
-      const msg = `🏦 Bankayin mutoq +$${Number(t.amount).toLocaleString()} ← ${t.fromName} (${t.fromAccount})`;
+      const msg = (window.t ? window.t('notif.bankTransfer') : '🏦 Բանկային մուտք +${amount} ← {from} ({account})')
+                  .replace('{amount}', Number(t.amount).toLocaleString())
+                  .replace('{from}', t.fromName)
+                  .replace('{account}', t.fromAccount);
       if (typeof showNotification === 'function') showNotification(msg, true);
       else alert(msg);
     }, i * 2000);
