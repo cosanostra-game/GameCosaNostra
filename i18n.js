@@ -1,6 +1,7 @@
 // =====================================================
-//  i18n.js — Cosa Nostra · Language System v1.0
+//  i18n.js — Cosa Nostra · Language System v2.0
 //  Languages: hy (Հայերեն) · ru (Русский)
+//  All keys are synchronized.
 // =====================================================
 
 const RU = {
@@ -31,25 +32,7 @@ const RU = {
   'menu.leaderboard':  'Лидерборд',
   'menu.settings':     'Настройки',
   'menu.profile':      'Мой профиль',
-
-  // ── Menu section titles ─────────────────────────────
-  'section.main':        'Основное',
-  'section.finance':     'Финансы и Имущество',
-  'section.underground': 'Подполье',
-  'section.extra':       'Дополнительно',
-
-  // ── Sidebar misc ────────────────────────────────────
-  'sidebar.rank': 'Звание',
-  'daily.label':  'Ежедневный бонус',
-  'daily.claim':  'Получить $100',
-  'daily.claimed':'Получен ✓',
-
-  // ── Topbar ──────────────────────────────────────────
-  'topbar.log':   'Журнал',
-  'topbar.sound': 'Звук',
-  'topbar.theme': 'Тема',
-  'topbar.lang':  '🇷🇺 РУ',
-  'topbar.energy':'⚡ Энерг.',
+  'menu.map':          'Карта города',
 
   // ── Page headings (h1 / h2) ─────────────────────────
   'page.main':        'Главная',
@@ -78,6 +61,27 @@ const RU = {
   'page.profile':     'Мой профиль',
   'page.friends':     'Друзья',
   'page.messages':    'Сообщения',
+  'page.map':         'Карта Лос-Анджелеса',
+  'page.no_activity': 'Нет активности...',
+
+  // ── Menu section titles ─────────────────────────────
+  'section.main':        'Основное',
+  'section.finance':     'Финансы и Имущество',
+  'section.underground': 'Подполье',
+  'section.extra':       'Дополнительно',
+
+  // ── Sidebar misc ────────────────────────────────────
+  'sidebar.rank': 'Звание',
+  'daily.label':  'Ежедневный бонус',
+  'daily.claim':  'Получить $100',
+  'daily.claimed':'Получен ✓',
+
+  // ── Topbar ──────────────────────────────────────────
+  'topbar.log':   'Журнал',
+  'topbar.sound': 'Звук',
+  'topbar.theme': 'Тема',
+  'topbar.lang':  '🇷🇺 РУ',
+  'topbar.energy':'⚡ Энерг.',
 
   // ── Buttons ─────────────────────────────────────────
   'btn.deposit':      'Внести',
@@ -248,26 +252,29 @@ const RU = {
   'crypto.amtPh':     'Количество',
 
   // ── Notifications ────────────────────────────────────
-  'notif.inPrison':    'Вы в тюрьме',
-  'notif.noEnergy':    'Недостаточно энергии',
-  'notif.noHp':        'Вы без сознания. Идите в больницу.',
-  'notif.garageFull':  'Гараж заполнен',
-  'notif.saved':       'Сохранено ✓',
-  'notif.loaded':      'Загружено ✓',
-  'notif.resetConfirm':'Уверены? Всё будет удалено безвозвратно!',
-  'notif.dailyClaim':  'Ежедневный бонус +$100!',
-  'notif.dailyAlready':'Уже получен сегодня',
-  'notif.newRank':     'Новое звание:',
-  'notif.carStolen':   'Угнан',
-  'notif.garageExpand':'Гараж +5 мест ✅',
-  
+  'notif.in_prison':    'Вы в тюрьме',
+  'notif.no_energy':    'Недостаточно энергии',
+  'notif.no_hp':        'Вы без сознания. Идите в больницу.',
+  'notif.garage_full':  'Гараж заполнен',
+  'notif.saved':        'Сохранено ✓',
+  'notif.loaded':       'Загружено ✓',
+  'notif.reset_confirm':'Уверены? Всё будет удалено безвозвратно!',
+  'notif.daily_claim':  'Ежедневный бонус +$100!',
+  'notif.daily_already':'Уже получен сегодня',
+  'notif.new_rank':     'Новое звание:',
+  'notif.car_stolen':   'Угнан',
+  'notif.garage_expand':'Гараж +5 мест ✅',
+  'notif.get_daily':    'Забрать бонус',
+  'notif.daily_received':'Бонус получен',
+  'notif.daily_bonus':  'Ежедневный бонус +$100!',
+
   // Socket Dynamic Notifications
-  'notif.familyInvite': '🏰 Приглашение в семью: <b>{family}</b> (Босс: {boss})',
-  'notif.memberJoined': '👤 {member} присоединился к семье {family}!',
-  'notif.bankTransfer': '🏦 Перевод +${amount} ← {from} ({account})',
-  'notif.warDeclared':  '⚔️ <b>{attacker}</b> (Босс: {boss}) объявил войну!',
-  'notif.warAttack':    '{icon} <b>{attacker}</b> нанес <b>{damage}</b> урона! [{myHp} vs {enemyHp}]',
-  'notif.warEnded':     '{icon} Война окончена! Победитель: <b>{winner}</b> {prize}',
+  'notif.family_invite': '🏰 Приглашение в семью: <b>{family}</b> (Босс: {boss})',
+  'notif.member_joined': '👤 {member} присоединился к семье {family}!',
+  'notif.bank_transfer': '🏦 Перевод +${amount} ← {from} ({account})',
+  'notif.war_declared':  '⚔️ <b>{attacker}</b> (Босс: {boss}) объявил войну!',
+  'notif.war_attack':    '{icon} <b>{attacker}</b> нанес <b>{damage}</b> урона! [{myHp} vs {enemyHp}]',
+  'notif.war_ended':     '{icon} Война окончена! Победитель: <b>{winner}</b> {prize}',
 
   // ── Auth screen ─────────────────────────────────────
   'auth.loginTab':    'Войти',
@@ -347,7 +354,7 @@ const RU = {
   'nav.login':     'Войти',
   'nav.register':  'Регистрация',
   'intro.enter':   'Войти',
-  'hero.label':    'Армянский Мафия Ролплей',
+  'hero.label':    'Армянская Мафия Ролевая игра',
   'hero.tagline':  'Жизнь мафии — в ваших руках',
   'hero.play':     '▶ Начать игру',
   'hero.login':    'Войти',
@@ -392,7 +399,7 @@ const RU = {
   'dealer.empty': 'Нет доступных машин'
 };
 
-// ── Armenian notifications for t() fallback ────────────────────────
+// ── Armenian translations (full) ────────────────────────
 const HY = {
   // ── Sidebar navigation ─────────────────────────────
   'menu.main':         'Գլխավոր',
@@ -421,25 +428,7 @@ const HY = {
   'menu.leaderboard':  'Առաջատարներ',
   'menu.settings':     'Կարգավորումներ',
   'menu.profile':      'Իմ էջը',
-
-  // ── Menu section titles ─────────────────────────────
-  'section.main':        'Հիմնական',
-  'section.finance':     'Ֆինանսներ և Գույք',
-  'section.underground': 'Ընդհատակ',
-  'section.extra':       'Հավելյալ',
-
-  // ── Sidebar misc ────────────────────────────────────
-  'sidebar.rank': 'Կոչում',
-  'daily.label':  'Օրական բոնուս',
-  'daily.claim':  'Ստանալ $100',
-  'daily.claimed':'Ստացված է ✓',
-
-  // ── Topbar ──────────────────────────────────────────
-  'topbar.log':   'Մատյան',
-  'topbar.sound': 'Ձայն',
-  'topbar.theme': 'Թեմա',
-  'topbar.lang':  '🇦🇲 ՀՅ',
-  'topbar.energy':'⚡ Էներգ.',
+  'menu.map':          'Քաղաքի Քարտեզ',
 
   // ── Page headings (h1 / h2) ─────────────────────────
   'page.main':        'Գլխավոր',
@@ -468,6 +457,27 @@ const HY = {
   'page.profile':     'Իմ էջը',
   'page.friends':     'Ընկերներ',
   'page.messages':    'Նամակներ',
+  'page.map':         'Լոս Անջելեսի Քարտեզ',
+  'page.no_activity': 'Գործունեություն չկա...',
+
+  // ── Menu section titles ─────────────────────────────
+  'section.main':        'Հիմնական',
+  'section.finance':     'Ֆինանսներ և Գույք',
+  'section.underground': 'Ընդհատակ',
+  'section.extra':       'Հավելյալ',
+
+  // ── Sidebar misc ────────────────────────────────────
+  'sidebar.rank': 'Կոչում',
+  'daily.label':  'Օրական բոնուս',
+  'daily.claim':  'Ստանալ $100',
+  'daily.claimed':'Ստացված է ✓',
+
+  // ── Topbar ──────────────────────────────────────────
+  'topbar.log':   'Մատյան',
+  'topbar.sound': 'Ձայն',
+  'topbar.theme': 'Թեմա',
+  'topbar.lang':  '🇦🇲 ՀՅ',
+  'topbar.energy':'⚡ Էներգ.',
 
   // ── Buttons ─────────────────────────────────────────
   'btn.deposit':      'Մուտքագրել',
@@ -638,26 +648,29 @@ const HY = {
   'crypto.amtPh':     'Քանակ',
 
   // ── Notifications ────────────────────────────────────
-  'notif.inPrison':    'Դուք բանտում եք',
-  'notif.noEnergy':    'Բավարար էներգիա չկա',
-  'notif.noHp':        'Դուք անգիտակից եք: Գնացեք հիվանդանոց:',
-  'notif.garageFull':  'Ավտոտնակը լիքն է',
+  'notif.in_prison':    'Դուք բանտում եք',
+  'notif.no_energy':    'Բավարար էներգիա չկա',
+  'notif.no_hp':        'Դուք անգիտակից եք: Գնացեք հիվանդանոց:',
+  'notif.garage_full':  'Ավտոտնակը լիքն է',
   'notif.saved':       'Պահպանված է ✓',
   'notif.loaded':      'Բեռնված է ✓',
-  'notif.resetConfirm':'Համոզվա՞ծ եք։ Ամեն ինչ կջնջվի անվերադարձ։',
-  'notif.dailyClaim':  'Օրական բոնուս +$100!',
-  'notif.dailyAlready':'Այսօր արդեն ստացել եք',
-  'notif.newRank':     'Նոր կոչում՝',
-  'notif.carStolen':   'Առևանգված է',
-  'notif.garageExpand':'Ավտոտնակ +5 տեղ ✅',
+  'notif.reset_confirm':'Համոզվա՞ծ եք։ Ամեն ինչ կջնջվի անվերադարձ։',
+  'notif.daily_claim':  'Օրական բոնուս +$100!',
+  'notif.daily_already':'Այսօր արդեն ստացել եք',
+  'notif.new_rank':     'Նոր կոչում՝',
+  'notif.car_stolen':   'Առևանգված է',
+  'notif.garage_expand':'Ավտոտնակ +5 տեղ ✅',
+  'notif.get_daily':    'Ստանալ բոնուսը',
+  'notif.daily_received':'Բոնուսը ստացված է',
+  'notif.daily_bonus':  'Օրական բոնուս +$100!',
   
   // Socket Dynamic Notifications
-  'notif.familyInvite': '🏰 Ընտանեկան հրավեր: <b>{family}</b> (Բոսս՝ {boss})',
-  'notif.memberJoined': '👤 {member}-ը միացավ {family} ընտանիքին!',
-  'notif.bankTransfer': '🏦 Բանկային մուտք +${amount} ← {from} ({account})',
-  'notif.warDeclared':  '⚔️ <b>{attacker}</b>-ը (Բոսս՝ {boss}) պատերազմ է հայտարարել ձեր ընտանիքի դեմ:',
-  'notif.warAttack':    '{icon} <b>{attacker}</b>-ը հասցրեց <b>{damage}</b> վնաս: [{myHp} vs {enemyHp}]',
-  'notif.warEnded':     '{icon} Պատերազմն ավարտվեց: Հաղթող՝ <b>{winner}</b> {prize}',
+  'notif.family_invite': '🏰 Ընտանեկան հրավեր: <b>{family}</b> (Բոսս՝ {boss})',
+  'notif.member_joined': '👤 {member}-ը միացավ {family} ընտանիքին!',
+  'notif.bank_transfer': '🏦 Բանկային մուտք +${amount} ← {from} ({account})',
+  'notif.war_declared':  '⚔️ <b>{attacker}</b>-ը (Բոսս՝ {boss}) պատերազմ է հայտարարել ձեր ընտանիքի դեմ:',
+  'notif.war_attack':    '{icon} <b>{attacker}</b>-ը հասցրեց <b>{damage}</b> վնաս: [{myHp} vs {enemyHp}]',
+  'notif.war_ended':     '{icon} Պատերազմն ավարտվեց: Հաղթող՝ <b>{winner}</b> {prize}',
 
   // ── Auth screen ─────────────────────────────────────
   'auth.loginTab':    'Մուտք',
@@ -783,53 +796,37 @@ const HY = {
 };
 
 // ═══════════════════════════════════════════════════════
-//   PUBLIC API
+//   PUBLIC API (no changes needed)
 // ═══════════════════════════════════════════════════════
-
-/** Get current language code ('hy' | 'ru') */
 function getLang() {
   return localStorage.getItem('cnLang') || 'hy';
 }
 
-/**
- * t(key) — translate key for use in JavaScript strings.
- * Example: showNotification(t('notif.inPrison'), false)
- */
 function t(key) {
   const lang = getLang();
-  if (lang === 'ru') return RU[key] !== undefined ? RU[key] : key;
-  return HY[key] !== undefined ? HY[key] : key;
+  const dict = lang === 'ru' ? RU : HY;
+  return dict[key] !== undefined ? dict[key] : key;
 }
 
-/**
- * setLang(lang) — switch language and refresh all translated elements.
- * lang: 'hy' | 'ru'
- */
 function setLang(lang) {
   localStorage.setItem('cnLang', lang);
   applyLang();
 }
 
-/**
- * applyLang() — scan DOM and update all translated elements.
- * Safe to call multiple times.
- */
 function applyLang() {
   const lang = getLang();
-  const dict = lang === 'ru' ? RU : HY; 
+  const dict = lang === 'ru' ? RU : HY;
 
-  // ── 1. [data-i18n] — full textContent replacement ────────
+  // 1. data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
     if (el.dataset.i18nOrig === undefined) {
       el.dataset.i18nOrig = el.textContent.trim();
     }
     const key = el.dataset.i18n;
-    el.textContent = (dict && dict[key] !== undefined)
-      ? dict[key]
-      : el.dataset.i18nOrig;
+    el.textContent = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nOrig;
   });
 
-  // ── 2. [data-i18n-text] — text node only (preserves icons/badges) ─
+  // 2. data-i18n-text
   document.querySelectorAll('[data-i18n-text]').forEach(el => {
     if (el.dataset.i18nOrigText === undefined) {
       let raw = '';
@@ -849,26 +846,26 @@ function applyLang() {
     if (!done) el.appendChild(document.createTextNode(' ' + newTx));
   });
 
-  // ── 3. [data-i18n-ph] — placeholder ─────────────────────
+  // 3. data-i18n-ph
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     if (el.dataset.i18nPhOrig === undefined) el.dataset.i18nPhOrig = el.placeholder;
     const key = el.dataset.i18nPh;
     el.placeholder = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nPhOrig;
   });
 
-  // ── 4. Update lang toggle button ─────────────────────────
+  // 4. lang toggle button
   const btn = document.getElementById('lang-toggle-btn');
   if (btn) {
     btn.textContent = lang === 'ru' ? '🇷🇺 РУ' : '🇦🇲 ՀՅ';
     btn.title = lang === 'ru' ? 'Переключить язык' : 'Փոխել լեզուն';
   }
 
-  // ── 5. Update lang selector buttons ──────────────────────
+  // 5. lang selector buttons
   document.querySelectorAll('.cn-lang-btn').forEach(b => {
     b.classList.toggle('cn-lang-active', b.dataset.lang === lang);
   });
 
-  // ── 6. html[lang] ────────────────────────────────────────
+  // 6. html lang attribute
   document.documentElement.lang = lang === 'hy' ? 'hy' : 'ru';
 }
 
