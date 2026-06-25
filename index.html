@@ -1889,57 +1889,104 @@ async function apiCall(endpoint, method = 'GET', body = null) {
   return data;
 }
 
-// ── If already logged in → redirect to game immediately ──────────
-(function checkAlreadyLoggedIn() {
-  const token = getToken();
-  if (!token) return; // No token → show intro normally
-
-  // Token exists: verify it, redirect if valid
-  // Show a quick "checking..." state and redirect fast
-  const fill = document.getElementById('progressFill');
-  if (fill) fill.style.transition = 'width 0.8s ease';
-  if (fill) fill.style.width = '60%';
-
-  apiCall('/auth/me').then(() => {
-    if (fill) fill.style.width = '100%';
-    setTimeout(() => { window.location.href = 'landing.html'; }, 300);
-  }).catch(() => {
-    clearToken(); // Token expired → let intro play normally
-  });
-})();
+// ── 🔥 Backend wakeup ping (Render free-tier cold start) ─────────
+// Fires immediately when the script parses — fire-and-forget.
+// By the time the user finishes reading the intro, the server is
+// already warm and ready to handle login/register requests.
+fetch(API_BASE + '/').catch(() => {});
 
 // ================================================================
-//  INTRO LOGIC
+//  INTRO + AUTH-GATE LOGIC
+//  Two paths:
+//    A) Token found  → verify with /auth/me → redirect or reset
+//    B) No token     → play normal cinematic intro
 // ================================================================
-let introProgress = 0;
-const fill = document.getElementById('progressFill');
-const enterBtn = document.getElementById('introEnter');
-const cinTop = document.getElementById('cinTop');
-const cinBot = document.getElementById('cinBot');
+const fill          = document.getElementById('progressFill');
+const enterBtn      = document.getElementById('introEnter');
+const cinTop        = document.getElementById('cinTop');
+const cinBot        = document.getElementById('cinBot');
+const progressLabel = document.querySelector('.intro-progress-label');
 
-// Open cinematic bars after tiny delay
+// Guard: while redirecting, suppress the auto-enterSite() timer
+let redirecting = false;
+
+// Open cinematic letterbox bars
 setTimeout(() => {
-  cinTop.classList.add('open');
-  cinBot.classList.add('open');
+  if (cinTop) cinTop.classList.add('open');
+  if (cinBot) cinBot.classList.add('open');
 }, 200);
 
-// Animate progress bar
-const progressInterval = setInterval(() => {
-  introProgress += (100 - introProgress) * 0.06 + 1.5;
-  if (introProgress >= 100) {
-    introProgress = 100;
-    clearInterval(progressInterval);
-    fill.style.width = '100%';
-    setTimeout(() => {
-      enterBtn.classList.add('visible');
-    }, 200);
+// ─── Check stored token ───────────────────────────────────────────
+const storedToken = getToken();
+
+if (storedToken) {
+  // ── PATH A: Token exists → fast-verify, then redirect ─────────
+  if (progressLabel) progressLabel.textContent = 'ՍՏՈՒԳՎUM Է ՄUTQY...';
+
+  // Animate bar up to ~75% while /auth/me is in-flight
+  let authProg = 0;
+  const authInterval = setInterval(() => {
+    authProg += (76 - authProg) * 0.10 + 1.2;
+    if (authProg >= 76) { authProg = 76; clearInterval(authInterval); }
+    if (fill) fill.style.width = authProg + '%';
+  }, 30);
+
+  apiCall('/auth/me')
+    .then(() => {
+      // ✓ Valid token → finish bar, redirect
+      clearInterval(authInterval);
+      redirecting = true;
+      if (fill) {
+        fill.style.transition = 'width 0.5s ease';
+        fill.style.width = '100%';
+      }
+      if (progressLabel) progressLabel.textContent = 'ՄUTQ ՀASTƏTVEC ✓';
+      setTimeout(() => { window.location.href = 'landing.html'; }, 450);
+    })
+    .catch(() => {
+      // ✗ Token expired / invalid → clear it and fall back to intro
+      clearInterval(authInterval);
+      clearToken();
+      resetAndPlayIntro();
+    });
+
+} else {
+  // ── PATH B: No token → normal cinematic intro ──────────────────
+  playIntroAnimation();
+}
+
+// ─── Intro animation helpers ──────────────────────────────────────
+
+function resetAndPlayIntro() {
+  // Smoothly reset the bar that the auth-check had already advanced
+  if (fill) {
+    fill.style.transition = 'width 0.35s ease';
+    fill.style.width = '0%';
   }
-  fill.style.width = introProgress + '%';
-}, 40);
+  if (progressLabel) progressLabel.textContent = 'ԲEՌNUMID ✦ Loading';
+  setTimeout(playIntroAnimation, 400);
+}
+
+function playIntroAnimation() {
+  if (fill) fill.style.transition = 'width 0.1s linear';
+  let introProgress = 0;
+  const progressInterval = setInterval(() => {
+    introProgress += (100 - introProgress) * 0.06 + 1.5;
+    if (introProgress >= 100) {
+      introProgress = 100;
+      clearInterval(progressInterval);
+      if (fill) fill.style.width = '100%';
+      setTimeout(() => {
+        if (enterBtn) enterBtn.classList.add('visible');
+      }, 200);
+    }
+    if (fill) fill.style.width = introProgress + '%';
+  }, 40);
+}
 
 function enterSite() {
   const intro = document.getElementById('intro');
-  const site = document.getElementById('site');
+  const site  = document.getElementById('site');
   intro.classList.add('hide');
   setTimeout(() => {
     intro.style.display = 'none';
@@ -1948,9 +1995,9 @@ function enterSite() {
   }, 1200);
 }
 
-// Auto-enter after 2.5s if user doesn't click
+// Auto-enter after 2.5 s — skip if we are already redirecting to landing.html
 setTimeout(() => {
-  if (!document.getElementById('intro').classList.contains('hide')) {
+  if (!redirecting && !document.getElementById('intro').classList.contains('hide')) {
     enterSite();
   }
 }, 2500);
