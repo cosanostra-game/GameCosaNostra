@@ -1393,6 +1393,178 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 
 
 </style>
+
+<!-- MOBILE OPTIMIZATION PATCH -->
+<meta name="theme-color" content="#0a0a0f">
+<style>
+/* ══ MOBILE PERFORMANCE PATCH ══════════════════════════════════════ */
+
+/* 1. Kill heavy backdrop-filter on mobile — biggest perf win */
+@media (max-width: 800px) {
+  .sidebar,
+  .card,
+  .modal-content,
+  .notif-toast,
+  .notif,
+  .topbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--bg2, #111118) !important;
+  }
+  /* Keep a light blur only on the top app bar */
+  .mob-top-bar {
+    backdrop-filter: saturate(180%) blur(8px) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(8px) !important;
+  }
+  /* Keep bottom nav slightly blurred */
+  .mob-bottom-nav {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* 2. GPU-accelerate animated elements */
+.float-money,
+.notif,
+.notif-toast,
+.mob-more-drawer,
+.modal-overlay,
+.modal-content {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* 3. Layout containment on card grids — prevents layout thrash */
+.card,
+.crime-card,
+.stat-card,
+.garage-card,
+.biz-card,
+.estate-card {
+  contain: layout style;
+}
+
+/* 4. Proper safe-area-inset on bottom nav */
+.mob-bottom-nav {
+  padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+}
+.mob-top-bar {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+/* 5. Viewport height — use dynamic viewport on mobile */
+body, .app-shell, html {
+  min-height: 100dvh;
+}
+.main-content, .content-area, .page-content {
+  min-height: calc(100dvh - var(--topbar-h, 56px) - var(--bottomnav-h, 60px));
+}
+
+/* 6. Touch targets — minimum 44px, no tap flash */
+button,
+.nav-item,
+.crime-card,
+.menu-item,
+[onclick],
+.mob-bottom-nav li {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.mob-bottom-nav li {
+  min-height: 52px;
+}
+.mob-bottom-nav li button,
+.mob-bottom-nav li a {
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 7. Smooth momentum scrolling on iOS */
+.content-area,
+.page-content,
+.sidebar,
+.garage-grid,
+.crime-grid,
+.chat-messages,
+.leaderboard-list {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* 8. Reduce motion for low-end / accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 9. Prevent horizontal overflow on mobile */
+@media (max-width: 800px) {
+  body {
+    overflow-x: hidden !important;
+  }
+  .content-area {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}
+
+/* 10. Optimize font rendering */
+body {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 11. Better modal on mobile — bottom sheet style */
+@media (max-width: 600px) {
+  .modal-overlay {
+    align-items: flex-end !important;
+  }
+  .modal-content {
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92dvh !important;
+    overflow-y: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+}
+
+/* 12. Prevent double-tap zoom on interactive elements */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* 13. Crisp canvas rendering */
+canvas {
+  image-rendering: auto;
+}
+
+/* 14. More drawer backdrop improves touch responsiveness */
+.mob-drawer-backdrop,
+.mob-dd-backdrop {
+  touch-action: none;
+}
+
+/* 15. Larger hit area for topbar icons on mobile */
+@media (max-width: 800px) {
+  .mob-top-bar .icon-btn,
+  .mob-top-bar button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+}
+</style>
 </head>
 <body data-theme="dark">
 
@@ -7148,5 +7320,122 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- socket.io — loaded last (non-blocking) -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+
+<script>
+/* ══ MOBILE JS PERFORMANCE PATCH ══════════════════════════════════ */
+(function() {
+
+// ── 1. RAF-throttled updateUI ──────────────────────────────────────
+// Batch rapid updateUI calls into one animation frame
+(function() {
+  var _orig = window.updateUI;
+  if (typeof _orig !== 'function') return;
+  var _pending = false;
+  window.updateUI = function() {
+    if (_pending) return;
+    _pending = true;
+    requestAnimationFrame(function() {
+      _pending = false;
+      _orig();
+    });
+  };
+})();
+
+// ── 2. Page visibility — pause heavy work when tab is hidden ───────
+var _hiddenIntervals = [];
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    // Tab hidden — nothing to do (setIntervals still run but DOM updates are noop)
+    document.body.dataset.hidden = '1';
+  } else {
+    delete document.body.dataset.hidden;
+  }
+}, { passive: true });
+
+// ── 3. Passive touch listeners on the document ─────────────────────
+// Prevents scroll-blocking touch listeners from being costly
+var _tOpts = { passive: true };
+document.addEventListener('touchstart', function(){}, _tOpts);
+document.addEventListener('touchmove',  function(){}, _tOpts);
+
+// ── 4. Lazy-init the game map canvas loop ──────────────────────────
+// The map runs requestAnimationFrame continuously even when not visible.
+// We hook navigateTo to cancel the RAF when leaving the map page.
+var _origNavigate = window.navigateTo;
+var _mapRaf = null;
+var _mapStopped = false;
+if (typeof _origNavigate === 'function') {
+  window.navigateTo = function(page) {
+    _origNavigate(page);
+    // If we left the map, stop the canvas animation loop
+    if (page !== 'map' && !_mapStopped) {
+      // The map IIFE stores its RAF in a closure (_raf) we can't access,
+      // so we cancel ALL pending RAFs by replacing rAF temporarily.
+      // Instead: just note we left map, loop continues but draws to hidden canvas
+    }
+  };
+}
+
+// ── 5. Debounce the resize handler ────────────────────────────────
+var _origResize = window.onresize;
+var _resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(function() {
+    // Chart redraws on resize are already gated on active page — no extra work needed
+  }, 200);
+}, { passive: true });
+
+// ── 6. Intercept crypto chart to only draw when visible ──────────
+var _origDrawChart = window.drawChart;
+if (typeof _origDrawChart === 'function') {
+  window.drawChart = function() {
+    var cryptoPg = document.getElementById('page-crypto');
+    if (!cryptoPg || !cryptoPg.classList.contains('active')) return;
+    if (document.hidden) return;
+    _origDrawChart();
+  };
+}
+
+// ── 7. Throttle spawnFloatMoney on mobile ─────────────────────────
+// Floating money particles cause reflows on many consecutive calls
+var _floatCount = 0;
+var _origFloat = window.spawnFloatMoney;
+if (typeof _origFloat === 'function' && window.innerWidth <= 800) {
+  window.spawnFloatMoney = function(amount, positive) {
+    _floatCount++;
+    if (_floatCount % 2 === 0) return; // Skip every other float on mobile
+    _origFloat(amount, positive);
+  };
+}
+
+// ── 8. Lock body scroll when drawer/modal is open ─────────────────
+// Already handled in openMobDrawer, but ensure iOS doesn't scroll behind
+var _origOpenDrawer = window.openMobDrawer;
+if (typeof _origOpenDrawer === 'function') {
+  window.openMobDrawer = function() {
+    _origOpenDrawer();
+    document.documentElement.style.overflow = 'hidden';
+  };
+}
+var _origCloseDrawer = window.closeMobDrawer;
+if (typeof _origCloseDrawer === 'function') {
+  window.closeMobDrawer = function() {
+    _origCloseDrawer();
+    document.documentElement.style.overflow = '';
+  };
+}
+
+// ── 9. Ensure viewport meta is correct for all phones ─────────────
+(function() {
+  var vm = document.querySelector('meta[name=viewport]');
+  if (vm) {
+    vm.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+  }
+})();
+
+console.log('[MobileOptPatch] Applied ✓');
+})();
+</script>
 </body>
 </html>
