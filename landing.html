@@ -4902,7 +4902,7 @@ function renderFamilies() {
     _renderFamilyInvites(mySection, canCreate);
 }
 
-async async function _renderFamilyInvites(mySection, canCreate) {
+async function _renderFamilyInvites(mySection, canCreate) {
     // Load pending invites
     let invites = [];
     try { invites = await apiGetFamilyInvites(); } catch(e) {}
