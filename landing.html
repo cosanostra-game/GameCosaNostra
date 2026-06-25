@@ -3141,10 +3141,10 @@ async function authRegister() {
     const pass  = document.getElementById('reg-password').value;
     const conf  = document.getElementById('reg-confirm').value;
 
-    if (!name || name.length < 2)      return authMsg('Անунը min 2 нших');
-    if (!email.includes('@'))          return authMsg('Нερмаl ел. хасцε мутъqаgrеq');
-    if (pass.length < 6)               return authMsg('Гайтнабары min 6 нших');
-    if (pass !== conf)                 return authMsg('Гайтнабаrerы чен həmənкnum');
+    if (!name || name.length < 2)      return authMsg(t('auth.err.nameShort'));
+    if (!email.includes('@'))          return authMsg(t('auth.err.emailInvalid'));
+    if (pass.length < 6)               return authMsg(t('auth.err.passShort'));
+    if (pass !== conf)                 return authMsg(t('auth.err.passMatch'));
 
     const avatarColor = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
     const btn = document.querySelector('.auth-btn');
@@ -3153,7 +3153,7 @@ async function authRegister() {
     try {
         const data = await apiCall('/auth/register', 'POST', { name, email, password: pass, avatarColor });
         saveToken(data.token);
-        authMsg('Грацнумь хаджохвец! Барив галуст, ' + name + '!', 'ok');
+        authMsg(t('auth.ok.registered') + name + '!', 'ok');
         setTimeout(() => authSuccess(data.user), 900);
     } catch (err) {
         authMsg(err.message);
@@ -3166,7 +3166,7 @@ async function authLogin() {
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass  = document.getElementById('login-password').value;
 
-    if (!email || !pass) return authMsg('Лрацрек бolor дашterы');
+    if (!email || !pass) return authMsg(t('auth.err.fillAll'));
 
     const btn = document.querySelector('.auth-btn');
     if (btn) { btn.disabled = true; btn.textContent = t('btn.logging_in'); }
@@ -3174,7 +3174,7 @@ async function authLogin() {
     try {
         const data = await apiCall('/auth/login', 'POST', { email, password: pass });
         saveToken(data.token);
-        authMsg('Барив галуст, ' + data.user.name + '!', 'ok');
+        authMsg(t('auth.ok.welcome') + data.user.name + '!', 'ok');
         setTimeout(() => authSuccess(data.user), 800);
     } catch (err) {
         authMsg(err.message);
@@ -3199,7 +3199,7 @@ function authSuccess(user) {
     setTimeout(() => { if (typeof window._chatSocketInit   === 'function') window._chatSocketInit();   }, 850); // Chat socket
     refreshAvatarUI(user.name, user.email);
     updateProfilePage();
-    if (typeof addActivity === 'function') addActivity('Բарив гаluст Cosa Nostra, ' + user.name + '!', true);
+    if (typeof addActivity === 'function') addActivity(t('auth.ok.welcome') + 'Cosa Nostra, ' + user.name + '!', true);
 
     const bgMusic = document.getElementById('bg-music');
     if (bgMusic) {
@@ -5514,9 +5514,9 @@ function stashAction(type) {
 
 function generateQuests() {
     player.quests = [
-        { id: 1, desc: '🎯 Կատարիր 3 հանցագործություն', target: 3, current: 0, reward: 300 },
-        { id: 2, desc: '🚗 Գողացիր 1 մեքենա', target: 1, current: 0, reward: 600 },
-        { id: 3, desc: '💰 Վաստակիր $1500 պասիվ եկամուտ', target: 1500, current: 0, reward: 250 }
+        { id: 1, desc: t('quest.1'), target: 3, current: 0, reward: 300 },
+        { id: 2, desc: t('quest.2'), target: 1, current: 0, reward: 600 },
+        { id: 3, desc: t('quest.3'), target: 1500, current: 0, reward: 250 }
     ];
     showNotification(t('notif.quests_refresh'), true);
     renderQuests();
@@ -5533,16 +5533,16 @@ function renderQuests() {
         const isClaimed = q.current === -1;
         let btnHtml = '';
         if (isClaimed) {
-            btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">✅ Կատարված է</button>`;
+            btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">✅ ${t('quest.done')}</button>`;
         } else if (isDone) {
-            btnHtml = `<button style="background:var(--ok);" onclick="claimQuest(${idx})">🎁 Ստանալ $${q.reward}</button>`;
+            btnHtml = `<button style="background:var(--ok);" onclick="claimQuest(${idx})">🎁 ${t('quest.claim')}${q.reward}</button>`;
         } else {
             btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">${q.current} / ${q.target}</button>`;
         }
         newHtml += `
         <div class="card" style="animation:none;${isDone && !isClaimed ? 'border: 1px solid var(--ok);' : ''}">
             <h3 style="color:${isClaimed ? 'var(--text)' : 'var(--text-l)'};">${q.desc}</h3>
-            <p style="color:var(--text);">Պարգև: <span style="color:var(--ok); font-weight:bold;">$${q.reward}</span></p>
+            <p style="color:var(--text);">${t('quest.reward')}: <span style="color:var(--ok); font-weight:bold;">$${q.reward}</span></p>
             ${btnHtml}
         </div>`;
     });
@@ -5555,7 +5555,7 @@ function claimQuest(idx) {
         player.money += q.reward;
         player.stats.earnings += q.reward;
         q.current = -1;
-        showNotification(`📜 Խնդիր կատարվեց! +$${q.reward}`, true);
+        showNotification(`${t('quest.claimed')}${q.reward}`, true);
         spawnFloatMoney(q.reward, true);
         playTone('upgrade', .25);
         updateUI();
@@ -5599,10 +5599,10 @@ function renderLeaderboard() {
 
 function triggerRandomEvent() {
     const events = [
-        { msg: '🌧️ Ուժեղ անձրև։ Հանցագործությունների ռիսկը նվազեց ոստիկանության պասիվության պատճառով։', effect: () => {} },
-        { msg: '📈 Կրիպտո շուկան ակտիվացավ։ Գների տատանումներ։', effect: () => {} },
-        { msg: '🎁 Քեզ ճանաչեցին փողոցում որպես «լավ տղա»! +$200', effect: () => { player.money += 200; player.stats.earnings+=200; showNotification('🎁 +$200', true); spawnFloatMoney(200, true); } },
-        { msg: '👮 Ոստիկանական ռեյդ շրջանում։', effect: () => { 
+        { msg: t('event.rain'), effect: () => {} },
+        { msg: t('event.crypto'), effect: () => {} },
+        { msg: t('event.gift'), effect: () => { player.money += 200; player.stats.earnings+=200; showNotification('🎁 +$200', true); spawnFloatMoney(200, true); } },
+        { msg: t('event.raid'), effect: () => {
             if(player.money >= 500) {
                 player.money -= 500;
                 showNotification(t('notif.arrested2'), false);
@@ -5938,11 +5938,11 @@ async function searchFriendsNow() {
     const container = document.getElementById('friends-search-results');
     if (!q || q.length < 2) { container.innerHTML = ''; return; }
 
-    container.innerHTML = '<div class="friends-empty">Որոնվում է...</div>';
+    container.innerHTML = '<div class="friends-empty">' + t('friends.searching') + '</div>';
     try {
         const data = await apiCall('/game/search?name=' + encodeURIComponent(q));
         if (!data.results || data.results.length === 0) {
-            container.innerHTML = '<div class="friends-empty">Ոչ ոք չի գտնվել</div>';
+            container.innerHTML = '<div class="friends-empty">' + t('friends.notFound') + '</div>';
             return;
         }
         // Load my friends to know who is already friend
@@ -5950,7 +5950,7 @@ async function searchFriendsNow() {
         const myFriendIds = new Set((myData.friends || []).map(f => String(f.userId)));
         const pendingSentIds = new Set(); // We can't know what requests WE sent, server handles duplicate check
 
-        container.innerHTML = '<div class="friends-section-title"><i class="material-icons" style="font-size:16px;">search</i>Արդյունքներ <span class="search-result-badge">' + data.results.length + '</span></div>' +
+        container.innerHTML = '<div class="friends-section-title"><i class="material-icons" style="font-size:16px;">search</i>' + t('friends.results') + ' <span class="search-result-badge">' + data.results.length + '</span></div>' +
             data.results.map(u => buildFriendCard(u, myFriendIds.has(u.userId) ? 'friend' : 'stranger')).join('');
     } catch (err) {
         container.innerHTML = '<div class="friends-empty" style="color:var(--accent);">Սխալ: ' + err.message + '</div>';
@@ -5963,15 +5963,15 @@ function buildFriendCard(u, relation) {
         ? '<img src="' + u.avatarImg + '" alt="">'
         : '<span>' + initials + '</span>';
     const onlineHtml = u.online
-        ? '<span class="status-dot online"></span><span style="color:var(--ok);">Օnlajn</span>'
-        : '<span class="status-dot offline"></span><span>Offline</span>';
+        ? '<span class="status-dot online"></span><span style="color:var(--ok);">' + t('friends.online') + '</span>'
+        : '<span class="status-dot offline"></span><span>' + t('chat.offline') + '</span>';
 
     // account field name differs: search results use bankAccount, friends list uses account
     const accountDisplay = escHtml(u.bankAccount || u.account || '—');
 
     let actionHtml = '';
     if (relation === 'friend') {
-        actionHtml = '<button class="btn-remove-friend" onclick="event.stopPropagation();removeFriend(\'' + u.userId + '\',this)" title="Հեռացնել ընկեր"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
+        actionHtml = '<button class="btn-remove-friend" onclick="event.stopPropagation();removeFriend(\'' + u.userId + '\',this)" title="' + t('friends.removeTip') + '"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_remove</i></button>';
     } else {
         actionHtml = '<button class="btn-add-friend" id="add-btn-' + u.userId + '" onclick="sendFriendRequest(\'' + u.userId + '\',this)"><i class="material-icons" style="font-size:16px;vertical-align:middle;">person_add</i></button>';
     }
@@ -6000,8 +6000,8 @@ function buildRequestCard(r) {
             '<div class="friend-account"><i class="material-icons" style="font-size:12px;vertical-align:middle;">account_balance</i> ' + escHtml(r.fromAccount || '—') + '</div>' +
         '</div>' +
         '<div class="friend-actions">' +
-            '<button class="btn-accept" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'accept\',this)">✓ Ընդունել</button>' +
-            '<button class="btn-decline" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'decline\',this)">✕ Մերժել</button>' +
+            '<button class="btn-accept" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'accept\',this)">✓ ' + t('friends.accept') + '</button>' +
+            '<button class="btn-decline" onclick="respondFriendRequest(\'' + r.fromUserId + '\',\'decline\',this)">✕ ' + t('friends.decline') + '</button>' +
         '</div>' +
     '</div>';
 }
@@ -6400,12 +6400,12 @@ async function openChat(uid, name, color, avatarImg, online) {
 
     // Load messages
     const box = document.getElementById('chat-messages');
-    box.innerHTML = '<div class="chat-date-divider">Բerrнваum e...</div>';
+    box.innerHTML = '<div class="chat-date-divider">' + t('chat.loading') + '</div>';
     try {
         const data = await apiCall('/game/chat/' + uid);
         renderMessages(data.messages || []);
     } catch (err) {
-        box.innerHTML = '<div class="chat-date-divider" style="color:var(--accent);">Serrver skhale</div>';
+        box.innerHTML = '<div class="chat-date-divider" style="color:var(--accent);">❌ ' + (err && err.message ? err.message : 'Error') + '</div>';
     }
 
     document.getElementById('chat-textarea').focus();
@@ -6429,7 +6429,7 @@ function renderMessages(msgs) {
     const myId  = currentUser ? String(currentUser.id || currentUser._id || '') : '';
 
     if (!msgs.length) {
-        box.innerHTML = '<div class="chat-date-divider">Нaghordagrutʻyunner chkan. Grel arajin-y!</div>';
+        box.innerHTML = '<div class="chat-date-divider">' + t('chat.noMessages') + '</div>';
         return;
     }
 
@@ -7061,7 +7061,7 @@ function renderMapBusinesses() {
   const businesses = (typeof player !== 'undefined' && player.businesses) ? player.businesses : [];
   if (businesses.length === 0) {
     bizListEl.innerHTML = `<div style="color:var(--text);font-size:13px;text-align:center;padding:8px;">
-      Biznes dеr chuneq. <a onclick="switchTab('business',null)" style="color:var(--accent);cursor:pointer;">Bac el →</a></div>`;
+      ${t('map.noBusinesses')} <a onclick="switchTab('business',null)" style="color:var(--accent);cursor:pointer;">${t('map.openBiz')}</a></div>`;
     return;
   }
   const BIZ_ICONS = { restaurant:'🍴', casino:'🎰', arms:'🔫', strip:'💃', estate:'🏠' };

@@ -396,7 +396,105 @@ const RU = {
   'car.repair': 'Ремонт',
   'car.drive': 'Ехать',
   'garage.empty': 'Гараж пуст',
-  'dealer.empty': 'Нет доступных машин'
+  'dealer.empty': 'Нет доступных машин',
+
+  // ── Mobile Drawer sections ────────────────────────────
+  'drawer.title':        'Все разделы',
+  'drawer.main':         'Основное',
+  'drawer.finance':      'Финансы',
+  'drawer.underground':  'Подполье',
+  'drawer.extra':        'Дополнительно',
+
+  // ── Mobile Drawer cell labels ─────────────────────────
+  'mob.cars':        'Угон авто',
+  'mob.garage':      'Гараж',
+  'mob.inventory':   'Арсенал',
+  'mob.dealership':  'Автосалон',
+  'mob.business':    'Бизнес',
+  'mob.crypto':      'Крипто',
+  'mob.estate':      'Недвижимость',
+  'mob.stash':       'Тайник',
+  'mob.prison':      'Тюрьма',
+  'mob.hospital':    'Больница',
+  'mob.training':    'Тренировка',
+  'mob.reputation':  'Репутация',
+  'mob.families':    'Семьи',
+  'mob.friends':     'Друзья',
+  'mob.quests':      'Задания',
+  'mob.daynight':    'Ночь/День',
+  'mob.events':      'События',
+  'mob.stats':       'Статистика',
+  'mob.leaderboard': 'Лидерборд',
+  'mob.profile':     'Профиль',
+
+  // ── Edit Profile Modal ────────────────────────────────
+  'modal.editProfile':    '✏️ Редактировать профиль',
+  'modal.avatarBgColor':  'Цвет фона',
+  'modal.avatarClick':    'Нажмите на аватар, чтобы сменить фото',
+  'modal.nickLabel':      'Nickname',
+  'modal.nickPh':         'Ваше имя',
+  'modal.bioLabel':       'Краткая биография',
+  'modal.bioPh':          'Что-нибудь о себе...',
+  'modal.cancel':         'Отмена',
+  'modal.save':           'Сохранить',
+
+  // ── Friend Profile Modal ──────────────────────────────
+  'modal.friendProfile':  '👤 Профиль друга',
+
+  // ── Search & Friends ──────────────────────────────────
+  'friends.searching':    'Поиск...',
+  'friends.notFound':     'Никого не найдено',
+  'friends.results':      'Результаты',
+  'friends.removeTip':    'Удалить друга',
+  'friends.online':       'Онлайн',
+  'friends.accept':       'Принять',
+  'friends.decline':      'Отклонить',
+
+  // ── Chat ──────────────────────────────────────────────
+  'chat.loading':         'Загрузка...',
+  'chat.noMessages':      'Сообщений нет. Напишите первым!',
+  'chat.offline':         'Офлайн',
+
+  // ── Auth errors ───────────────────────────────────────
+  'auth.err.nameShort':   'Имя — минимум 2 символа',
+  'auth.err.emailInvalid':'Введите корректный e-mail',
+  'auth.err.passShort':   'Пароль — минимум 6 символов',
+  'auth.err.passMatch':   'Пароли не совпадают',
+  'auth.err.fillAll':     'Заполните все поля',
+  'auth.ok.registered':   'Регистрация успешна! Добро пожаловать, ',
+  'auth.ok.welcome':      'Добро пожаловать, ',
+  'btn.registering':      'Регистрация...',
+  'btn.logging_in':       'Вход...',
+  'btn.register':         'Зарегистрироваться',
+  'btn.login':            'Войти',
+
+  // ── Quests ────────────────────────────────────────────
+  'quest.1':         '🎯 Совершить 3 преступления',
+  'quest.2':         '🚗 Угнать 1 машину',
+  'quest.3':         '💰 Заработать $1500 пассивно',
+  'quest.reward':    'Награда',
+  'quest.done':      '✅ Выполнено',
+  'quest.claim':     '🎁 Получить $',
+  'quest.claimed':   '📜 Задание выполнено! +$',
+  'notif.quests_refresh': '📋 Новые задания на сегодня!',
+
+  // ── Events ────────────────────────────────────────────
+  'event.rain':      '🌧️ Сильный дождь. Риск преступлений снизился из-за пассивности полиции.',
+  'event.crypto':    '📈 Крипторынок активизировался. Колебания цен.',
+  'event.gift':      '🎁 Тебя узнали на улице как «хорошего парня»! +$200',
+  'event.raid':      '👮 Полицейский рейд в районе.',
+  'notif.arrested2': '👮 Рейд! Конфисковано $500',
+
+  // ── Map ───────────────────────────────────────────────
+  'map.noBusinesses': 'Бизнесов ещё нет.',
+  'map.openBiz':      'Открыть →',
+  'map.playerLabel':  'Вы',
+  'map.legend.bank':       '🏦 Банк',
+  'map.legend.prison':     '🔒 Тюрьма',
+  'map.legend.hospital':   '🏥 Больница',
+  'map.legend.casino':     '🎰 Казино',
+  'map.legend.bizmarket':  '🏢 Рынок бизнесов'
+
 };
 
 // ── Armenian translations (full) ────────────────────────
@@ -792,7 +890,104 @@ const HY = {
   'car.repair': 'Վերանորոգել',
   'car.drive': 'Վարել',
   'garage.empty': 'Ավտոտնակը դատարկ է',
-  'dealer.empty': 'Հասանելի մեքենաներ չկան'
+  'dealer.empty': 'Հасанели мекеnaner чкан',
+
+  // ── Mobile Drawer sections ────────────────────────────
+  'drawer.title':        'Բոլոր բաժինները',
+  'drawer.main':         'Հիмнакан',
+  'drawer.finance':      'Ֆинансner',
+  'drawer.underground':  'Əndhatак',
+  'drawer.extra':        'Həvelyal',
+
+  // ── Mobile Drawer cell labels ─────────────────────────
+  'mob.cars':        'Ավтоaṙевangum',
+  'mob.garage':      'Ававтоtnак',
+  'mob.inventory':   'Зинаноц',
+  'mob.dealership':  'Ававтосрах',
+  'mob.business':    'Бизнес',
+  'mob.crypto':      'Кripto',
+  'mob.estate':      'Аншарж гуйк',
+  'mob.stash':       'Тhакстоц',
+  'mob.prison':      'Бант',
+  'mob.hospital':    'Хиванданоц',
+  'mob.training':    'Марзумner',
+  'mob.reputation':  'Хамбав',
+  'mob.families':    'Ентаникhnер',
+  'mob.friends':     'Enkernner',
+  'mob.quests':      'Орва арajadrankner',
+  'mob.daynight':    'Гishер / Цerek',
+  'mob.events':      'Иradarcutyunner',
+  'mob.stats':       'Виджакагруtyun',
+  'mob.leaderboard': 'Arajaтarner',
+  'mob.profile':     'Пrofил',
+
+  // ── Edit Profile Modal ────────────────────────────────
+  'modal.editProfile':    '✏️ Хмбагрел профилы',
+  'modal.avatarBgColor':  'Фоni гuyны',
+  'modal.avatarClick':    'Сеjмек аватари вра нкары фохели хамар',
+  'modal.nickLabel':      'Маканун (Nickname)',
+  'modal.nickPh':         'Дзер ануны',
+  'modal.bioLabel':       'Карч кенсаграгруtyun',
+  'modal.bioPh':          'Инч-ор бан дзер масин...',
+  'modal.cancel':         'Чегаркел',
+  'modal.save':           'Пахпанел',
+
+  // ── Friend Profile Modal ──────────────────────────────
+  'modal.friendProfile':  '👤 Enkerojs профилы',
+
+  // ── Search & Friends ──────────────────────────────────
+  'friends.searching':    'Оrонвum е...',
+  'friends.notFound':     'Воч вок чи гtnвел',
+  'friends.results':      'Ardyunqner',
+  'friends.removeTip':    'Хераcнел enkerojs',
+  'friends.online':       'Оnлайн',
+  'friends.accept':       'Əndunел',
+  'friends.decline':      'Мерjhел',
+
+  // ── Chat ──────────────────────────────────────────────
+  'chat.loading':         'Бerrнвум е...',
+  'chat.noMessages':      'Наghоrdagrutʻyunner чkan. Грел аrajin-у!',
+  'chat.offline':         'Офлайн',
+
+  // ── Auth errors ───────────────────────────────────────
+  'auth.err.nameShort':   'Ануны петq е лини аrрнаzcаyr 2 ниш',
+  'auth.err.emailInvalid':'Мutqagrek вавер ел. хасcе',
+  'auth.err.passShort':   'Гайтнабары петq е лини аrрнаzcаyr 6 ниш',
+  'auth.err.passMatch':   'Гайtnaбarery чен hамənknum',
+  'auth.err.fillAll':     'Лrаcrek болor дашtеry',
+  'auth.ok.registered':   'Граncуmy хаджохвec! Бари галуст, ',
+  'auth.ok.welcome':      'Бари галуст, ',
+  'btn.registering':      'Граncum...',
+  'btn.logging_in':       'Мutq...',
+  'btn.register':         'Граncvel ➤',
+  'btn.login':            'Мutq ➤',
+
+  // ── Quests ────────────────────────────────────────────
+  'quest.1':         '🎯 Катарел 3 ханцагорцуtyun',
+  'quest.2':         '🚗 Гоханал 1 мекена',
+  'quest.3':         '💰 Вастакел $1500 пасiv екамut',
+  'quest.reward':    'Паргeв',
+  'quest.done':      '✅ Катарваγ е',
+  'quest.claim':     '🎁 Станал $',
+  'quest.claimed':   '📜 Аrajadrankы катарваγ е: +$',
+  'notif.quests_refresh': '📋 Орва нор аrajadranknerы:',
+
+  // ── Events ────────────────────────────────────────────
+  'event.rain':      '🌧️ Уjеghи андзрев: Ханцагорцуtyunери riskы нваzel е остиканутyан пасивутyан патjaров:',
+  'event.crypto':    '📈 Кriptoшукан акtiвацавав: Гнери татанumnер:',
+  'event.gift':      '🎁 Qез чanачецin поghосum орпес «лав тgha»: +$200',
+  'event.raid':      '👮 Остиканакан рейd шрjанum:',
+  'notif.arrested2': '👮 Рейd: Бrinaграваvec $500',
+
+  // ── Map ───────────────────────────────────────────────
+  'map.noBusinesses': 'Бизнес дер чунек:',
+  'map.openBiz':      'Бацел →',
+  'map.playerLabel':  'Дu',
+  'map.legend.bank':       '🏦 Банк',
+  'map.legend.prison':     '🔒 Бант',
+  'map.legend.hospital':   '🏥 Хиванданоц',
+  'map.legend.casino':     '🎰 Казино',
+  'map.legend.bizmarket':  '🏢 Бизнес шука'
 };
 
 // ═══════════════════════════════════════════════════════
@@ -884,21 +1079,51 @@ function applyLang() {
 //    'CSS-селектор': { key: 'ключ.словаря', prop: 'placeholder' }
 // =====================================================
 const SELECTOR_MAP = {
-  // ── Гараж (замените на реальные ID/классы из вашего HTML) ──
-  // '#garage-title':       'page.garage',
-  // '.garage-slots-label': 'garage.slots',
-  // '.garage-empty-msg':   'garage.empty',
+  // ── Mobile Drawer ──────────────────────────────────────────────
+  '#mob-more-drawer .mob-drawer-hdr > span':                         'drawer.title',
 
-  // ── Оружие ──
-  // '#weapon-knife-name':  'weapon.knife',
-  // '#weapon-ak47-name':   'weapon.ak47',
-  // '.inv-shop-tab':       'inv.shopTab',
-  // '.inv-owned-tab':      'inv.ownedTab',
+  '#mob-more-drawer .mob-drawer-section:nth-of-type(1)':             'drawer.main',
+  '#mob-more-drawer .mob-drawer-section:nth-of-type(2)':             'drawer.finance',
+  '#mob-more-drawer .mob-drawer-section:nth-of-type(3)':             'drawer.underground',
+  '#mob-more-drawer .mob-drawer-section:nth-of-type(4)':             'drawer.extra',
 
-  // ── Автосалон ──
-  // '#dealer-new-tab':     'dealer.newTab',
-  // '#dealer-used-tab':    'dealer.usedTab',
-  // '.dealer-empty-msg':   'dealer.empty',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(1) .mob-drawer-cell:nth-child(1) .mob-dc-label': 'mob.cars',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(1) .mob-drawer-cell:nth-child(2) .mob-dc-label': 'mob.garage',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(1) .mob-drawer-cell:nth-child(3) .mob-dc-label': 'mob.inventory',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(1) .mob-drawer-cell:nth-child(4) .mob-dc-label': 'mob.dealership',
+
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(2) .mob-drawer-cell:nth-child(1) .mob-dc-label': 'mob.business',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(2) .mob-drawer-cell:nth-child(2) .mob-dc-label': 'mob.crypto',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(2) .mob-drawer-cell:nth-child(3) .mob-dc-label': 'mob.estate',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(2) .mob-drawer-cell:nth-child(4) .mob-dc-label': 'mob.stash',
+
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(1) .mob-dc-label': 'mob.prison',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(2) .mob-dc-label': 'mob.hospital',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(3) .mob-dc-label': 'mob.training',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(4) .mob-dc-label': 'mob.reputation',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(5) .mob-dc-label': 'mob.families',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(3) .mob-drawer-cell:nth-child(6) .mob-dc-label': 'mob.friends',
+
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(1) .mob-dc-label': 'mob.quests',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(2) .mob-dc-label': 'mob.daynight',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(3) .mob-dc-label': 'mob.events',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(4) .mob-dc-label': 'mob.stats',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(5) .mob-dc-label': 'mob.leaderboard',
+  '#mob-more-drawer .mob-drawer-grid:nth-of-type(4) .mob-drawer-cell:nth-child(6) .mob-dc-label': 'mob.profile',
+
+  // ── Edit Profile Modal ─────────────────────────────────────────
+  '#edit-profile-modal .modal-header h2':                            'modal.editProfile',
+  '#edit-profile-modal .modal-body > div > div > div:first-child > div:first-child': 'modal.avatarBgColor',
+  '#edit-profile-modal .modal-body > div > div[style*="font-size:11px"]':            'modal.avatarClick',
+  '#edit-profile-modal label:nth-of-type(1)':                        'modal.nickLabel',
+  '#edit-profile-modal label:nth-of-type(2)':                        'modal.bioLabel',
+  '#edit-name-input':   { key: 'modal.nickPh',  prop: 'placeholder' },
+  '#edit-bio-input':    { key: 'modal.bioPh',   prop: 'placeholder' },
+  '#edit-profile-modal .modal-footer button:first-child':            'modal.cancel',
+  '#edit-profile-modal .modal-footer button:last-child':             'modal.save',
+
+  // ── Friend Profile Modal title ─────────────────────────────────
+  '#friend-profile-modal .modal-header h2':                          'modal.friendProfile',
 };
 
 function applyLangBySelectors(map = SELECTOR_MAP) {
