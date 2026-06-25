@@ -493,7 +493,76 @@ const RU = {
   'map.legend.prison':     '🔒 Тюрьма',
   'map.legend.hospital':   '🏥 Больница',
   'map.legend.casino':     '🎰 Казино',
-  'map.legend.bizmarket':  '🏢 Рынок бизнесов'
+  'map.legend.bizmarket':  '🏢 Рынок бизнесов',
+
+  // ── Dealership filter dropdowns & render strings ──────
+  'dealer.filterAll':    'Все типы',
+  'dealer.filterSedan':  'Седан',
+  'dealer.filterSuv':    'Внедорожник',
+  'dealer.filterSport':  'Спорт',
+  'dealer.sortDefault':  'По умолчанию',
+  'dealer.sortAsc':      'Цена ↑',
+  'dealer.sortDesc':     'Цена ↓',
+  'dealer.noFound':      'Машин не найдено',
+  'dealer.badge.new':    'НОВЫЙ',
+  'dealer.cond':         'Сост.:',
+  'dealer.viewBtn':      'Подробнее',
+  'dealer.closeBtn':     'Закрыть',
+  'dealer.buyBtn':       'Купить',
+  'dealer.bought':       '🚗 Куплено: ',
+
+  // ── Map ──────────────────────────────────────────────
+  'map.desc':            'На карте отображаются ваши районы, бизнесы и ключевые объекты.',
+
+  // ── Reputation ───────────────────────────────────────
+  'rep.level':           'Уровень:',
+
+  // ── Rank modal ────────────────────────────────────────
+  'rank.title':    '⭐ Звания',
+  'rank.current':  'Текущее:',
+  'rank.progress': 'Прогресс',
+  'rank.all':      'Все Звания',
+  'rank.max':      'XP (Максимум)',
+
+  // ── Messages ─────────────────────────────────────────
+  'msg.header':       'Сообщения',
+  'msg.loadingList':  'Загрузка...',
+  'msg.selectFriend': 'Выберите собеседника',
+  'msg.inputPh':      'Написать сообщение...',
+  'msg.sendTitle':    'Отправить',
+
+  // ── Families render ───────────────────────────────────
+  'fam.invite.hdr':      '🏰 Приглашение в семью',
+  'fam.invite.body':     ' пригласила вас (Босс: ',
+  'fam.invite.accept':   '✓ Принять',
+  'fam.invite.decline':  '✕ Отклонить',
+  'fam.create.title':    'Создать 6-ю Семью',
+  'fam.create.req':      'Требуется <b style="color:var(--accent);">Мафиози</b> и <b style="color:var(--ok);">$250,000</b>',
+  'fam.create.namePh':   'Название семьи...',
+  'fam.create.colorLbl': 'Цвет:',
+  'fam.create.btn':      '🏰 Основать Семью',
+  'fam.create.creating': 'Создаётся...',
+  'fam.create.curRank':  'Текущее звание: ',
+  'fam.power':           'СИЛА',
+  'fam.mem.count':       'ЧЛЕНЫ',
+  'fam.realMembers.hdr': 'Реальные члены',
+  'fam.noMembers':       'Реальных членов пока нет',
+  'fam.kick':            'Выгнать',
+  'fam.inv.form.hdr':    '📨 Пригласить участника',
+  'fam.inv.form.ph':     'Номер счёта AM123456...',
+  'fam.inv.form.btn':    '📨 Пригласить',
+  'fam.upgrade.btn':     '💪 Сила +10 ($50,000)',
+  'fam.recruit.btn':     '👤 Участник +1 ($10,000)',
+  'fam.leave.btn':       '🚪 Покинуть семью',
+  'fam.disband.btn':     '💀 Распустить семью',
+  'fam.family.suffix':   ' Семья',
+  'fam.nameErr':         'Укажите название семьи',
+  'fam.accErr':          'Укажите номер счёта AM',
+
+  // ── Missing notification keys ─────────────────────────
+  'notif.garage_full2':  'Гараж заполнен',
+  'notif.no_money':      'Недостаточно средств',
+  'notif.insufficient':  'Недостаточно средств на счёте'
 
 };
 
@@ -987,8 +1056,99 @@ const HY = {
   'map.legend.prison':     '🔒 Бант',
   'map.legend.hospital':   '🏥 Хиванданоц',
   'map.legend.casino':     '🎰 Казино',
-  'map.legend.bizmarket':  '🏢 Бизнес шука'
+  'map.legend.bizmarket':  '🏢 Бизнес шука',
+
+  // ── Dealership filter dropdowns & render strings ──────
+  'dealer.filterAll':    'Բոլոր տեսակները',
+  'dealer.filterSedan':  'Սեդան',
+  'dealer.filterSuv':    'Ամենագնաց',
+  'dealer.filterSport':  'Սպորտային',
+  'dealer.sortDefault':  'Սովորական',
+  'dealer.sortAsc':      'Գինը ↑',
+  'dealer.sortDesc':     'Գինը ↓',
+  'dealer.noFound':      'Ոչ մի մեքենա չգտնվեց',
+  'dealer.badge.new':    'ՆՈՐ',
+  'dealer.cond':         'Վիճ.:',
+  'dealer.viewBtn':      'Դիտել',
+  'dealer.closeBtn':     'Փակել',
+  'dealer.buyBtn':       'Գնել',
+  'dealer.bought':       '🚗 Գնեցիք: ',
+
+  // ── Map ──────────────────────────────────────────────
+  'map.desc':            'Քաղաքի վրա տեսնում ես քո շրջանները, բիզնեսները և կարևոր վայրերը։',
+
+  // ── Reputation ───────────────────────────────────────
+  'rep.level':           'Մակարդակ:',
+
+  // ── Rank modal ────────────────────────────────────────
+  'rank.title':    '⭐ Կոչումներ',
+  'rank.current':  'Ներկայիս:',
+  'rank.progress': 'Առաջընթաց',
+  'rank.all':      'Բոլոր Կոչումները',
+  'rank.max':      'XP (Մաքսիմум)',
+
+  // ── Messages ─────────────────────────────────────────
+  'msg.header':       'Հաղորդագրություններ',
+  'msg.loadingList':  'Բեռնվում է...',
+  'msg.selectFriend': 'Ընտրեք ընկերոջը գրելու համար',
+  'msg.inputPh':      'Գրել հաղորդагруtyun...',
+  'msg.sendTitle':    'Ուղarkel',
+
+  // ── Families render ───────────────────────────────────
+  'fam.invite.hdr':      '🏰 Ընтанekain Hraver',
+  'fam.invite.body':     ' yntaniqy hravel e kez (Boss: ',
+  'fam.invite.accept':   '✓ Kamel',
+  'fam.invite.decline':  '✕ Morjvel',
+  'fam.create.title':    'Ստthcir 6-rd Yntaniqy',
+  'fam.create.req':      'Pahanjanvum e <b style="color:var(--accent);">Mafioz</b> + <b style="color:var(--ok);">$250,000</b>',
+  'fam.create.namePh':   'Yntaniqi anun...',
+  'fam.create.colorLbl': 'Graven:',
+  'fam.create.btn':      '🏰 Himnel Yntaniq',
+  'fam.create.creating': 'Steghtsavrm e...',
+  'fam.create.curRank':  'Nerkayin koch: ',
+  'fam.power':           'ՈՒԺ',
+  'fam.mem.count':       'ԱՆԴԱՄ',
+  'fam.realMembers.hdr': 'Իravakan andamner',
+  'fam.noMembers':       'Իravakan andamner chka',
+  'fam.kick':            'Hanel',
+  'fam.inv.form.hdr':    '📨 Hravel Ynker',
+  'fam.inv.form.ph':     'AM123456 hashvehamar...',
+  'fam.inv.form.btn':    '📨 Hravel',
+  'fam.upgrade.btn':     '💪 Ujh +10 ($50,000)',
+  'fam.recruit.btn':     '👤 Andam +1 ($10,000)',
+  'fam.leave.btn':       '🚪 Durs gal',
+  'fam.disband.btn':     '💀 Nercnel Yntaniq',
+  'fam.family.suffix':   ' Yntaniq',
+  'fam.nameErr':         'Matucek Yntanqy anun',
+  'fam.accErr':          'Matucek AM hashvehamar',
+
+  // ── Missing notification keys ─────────────────────────
+  'notif.garage_full2':  'Ավтоtnaky liqu e',
+  'notif.no_money':      'Бавараr depqneri chunek',
+  'notif.insufficient':  'Bavarар depqneri chkа'
 };
+
+// ═══════════════════════════════════════════════════════
+//   RANK NAME TRANSLATIONS
+// ═══════════════════════════════════════════════════════
+const RANK_NAMES_RU = {
+  'Դататarkaport': 'Бродяга',
+  'Դататаркапорт': 'Бродяга',
+  'Грpanahat':     'Карманник',
+  'Гrpanahat':     'Карманник',
+  'Avazak':        'Бандит',
+  'Мafioz':        'Мафиози',
+  'Mafioz':        'Мафиози',
+  'Kapo':          'Капо',
+  'Don':           'Дон',
+  'Knqahayr':      'Крёстный Отец'
+};
+
+function getRankName(name) {
+  if (!name) return name || '';
+  if (getLang() === 'ru') return RANK_NAMES_RU[name] || name;
+  return name;
+}
 
 // ═══════════════════════════════════════════════════════
 //   PUBLIC API (no changes needed)
@@ -1063,7 +1223,41 @@ function applyLang() {
   // 6. html lang attribute
   document.documentElement.lang = lang === 'hy' ? 'hy' : 'ru';
 
-  // 7. Прямая привязка по существующим ID/классам (без data-i18n)
+  // 7. Dealer filter dropdowns (value attrs stay Armenian for filter logic)
+  const _dft = document.getElementById('dealer-filter-type');
+  if (_dft && _dft.options) {
+    const _o = _dft.options;
+    if (_o[0]) _o[0].text = t('dealer.filterAll');
+    if (_o[1]) _o[1].text = t('dealer.filterSedan');
+    if (_o[2]) _o[2].text = t('dealer.filterSuv');
+    if (_o[3]) _o[3].text = t('dealer.filterSport');
+  }
+  const _dsp = document.getElementById('dealer-sort-price');
+  if (_dsp && _dsp.options) {
+    const _s = _dsp.options;
+    if (_s[0]) _s[0].text = t('dealer.sortDefault');
+    if (_s[1]) _s[1].text = t('dealer.sortAsc');
+    if (_s[2]) _s[2].text = t('dealer.sortDesc');
+  }
+
+  // 8. Rank name display refresh (without waiting for next updateUI call)
+  if (typeof player !== 'undefined' && player && player.rank) {
+    const _rn = getRankName(player.rank);
+    ['rankDisplay', 'sidebar-rank-val'].forEach(function(id) {
+      const el = document.getElementById(id);
+      if (el) { el.innerText = _rn; if (typeof _prev !== 'undefined') _prev[id] = _rn; }
+    });
+    const _mwr = document.getElementById('main-welcome-rank');
+    if (_mwr) { _mwr.innerText = '⭐ ' + _rn; if (typeof _prev !== 'undefined') _prev['main-welcome-rank'] = '⭐ ' + _rn; }
+    const _phr = document.getElementById('profile-hero-rank');
+    if (_phr) _phr.textContent = _rn;
+    const _ar = document.getElementById('acc-rank');
+    if (_ar) _ar.textContent = _rn;
+    const _mobRank = document.getElementById('mob-dd-rank');
+    if (_mobRank) _mobRank.textContent = _rn;
+  }
+
+  // 9. Прямая привязка по существующим ID/классам (без data-i18n)
   applyLangBySelectors();
 }
 

@@ -2107,7 +2107,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <h1><i class="material-icons">handshake</i> <span data-i18n="page.reputation">Համբավ</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;" data-i18n="rep.desc">Քո հեղինակությունը քաղաքում։ Բարձր համբավը նվազեցնում է ձերբակալման ռիսկը և բացում է նոր բիզնեսներ։</p>
         <div class="form-box" style="max-width:500px;">
-            <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);">Մակարդակ: <span id="rep-level" style="color:var(--warn)">50</span>/100</h2>
+            <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);"><span data-i18n="rep.level">Մակարդակ: <span</span> id="rep-level" style="color:var(--warn)">50</span>/100</h2>
             <div class="card" style="border: 1px solid var(--border); box-shadow:none;">
                 <h3><i class="material-icons">payments</i> <span data-i18n="rep.donation">Բարեգործություն / Կաշառք Քաղաքապետարանին</span></h3>
                 <p data-i18n="rep.donDesc">Նվիրաբերելով գումար, դուք գնում եք քաղաքի լռությունը: +5 Համբավ</p>
@@ -2847,10 +2847,10 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <!-- Contacts sidebar -->
         <div class="chat-contacts">
             <div class="chat-contacts-header">
-                <h3><i class="material-icons" style="font-size:18px;vertical-align:middle;color:var(--accent);margin-right:6px;">chat</i>Հաղորդագրություններ</h3>
+                <h3><i class="material-icons" style="font-size:18px;vertical-align:middle;color:var(--accent);margin-right:6px;">chat</i><span data-i18n="msg.header">Հաղորդագրություններ</span></h3>
             </div>
             <div class="chat-contacts-list" id="chat-contacts-list">
-                <div class="chat-contacts-empty">Բեռնվում է...</div>
+                <div class="chat-contacts-empty" data-i18n="msg.loadingList">Բեռնվում է...</div>
             </div>
         </div>
 
@@ -2858,7 +2858,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div class="chat-pane" id="chat-pane">
             <div class="chat-pane-empty" id="chat-pane-empty">
                 <i class="material-icons">forum</i>
-                <p>Ընտրեք ընկերոջը գրելու համար</p>
+                <p data-i18n="msg.selectFriend">Ընտրեք ընկերոջը գրելու համար</p>
             </div>
             <!-- Header (hidden until a chat is open) -->
             <div class="chat-header" id="chat-header" style="display:none;">
@@ -2872,8 +2872,8 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
             <div class="chat-messages" id="chat-messages" style="display:none;"></div>
             <!-- Input area (hidden until a chat is open) -->
             <div class="chat-input-area" id="chat-input-area" style="display:none;">
-                <textarea id="chat-textarea" rows="1" placeholder="Grel haghordagrutʻyun..." onkeydown="chatKeyDown(event)" oninput="autoResizeChatArea(this)"></textarea>
-                <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()" title="Uхarkel">
+                <textarea id="chat-textarea" rows="1" placeholder="Grel haghordagrutʻyun..." data-i18n-ph="msg.inputPh" onkeydown="chatKeyDown(event)" oninput="autoResizeChatArea(this)"></textarea>
+                <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()" title="Uхarkel" data-i18n-title="msg.sendTitle">
                     <i class="material-icons">send</i>
                 </button>
             </div>
@@ -2887,20 +2887,20 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     <div class="modal-content">
         <div class="modal-header">
             <h2 id="dealer-modal-title" style="margin:0;font-size:18px;color:var(--text-l);">Ավտոսրահ</h2>
-            <button class="close-btn" onclick="closeDealerModal()"><i class="material-icons">close</i></button>
+            <button class="close-btn" onclick="closeDealerModal()" data-i18n="dealer.closeBtn"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
             <div style="text-align:center;height:210px;margin-bottom:20px;overflow:hidden;border-radius:16px;position:relative;" id="dealer-modal-icon"></div>
             <div style="font-size:28px;font-weight:800;color:var(--ok);margin-bottom:12px;" id="dealer-modal-price"></div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
                 <span style="background:rgba(10,132,255,0.15);color:#0a84ff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;" id="dealer-modal-type"></span>
-                <span style="background:rgba(50,215,75,0.15);color:var(--ok);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;">⚙️ Վիճ. <span id="dealer-modal-cond"></span></span>
+                <span style="background:rgba(50,215,75,0.15);color:var(--ok);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;">⚙️ <span id="dealer-modal-cond-label" data-i18n="dealer.cond">Виch.:</span> <span id="dealer-modal-cond"></span></span>
             </div>
             <p style="font-size:14px;line-height:1.8;color:var(--text-l);background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;border:1px solid var(--border);" id="dealer-modal-desc"></p>
         </div>
         <div class="modal-footer">
             <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeDealerModal()">Փակել</button>
-            <button id="dealer-modal-buy-btn" style="background:var(--ok);">Գնել</button>
+            <button id="dealer-modal-buy-btn" style="background:var(--ok);" data-i18n="dealer.buyBtn">Գնել</button>
         </div>
     </div>
 </div>
@@ -2928,17 +2928,17 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 <div id="rank-modal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 style="margin:0;font-size:18px;color:var(--text-l);"><i class="material-icons" style="color:var(--warn);">star</i> Կոչումներ</h2>
+            <h2 style="margin:0;font-size:18px;color:var(--text-l);"><i class="material-icons" style="color:var(--warn);">star</i> <span data-i18n="rank.title">⭐ Կոչումներ</span></h2>
             <button class="close-btn" onclick="closeRankModal()"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
-            <div style="text-align:center;font-size:18px;font-weight:700;color:var(--text-l);margin-bottom:16px;">Ներկայիս: <span id="modal-current-rank" style="color:var(--accent);">Դատարկապորտ</span></div>
+            <div style="text-align:center;font-size:18px;font-weight:700;color:var(--text-l);margin-bottom:16px;"><span data-i18n="rank.current">Ներկայիս:</span> <span id="modal-current-rank" style="color:var(--accent);">Դататarkaport</span></div>
             <div style="margin-bottom:24px;text-align:center;">
-                <p style="color:var(--text);margin-bottom:10px;font-size:13px;text-transform:uppercase;font-weight:600;">Առաջընթաց</p>
+                <p style="color:var(--text);margin-bottom:10px;font-size:13px;text-transform:uppercase;font-weight:600;" data-i18n="rank.progress">Առաջընthաc</p>
                 <div class="rank-bar-track"><div id="rank-progress-bar" class="rank-bar-fill" style="width:0%;"></div></div>
                 <p id="rank-progress-text" style="margin-top:10px;font-weight:700;color:var(--text-l);font-size:14px;">0 / 300 XP</p>
             </div>
-            <h3 style="margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px;color:var(--text-l);font-size:16px;">Բոլոր Կոչումները</h3>
+            <h3 style="margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px;color:var(--text-l);font-size:16px;" data-i18n="rank.all">Բоlor Koчumnerner</h3>
             <ul id="ranks-list-modal"></ul>
         </div>
         <div class="modal-footer">
@@ -3089,11 +3089,11 @@ function refreshAvatarUI(name, email) {
     const phn = document.getElementById('profile-hero-name'); if (phn) phn.textContent = name;
     const phe = document.getElementById('profile-hero-email');
     if (phe && email) { const parts = email.split('@'); phe.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = (typeof player !== 'undefined' ? player.rank : '') || 'Դатаркапорт';
+    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = getRankName((typeof player !== 'undefined' ? player.rank : '') || 'Դататarkaport');
     const an  = document.getElementById('acc-name');  if (an)  an.textContent  = name;
     const ae  = document.getElementById('acc-email');
     if (ae && email) { const parts = email.split('@'); ae.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const ar  = document.getElementById('acc-rank');  if (ar)  ar.textContent  = (typeof player !== 'undefined' ? player.rank : '') || 'Դатаркапорт';
+    const ar  = document.getElementById('acc-rank');  if (ar)  ar.textContent  = getRankName((typeof player !== 'undefined' ? player.rank : '') || 'Դататarkaport');
 
     if (currentUser && currentUser.createdAt) {
         const d   = new Date(currentUser.createdAt).toLocaleDateString('hy-AM');
@@ -4232,15 +4232,15 @@ function updateUI() {
     _set('moneyDisplay',    player.money.toLocaleString());
     _set('energyDisplay',   Math.floor(player.energy));
     _set('hpDisplay',       Math.floor(player.hp));
-    _set('rankDisplay',     player.rank);
+    _set('rankDisplay',     getRankName(player.rank));
     _set('bankTopDisplay',  player.bank.toLocaleString());
     _set('bankPageDisplay', player.bank.toLocaleString());
     _set('bankLoanDisplay', player.loan.toLocaleString());
     _set('personalBankAccShow', player.bankAccount);
     _set('my-biz-count',    player.businesses.length);
     _set('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
-    _set('sidebar-rank-val', player.rank);
-    _set('main-welcome-rank', '⭐ ' + player.rank);
+    _set('sidebar-rank-val', getRankName(player.rank));
+    _set('main-welcome-rank', '⭐ ' + getRankName(player.rank));
     _set('stashDisplay',    player.stash.toLocaleString());
 
     const dirtyEl = _dom['dirtyMoneyDisplay'] || (_dom['dirtyMoneyDisplay'] = document.getElementById('dirtyMoneyDisplay'));
@@ -4254,7 +4254,7 @@ function updateUI() {
     _set('stat-crimes',      player.stats.crimes);
     _set('stat-cars',        player.stats.cars);
     _set('stat-earnings',    `$${player.stats.earnings.toLocaleString()}`);
-    _set('stat-time',        `${Math.floor(player.stats.minutes)} րոպե`);
+    _set('stat-time', `${Math.floor(player.stats.minutes)} ${t('stats.timeUnit')}`);
 
     // HP / Energy bars
     _setW(_dom['hp-bar'],     Math.min(100, (player.hp / player.maxHp) * 100) + '%');
@@ -4300,11 +4300,11 @@ function updateUI() {
 //   RANK MODAL
 // ==========================================
 function openRankModal() {
-    document.getElementById('modal-current-rank').innerText = player.rank;
+    document.getElementById('modal-current-rank').innerText = getRankName(player.rank);
     let nextRank = null;
     for (let i = 0; i < ranks.length; i++) { if (player.exp < ranks[i].exp) { nextRank = ranks[i]; break; } }
     let pct = nextRank ? (player.exp / nextRank.exp) * 100 : 100;
-    let text = nextRank ? `${player.exp} / ${nextRank.exp} XP` : `${player.exp} XP (Մաքսիմում)`;
+    let text = nextRank ? `${player.exp} / ${nextRank.exp} XP` : `${player.exp} XP (${t('rank.max')})`;
     document.getElementById('rank-progress-text').innerText = text;
     document.getElementById('rank-progress-bar').style.width = pct + '%';
     let html = '';
@@ -4314,7 +4314,7 @@ function openRankModal() {
         let col = isCur ? 'var(--ok)' : (passed ? 'var(--text-l)' : 'var(--text)');
         let icon = passed ? '<i class="material-icons" style="color:var(--ok)">check</i>' : '<i class="material-icons" style="color:var(--text);">lock</i>';
         html += `<li style="padding:14px 12px;border-bottom:1px solid var(--border);color:${col};display:flex;justify-content:space-between;align-items:center;background:${isCur?'rgba(52,199,89,0.1)':'transparent'};border-radius:12px;margin-bottom:4px;">
-            <span style="font-weight:600;">${icon} ${r.name}</span>
+            <span style="font-weight:600;">${icon} ${getRankName(r.name)}</span>
             <span style="font-size:14px;">${r.exp} XP</span>
         </li>`;
     });
@@ -4544,25 +4544,27 @@ function renderDealership() {
     let filtered = src.filter(x => (fType==='all'||x.type===fType) && x.price>=fMin && x.price<=fMax);
     if (sort==='asc') filtered.sort((a,b)=>a.price-b.price);
     else if (sort==='desc') filtered.sort((a,b)=>b.price-a.price);
-    let html = filtered.length===0 ? '<p style="color:var(--text);">Ոչ մի մեքենա չգտնվեց</p>' : '';
+    let html = filtered.length===0 ? `<p style="color:var(--text);">${t('dealer.noFound')}</p>` : '';
     filtered.forEach(item => {
         let condColor = item.condition >= 90 ? 'var(--ok)' : item.condition >= 70 ? 'var(--warn)' : 'var(--accent)';
         html += `<div class="list-am-card" onclick="openDealerModal('${item.id}')">
             <div class="list-am-img" style="position:relative;overflow:hidden;">
                 <img src="${item.imgUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;">
                 <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">${item.type}</div>
-                ${item.isNew ? `<div style="position:absolute;top:8px;left:8px;background:var(--ok);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;">ՆՈՐ</div>` : ''}
+                ${item.isNew ? `<div style="position:absolute;top:8px;left:8px;background:var(--ok);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;">${t('dealer.badge.new')}</div>` : ''}
             </div>
             <div class="list-am-info">
                 <div style="font-size:16px;font-weight:800;margin-bottom:6px;color:var(--text-l);">${item.title}</div>
                 <div style="font-size:20px;color:var(--ok);font-weight:800;margin-bottom:8px;">$${item.price.toLocaleString()}</div>
-                <div style="font-size:12px;color:${condColor};font-weight:700;margin-bottom:6px;">⚙️ Վիճ.՝ ${item.condition}%</div>
+                <div style="font-size:12px;color:${condColor};font-weight:700;margin-bottom:6px;">⚙️ ${t('dealer.cond')} ${item.condition}%</div>
                 <p style="color:var(--text);font-size:12px;line-height:1.5;margin-bottom:10px;">${item.desc.split('|').slice(0,2).join('|')}</p>
-                <button style="background:var(--border);color:var(--text-l);margin-top:4px;" onclick="event.stopPropagation();openDealerModal('${item.id}')">Դիտել Ամբ.</button>
+                <button style="background:var(--border);color:var(--text-l);margin-top:4px;" onclick="event.stopPropagation();openDealerModal('${item.id}')">${t('dealer.viewBtn')}</button>
             </div>
         </div>`;
     });
     const viewEl = document.getElementById(activeDealerTab==='new' ? 'dealer-new-view' : 'dealer-used-view');
+    if (viewEl) viewEl.innerHTML = html;
+}iew');
     if (viewEl) viewEl.innerHTML = html;
 }
 function openDealerModal(id) {
@@ -4876,7 +4878,7 @@ function renderFamilies() {
     _renderFamilyInvites(mySection, canCreate);
 }
 
-async function _renderFamilyInvites(mySection, canCreate) {
+async async function _renderFamilyInvites(mySection, canCreate) {
     // Load pending invites
     let invites = [];
     try { invites = await apiGetFamilyInvites(); } catch(e) {}
@@ -4885,11 +4887,11 @@ async function _renderFamilyInvites(mySection, canCreate) {
     if (invites && invites.length > 0) {
         inviteHtml = invites.map(inv => `
         <div class="card" style="border:2px solid var(--warn);margin-bottom:12px;">
-            <h3 style="color:var(--warn);"><i class="material-icons">mail</i> Yntaniqayin Hraver</h3>
-            <p style="margin-bottom:12px;"><b style="color:var(--text-l);">${inv.familyName}</b> yntaniqy hravel e kez (Boss: ${inv.bossName})</p>
+            <h3 style="color:var(--warn);"><i class="material-icons">mail</i> ${t('fam.invite.hdr')}</h3>
+            <p style="margin-bottom:12px;"><b style="color:var(--text-l);">${inv.familyName}</b>${t('fam.invite.body')}${inv.bossName})</p>
             <div style="display:flex;gap:10px;">
-                <button style="background:var(--ok);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','accept')">✓ Kamel</button>
-                <button style="background:var(--accent);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','decline')">✕ Morjvel</button>
+                <button style="background:var(--ok);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','accept')">${t('fam.invite.accept')}</button>
+                <button style="background:var(--accent);width:auto;padding:10px 20px;" onclick="respondFamilyInvite('${inv.familyId}','decline')">${t('fam.invite.decline')}</button>
             </div>
         </div>`).join('');
     }
@@ -4902,18 +4904,18 @@ async function _renderFamilyInvites(mySection, canCreate) {
         mySection.innerHTML = inviteHtml + `
         <div class="card" style="border:1px solid ${canCreate?'var(--ok)':'var(--border)'}; text-align:center;">
             <i class="material-icons" style="font-size:42px;margin-bottom:16px;color:${canCreate?'var(--ok)':'var(--text)'};">add_business</i>
-            <h3 style="justify-content:center; color:${canCreate?'var(--ok)':'var(--text)'};">Steghtsir 6-rd Yntaniqy</h3>
-            <p style="margin-bottom:16px;">Pahanjanvum e <b style="color:var(--accent);">Mafioz</b> koch + <b style="color:var(--ok);">$250,000</b></p>
+            <h3 style="justify-content:center; color:${canCreate?'var(--ok)':'var(--text)'};">${t('fam.create.title')}</h3>
+            <p style="margin-bottom:16px;">${t('fam.create.req')}</p>
             ${canCreate ? `
-            <input type="text" id="familyNameInput" placeholder="Yntaniqi anun..." style="max-width:240px;margin-bottom:14px;">
+            <input type="text" id="familyNameInput" placeholder="${t('fam.create.namePh')}" style="max-width:240px;margin-bottom:14px;">
             <br>
             <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:8px;">
-                <label style="font-size:13px;color:var(--text);">Graven:</label>
+                <label style="font-size:13px;color:var(--text);">${t('fam.create.colorLbl')}</label>
                 <input type="color" id="familyColorInput" value="#ff3b30" style="width:40px;height:36px;border:none;background:none;cursor:pointer;">
             </div>
             <br>
-            <button style="background:var(--ok);width:auto;padding:14px 32px;margin-top:12px;" onclick="createMyFamilyAPI()">🏰 Himnel Yntaniq</button>
-            ` : `<p style="color:var(--accent);font-weight:700;">Nerkayin koch: ${player.rank}</p>`}
+            <button style="background:var(--ok);width:auto;padding:14px 32px;margin-top:12px;" onclick="createMyFamilyAPI()">${t('fam.create.btn')}</button>
+            ` : `<p style="color:var(--accent);font-weight:700;">${t('fam.create.curRank')}${getRankName(player.rank)}</p>`}
         </div>`;
         return;
     }
@@ -4929,47 +4931,47 @@ async function _renderFamilyInvites(mySection, canCreate) {
             <span>👤</span>
             <span style="flex:1;color:var(--text-l);">${m.name}</span>
             <span style="font-family:monospace;font-size:12px;color:var(--text);">${m.account}</span>
-            ${isBoss ? `<button onclick="kickFamilyMember('${m.userId}')" style="background:var(--accent);width:auto;padding:4px 10px;font-size:12px;">Hanel</button>` : ''}
+            ${isBoss ? `<button onclick="kickFamilyMember('${m.userId}')" style="background:var(--accent);width:auto;padding:4px 10px;font-size:12px;">${t('fam.kick')}</button>` : ''}
           </div>`).join('')
-        : '<p style="color:var(--text);font-size:13px;">Iravakan andamner chka deռ</p>';
+        : `<p style="color:var(--text);font-size:13px;">${t('fam.noMembers')}</p>`;
 
     // Invite form (boss only)
     const inviteForm = isBoss ? `
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
-            <h4 style="color:var(--text-l);margin-bottom:10px;">📨 Hravel Ynker</h4>
+            <h4 style="color:var(--text-l);margin-bottom:10px;">${t('fam.inv.form.hdr')}</h4>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <input type="text" id="familyInviteAccount" placeholder="AM123456 hashvehamar..." style="flex:1;min-width:180px;">
-                <button style="background:#0a84ff;width:auto;padding:12px 18px;" onclick="inviteToFamilyAPI()">📨 Hravel</button>
+                <input type="text" id="familyInviteAccount" placeholder="${t('fam.inv.form.ph')}" style="flex:1;min-width:180px;">
+                <button style="background:#0a84ff;width:auto;padding:12px 18px;" onclick="inviteToFamilyAPI()">${t('fam.inv.form.btn')}</button>
             </div>
         </div>` : '';
 
-    const leaveLabel = isBoss ? '💀 Nercnel Yntaniq' : '🚪 Durs gal';
+    const leaveLabel = isBoss ? t('fam.disband.btn') : t('fam.leave.btn');
 
     mySection.innerHTML = inviteHtml + `
     <div class="card" style="border:2px solid ${family.color||'var(--ok)'};">
         <h3 style="color:${family.color||'var(--ok)'};">
-            <i class="material-icons">shield</i> ⭐ ${family.name} Yntaniq
+            <i class="material-icons">shield</i> ⭐ ${family.name}${t('fam.family.suffix')}
             <span style="font-size:12px;font-weight:400;margin-left:8px;color:var(--text);">${myRole}</span>
         </h3>
         <p style="margin-bottom:6px;"><b>Boss:</b> ${family.bossName}</p>
         <div style="display:flex;gap:18px;margin:10px 0 14px;flex-wrap:wrap;">
             <div style="text-align:center;">
                 <div style="font-size:22px;font-weight:800;color:${family.color||'var(--ok)'};">${family.power}</div>
-                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ujh</div>
+                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">${t('fam.power')}</div>
             </div>
             <div style="text-align:center;">
                 <div style="font-size:22px;font-weight:800;color:var(--text-l);">${total}</div>
-                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Andamner</div>
+                <div style="font-size:11px;color:var(--text);text-transform:uppercase;">${t('fam.mem.count')}</div>
             </div>
         </div>
         <div style="margin-bottom:14px;">
-            <h4 style="color:var(--text-l);margin-bottom:8px;">Iravakan andamner</h4>
+            <h4 style="color:var(--text-l);margin-bottom:8px;">${t('fam.realMembers.hdr')}</h4>
             ${membersHtml}
         </div>
         ${isBoss ? `
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button style="background:var(--ok);width:auto;padding:12px 20px;" onclick="familyUpgradePowerAPI()">💪 Ujh +10 ($50,000)</button>
-            <button style="background:#5e5ce6;width:auto;padding:12px 20px;" onclick="familyRecruitAPI()">👤 Andam +1 ($10,000)</button>
+            <button style="background:var(--ok);width:auto;padding:12px 20px;" onclick="familyUpgradePowerAPI()">${t('fam.upgrade.btn')}</button>
+            <button style="background:#5e5ce6;width:auto;padding:12px 20px;" onclick="familyRecruitAPI()">${t('fam.recruit.btn')}</button>
         </div>` : ''}
         ${inviteForm}
         <div style="margin-top:14px;">
@@ -4977,12 +4979,13 @@ async function _renderFamilyInvites(mySection, canCreate) {
         </div>
     </div>`;
 }
+
 async function createMyFamilyAPI() {
     const name  = (document.getElementById('familyNameInput')||{}).value;
     const color = (document.getElementById('familyColorInput')||{value:'#ff3b30'}).value;
-    if (!name || !name.trim()) return showNotification('Matutsek Yntanqy anun', false);
+    if (!name || !name.trim()) return showNotification(t('fam.nameErr'), false);
     const btn = document.querySelector('#my-family-section button');
-    if (btn) { btn.disabled = true; btn.textContent = 'Steghtsavrm e...'; }
+    if (btn) { btn.disabled = true; btn.textContent = t('fam.create.creating'); }
     try {
         await apiCreateFamily(name.trim(), color);
         showNotification(`🏰 ${name.trim()} yntaniqy himmnvec!`, true);
@@ -4993,13 +4996,13 @@ async function createMyFamilyAPI() {
         renderFamilies();
     } catch(err) {
         showNotification('✕ ' + err.message, false);
-        if (btn) { btn.disabled = false; btn.textContent = '🏰 Himnel Yntaniq'; }
+        if (btn) { btn.disabled = false; btn.textContent = t('fam.create.btn'); }
     }
 }
 
 async function inviteToFamilyAPI() {
     const acc = (document.getElementById('familyInviteAccount')||{}).value;
-    if (!acc || !acc.trim()) return showNotification('Matutsek AM hashvehamar', false);
+    if (!acc || !acc.trim()) return showNotification(t('fam.accErr'), false);
     try {
         const res = await apiInviteToFamily(acc.trim().toUpperCase());
         showNotification('📨 ' + res.message, true);
