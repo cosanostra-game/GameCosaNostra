@@ -867,6 +867,55 @@ function applyLang() {
 
   // 6. html lang attribute
   document.documentElement.lang = lang === 'hy' ? 'hy' : 'ru';
+
+  // 7. Прямая привязка по существующим ID/классам (без data-i18n)
+  applyLangBySelectors();
+}
+
+// =====================================================
+//  ПРЯМАЯ ПРИВЯЗКА ПО ID / КЛАССАМ (без data-i18n)
+//  Сюда добавляются селекторы, которые УЖЕ есть в HTML —
+//  никаких новых атрибутов вешать не нужно.
+//
+//  Формат:
+//    'CSS-селектор': 'ключ.словаря'
+//  Если нужно не innerHTML, а другое свойство (например,
+//  placeholder для <input>):
+//    'CSS-селектор': { key: 'ключ.словаря', prop: 'placeholder' }
+// =====================================================
+const SELECTOR_MAP = {
+  // ── Гараж (замените на реальные ID/классы из вашего HTML) ──
+  // '#garage-title':       'page.garage',
+  // '.garage-slots-label': 'garage.slots',
+  // '.garage-empty-msg':   'garage.empty',
+
+  // ── Оружие ──
+  // '#weapon-knife-name':  'weapon.knife',
+  // '#weapon-ak47-name':   'weapon.ak47',
+  // '.inv-shop-tab':       'inv.shopTab',
+  // '.inv-owned-tab':      'inv.ownedTab',
+
+  // ── Автосалон ──
+  // '#dealer-new-tab':     'dealer.newTab',
+  // '#dealer-used-tab':    'dealer.usedTab',
+  // '.dealer-empty-msg':   'dealer.empty',
+};
+
+function applyLangBySelectors(map = SELECTOR_MAP) {
+  const lang = getLang();
+  const dict = lang === 'ru' ? RU : HY;
+
+  Object.entries(map).forEach(([selector, entry]) => {
+    const key  = typeof entry === 'string' ? entry : entry.key;
+    const prop = typeof entry === 'string' ? 'innerHTML' : (entry.prop || 'innerHTML');
+    const value = dict[key];
+    if (value === undefined) return; // такого ключа нет — элемент не трогаем
+
+    document.querySelectorAll(selector).forEach(el => {
+      if (prop === 'placeholder') el.placeholder = value;
+      else el[prop] = value;
+    });
+  });
 }
 
 // Auto-apply on DOM ready
