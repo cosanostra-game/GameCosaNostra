@@ -3615,7 +3615,7 @@ class Player extends Entity {
 
         // ── Progression ────────────────────────────────────────
         this.exp          = data.exp          ?? 0;
-        this.rank         = data.rank         ?? 'Դatarcapорт';
+        this.rank         = data.rank         ?? 'Դատարկապորտ';
         this.reputation   = data.reputation   ?? 50;
 
         // ── Game state ─────────────────────────────────────────
@@ -4119,7 +4119,7 @@ function toggleActivityLog() {
     if (activityLogOpen) renderActivityLog();
 }
 function addActivity(msg, success = true) {
-    activityItems.unshift({ msg, success, time: new Date().toLocaleTimeString('hy-AM', {hour:'2-digit',minute:'2-digit'}) });
+    activityItems.unshift({ msg, success, time: new Date().toLocaleTimeString(getLang()==='ru'?'ru-RU':'hy-AM', {hour:'2-digit',minute:'2-digit'}) });
     if (activityItems.length > 30) activityItems.pop();
     if (activityLogOpen) renderActivityLog(); // skip rebuild if log is hidden
 }
@@ -5657,7 +5657,7 @@ function triggerRandomEvent() {
     const logEl = document.getElementById('event-log');
     if (logEl) {
         logEl.innerHTML = `<p style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border);">
-            <span style="color:var(--ok); font-weight:700;">[${new Date().toLocaleTimeString('hy-AM', {hour:'2-digit',minute:'2-digit'})}]</span> ${ev.msg}
+            <span style="color:var(--ok); font-weight:700;">[${new Date().toLocaleTimeString(getLang()==='ru'?'ru-RU':'hy-AM', {hour:'2-digit',minute:'2-digit'})}]</span> ${ev.msg}
         </p>` + logEl.innerHTML;
     }
     updateUI();
