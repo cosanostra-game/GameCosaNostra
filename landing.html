@@ -1654,7 +1654,7 @@ canvas {
 ═══════════════════════════════════════════════════ -->
 <div id="mobile-top-bar">
     <div class="mob-top-logo">COSA <span>NOSTRA</span></div>
-    <div class="mob-rank-chip" id="mob-rank-chip">Դatarkaport</div>
+    <div class="mob-rank-chip" id="mob-rank-chip">Դատարկապորտ</div>
     <button class="mob-avatar-btn" onclick="toggleMobDropdown()" aria-label="Profile menu">
         <div class="mob-avatar" id="mob-avatar-el">
             <span id="mob-avatar-initials">Ա</span>
@@ -1672,13 +1672,13 @@ canvas {
         </div>
         <div>
             <div class="mob-dd-name" id="mob-dd-name">Խաղացող</div>
-            <div class="mob-dd-rank" id="mob-dd-rank">Դատarkaport</div>
+            <div class="mob-dd-rank" id="mob-dd-rank">Դատարկապորտ</div>
         </div>
     </div>
-    <div class="mob-dd-item" onclick="switchTab('profile',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
+    <div class="mob-dd-item" onclick="switchTab('profile');closeMobDropdown()">
         <i class="material-icons">account_circle</i> Իմ Պրոֆիլը
     </div>
-    <div class="mob-dd-item" onclick="switchTab('settings',document.querySelector('.menu li a.active')||this);closeMobDropdown()">
+    <div class="mob-dd-item" onclick="switchTab('settings');closeMobDropdown()">
         <i class="material-icons">settings</i> Կարգավորումներ
     </div>
     <div class="mob-dd-divider"></div>
@@ -1696,40 +1696,42 @@ canvas {
         <button class="mob-drawer-close-btn" onclick="closeMobDrawer()"><i class="material-icons">close</i></button>
     </div>
 
-    <div class="mob-drawer-section">Հիmnakan</div>
+    <div class="mob-drawer-section">Հիմնական</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="switchTab('cars',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Ավtoարevangym</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('garage',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Ավtotnak</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('inventory',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Zinanos</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('dealership',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Ávtosalon</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('cars');closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Ավտոառևանգ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('garage');closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Ավտոտնակ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('inventory');closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Զինանոց</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('dealership');closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Ավտոսալոն</span></div>
     </div>
 
-    <div class="mob-drawer-section">Finansner</div>
+    <div class="mob-drawer-section">Ֆինանսներ</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="switchTab('business',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">work</i><span class="mob-dc-label">Biznes</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('crypto',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">currency_bitcoin</i><span class="mob-dc-label">Kripto</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('estate',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">business</i><span class="mob-dc-label">Anshn.Guyq</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('stash',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">inventory_2</i><span class="mob-dc-label">Gaytni Pahest</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('business');closeMobDrawer()"><i class="material-icons">work</i><span class="mob-dc-label">Բիզնես</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('crypto');closeMobDrawer()"><i class="material-icons">currency_bitcoin</i><span class="mob-dc-label">Կրիպտո</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('estate');closeMobDrawer()"><i class="material-icons">business</i><span class="mob-dc-label">Անշ. Գույք</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('stash');closeMobDrawer()"><i class="material-icons">inventory_2</i><span class="mob-dc-label">Գաղտ. Պահ.</span></div>
     </div>
 
-    <div class="mob-drawer-section">Yndhatak</div>
+    <div class="mob-drawer-section">Ընդհատակ</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="switchTab('prison',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">lock</i><span class="mob-dc-label">Bant</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('hospital',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">local_hospital</i><span class="mob-dc-label">Hivandanoc</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('training',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">fitness_center</i><span class="mob-dc-label">Varzhetsyum</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('reputation',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">handshake</i><span class="mob-dc-label">Hambav</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('families',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">groups</i><span class="mob-dc-label">Yntaniqner</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('friends',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">people</i><span class="mob-dc-label">Ynkerner</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('prison');closeMobDrawer()"><i class="material-icons">lock</i><span class="mob-dc-label">Բանտ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('hospital');closeMobDrawer()"><i class="material-icons">local_hospital</i><span class="mob-dc-label">Հիվանդ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('training');closeMobDrawer()"><i class="material-icons">fitness_center</i><span class="mob-dc-label">Վարժեցում</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('reputation');closeMobDrawer()"><i class="material-icons">handshake</i><span class="mob-dc-label">Համբավ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('families');closeMobDrawer()"><i class="material-icons">groups</i><span class="mob-dc-label">Ընտանիքն.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('friends');closeMobDrawer()"><i class="material-icons">people</i><span class="mob-dc-label">Ընկերներ</span></div>
     </div>
 
-    <div class="mob-drawer-section">Havayelyal</div>
+    <div class="mob-drawer-section">Հետախուզում</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="switchTab('quests',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label">Orva Khndir</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('daynight',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label">Gisher/Tserek</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('events',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label">Iradartsutyunner</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('stats',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label">Vichakagrutyun</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('leaderboard',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label">Liderboard</span></div>
-        <div class="mob-drawer-cell" onclick="switchTab('profile',document.querySelector('.menu li a.active')||this);closeMobDrawer()"><i class="material-icons">account_circle</i><span class="mob-dc-label">Profilĕ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('map');closeMobDrawer()"><i class="material-icons">map</i><span class="mob-dc-label">Քաղ. Քարտ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('quests');closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label">Օրվա Խնդ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('daynight');closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label">Գիշ./Ցերեկ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('events');closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label">Իրադ-ներ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('stats');closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label">Վիճ-ություն</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('leaderboard');closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label">Լիդերբորդ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('profile');closeMobDrawer()"><i class="material-icons">account_circle</i><span class="mob-dc-label">Պրոֆիլ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('settings');closeMobDrawer()"><i class="material-icons">settings</i><span class="mob-dc-label">Կարգ-ներ</span></div>
     </div>
 </div>
 <div id="mob-drawer-backdrop" onclick="closeMobDrawer()"></div>
@@ -7433,6 +7435,29 @@ if (typeof _origCloseDrawer === 'function') {
     vm.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
   }
 })();
+
+
+// ── 10. navigateTo — mobile drawer alias for switchTab ─────────────
+// Drawer cells call navigateTo(id); this maps to the game's switchTab
+window.navigateTo = function(page) {
+  if (typeof switchTab === 'function') {
+    switchTab(page);
+  } else {
+    // Fallback: wait for game init
+    setTimeout(function() { if (typeof switchTab === 'function') switchTab(page); }, 500);
+  }
+};
+
+// ── 11. Map page: init canvas when navigating to it ────────────────
+var _origSwitchTab = window.switchTab;
+if (typeof _origSwitchTab === 'function') {
+  window.switchTab = function(id) {
+    _origSwitchTab(id);
+    if (id === 'map' && typeof initGameMap === 'function') {
+      setTimeout(initGameMap, 50);
+    }
+  };
+}
 
 console.log('[MobileOptPatch] Applied ✓');
 })();
