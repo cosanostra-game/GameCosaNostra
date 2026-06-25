@@ -511,6 +511,54 @@ const RU = {
   'dealer.buyBtn':       'Купить',
   'dealer.bought':       '🚗 Куплено: ',
 
+  // ── Dealer — Car types & Spec abbreviations ───────────
+  'dealer.type.sport':    'Спорт',
+  'dealer.type.sedan':    'Седан',
+  'dealer.type.suv':      'Внедорожник',
+  'dealer.spec.hp':       'л.с.',
+  'dealer.spec.kmh':      'км/ч',
+  'dealer.spec.sec':      'с',
+  'dealer.spec.topSpeed': 'Макс.скор.',
+  'dealer.spec.auto6':    '6-ст. авт.',
+  'dealer.spec.auto8':    '8-ст. авт.',
+  'dealer.spec.mech6':    '6-ст. мех.',
+  'dealer.spec.fullPkg':  'Полн.комп.',
+  'dealer.spec.carbon':   'Carbon дет.',
+  'dealer.spec.seats':    'мест',
+  'dealer.spec.newKm':    '0 км',
+  'dealer.spec.km':       'км',
+  'dealer.spec.cond':     'С.И.',
+
+  // ── Estate ───────────────────────────────────────────
+  'estate.filterAll':       'Все типы',
+  'estate.type.house':      'Квартира',
+  'estate.type.land':       'Участок',
+  'estate.type.garage':     'Гараж',
+  'estate.title.apartment': 'Квартира',
+  'estate.title.land':      'Уч.',
+  'estate.title.garage':    'Гараж',
+  'estate.title.location':  '(Центр/Район)',
+  'estate.desc.apartment':  'Отличная квартира для аренды.',
+  'estate.desc.land':       'Плодородный земельный участок.',
+  'estate.desc.garage':     'Каменный, надёжный гараж.',
+  'estate.notFound':        'Не найдено',
+  'estate.rentPer10s':      'Аренда/10с:',
+  'estate.viewBtn':         'Просмотр',
+  'estate.empty':           'Нет недвижимости',
+  'estate.unrent':          'Снять с аренды',
+  'estate.rent':            'Сдать в аренду',
+  'estate.typeLabel':       'Тип:',
+  'estate.incomeLabel':     'Доход (аренда):',
+
+  // ── Garage UI ─────────────────────────────────────────
+  'garage.marketPrice': 'Рыночная цена:',
+  'garage.crimeCar':    '✅ Крим. Авто',
+  'garage.makeCrime':   '🚔 Сделать Крим.',
+
+  // ── Sold / Bought notifications ───────────────────────
+  'notif.sold':   'Продано',
+  'notif.bought': '🚗 Куплено:',
+
   // ── Map ──────────────────────────────────────────────
   'map.desc':            'На карте отображаются ваши районы, бизнесы и ключевые объекты.',
 
@@ -959,7 +1007,7 @@ const HY = {
   'car.repair': 'Վերանորոգել',
   'car.drive': 'Վարել',
   'garage.empty': 'Ավտոտնակը դատարկ է',
-  'dealer.empty': 'Հасанели мекеnaner чкан',
+  'dealer.empty': 'Հասանելի մեքենաներ չկան',
 
   // ── Mobile Drawer sections ────────────────────────────
   'drawer.title':        'Բոլոր բաժինները',
@@ -1073,6 +1121,54 @@ const HY = {
   'dealer.closeBtn':     'Փակել',
   'dealer.buyBtn':       'Գնել',
   'dealer.bought':       '🚗 Գնեցիք: ',
+
+  // ── Dealer — Car types & Spec abbreviations ───────────
+  'dealer.type.sport':    'Սպորտային',
+  'dealer.type.sedan':    'Սեդան',
+  'dealer.type.suv':      'Ամենագնաց',
+  'dealer.spec.hp':       'ձ.ու.',
+  'dealer.spec.kmh':      'կմ/ժ',
+  'dealer.spec.sec':      'վ',
+  'dealer.spec.topSpeed': 'Վ.արագ.',
+  'dealer.spec.auto6':    '6-փ. ավտ.',
+  'dealer.spec.auto8':    '8-փ. ավտ.',
+  'dealer.spec.mech6':    '6-փ. մեխ.',
+  'dealer.spec.fullPkg':  'Ֆ. արտ. լ.',
+  'dealer.spec.carbon':   'Carbon հատ.',
+  'dealer.spec.seats':    'տեղ',
+  'dealer.spec.newKm':    '0 կմ',
+  'dealer.spec.km':       'կմ',
+  'dealer.spec.cond':     'Մ.Ս.',
+
+  // ── Estate ───────────────────────────────────────────
+  'estate.filterAll':       'Բոլոր տեսակները',
+  'estate.type.house':      'Տուն',
+  'estate.type.land':       'Հող',
+  'estate.type.garage':     'Ավտոտնակ',
+  'estate.title.apartment': 'Բնակարան',
+  'estate.title.land':      'Հողատ.',
+  'estate.title.garage':    'Ավտոտնակ',
+  'estate.title.location':  '(Կենտ./Շրջ.)',
+  'estate.desc.apartment':  'Գերազանց բնակարան վարձի համար։',
+  'estate.desc.land':       'Բերքատու հողատարածք։',
+  'estate.desc.garage':     'Քարե, ապահով ավտոտնակ։',
+  'estate.notFound':        'Չգտնվեց',
+  'estate.rentPer10s':      'Վ/10վ:',
+  'estate.viewBtn':         'Դիտել',
+  'estate.empty':           'Գույք չկա',
+  'estate.unrent':          'Հանել վարձակալությունից',
+  'estate.rent':            'Տալ վարձով',
+  'estate.typeLabel':       'Տեսակ:',
+  'estate.incomeLabel':     'Եկամուտ (վարձ):',
+
+  // ── Garage UI ─────────────────────────────────────────
+  'garage.marketPrice': 'Շուկայական գին:',
+  'garage.crimeCar':    '✅ Հանց. Մեքենա',
+  'garage.makeCrime':   '🚔 Դարձնել Հանց.',
+
+  // ── Sold / Bought notifications ───────────────────────
+  'notif.sold':   'Վաճառվեց',
+  'notif.bought': '🚗 Գնեցիք:',
 
   // ── Map ──────────────────────────────────────────────
   'map.desc':            'Քաղաքի վրա տեսնում ես քո շրջանները, բիզնեսները և կարևոր վայրերը։',
@@ -1240,7 +1336,17 @@ function applyLang() {
     if (_s[2]) _s[2].text = t('dealer.sortDesc');
   }
 
-  // 8. Rank name display refresh (without waiting for next updateUI call)
+  // 8. Estate filter type dropdown
+  const _eftd = document.getElementById('filter-type');
+  if (_eftd && _eftd.options) {
+    const _ef = _eftd.options;
+    if (_ef[0]) _ef[0].text = t('estate.filterAll');
+    if (_ef[1]) _ef[1].text = t('estate.type.house');
+    if (_ef[2]) _ef[2].text = t('estate.type.land');
+    if (_ef[3]) _ef[3].text = t('estate.type.garage');
+  }
+
+  // 9. Rank name display refresh (without waiting for next updateUI call)
   if (typeof player !== 'undefined' && player && player.rank) {
     const _rn = getRankName(player.rank);
     ['rankDisplay', 'sidebar-rank-val'].forEach(function(id) {

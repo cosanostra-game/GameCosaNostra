@@ -1843,9 +1843,9 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div id="dealer-filters" class="filter-bar">
             <select id="dealer-filter-type" onchange="renderDealership()">
                 <option value="all">Բոլոր տեսակները</option>
-                <option value="Սեդան">Սեդան</option>
-                <option value="Ամենագնաց">Ամենագնաց</option>
-                <option value="Սպորտային">Սպորտային</option>
+                <option value="sedan">Սեդան</option>
+                <option value="suv">Ամենագնաց</option>
+                <option value="sport">Սպորտային</option>
             </select>
             <select id="dealer-sort-price" onchange="renderDealership()">
                 <option value="default">Սովորական</option>
@@ -2034,9 +2034,9 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <div id="estate-filters" class="filter-bar">
             <select id="filter-type" onchange="renderEstate()">
                 <option value="all">Բոլոր տեսակները</option>
-                <option value="Տուն">Բնակարան</option>
-                <option value="Հող">Հողատարածք</option>
-                <option value="Ավտոտնակ">Ավտոտնակ</option>
+                <option value="house">Բնակարան</option>
+                <option value="land">Հողատարածք</option>
+                <option value="garage">Ավտոտնակ</option>
             </select>
             <select id="sort-price" onchange="renderEstate()">
                 <option value="default">Սովորական</option>
@@ -3784,9 +3784,9 @@ cryptosData.forEach(c => { cryptoPrices[c.id] = c.basePrice; cryptoHistories[c.i
 // ==========================================
 let estateMarketData = [];
 for (let i = 1; i <= 10; i++) {
-    estateMarketData.push({ id:`H${i}`, type:"Տուն", title:`Բնակարան ${i} (Կենտ./Շրջ.)`, desc:`Գերազանց բնակարան վարձի համար։`, price:40000+(i*15000), rentInc:30+(i*5), imgIcon:"business"  });
-    estateMarketData.push({ id:`L${i}`, type:"Հող", title:`Հողատ. ${i}`, desc:`Բերքատու հողատարածք։`, price:10000+(i*3000), rentInc:10+(i*2), imgIcon:"agriculture"  });
-    estateMarketData.push({ id:`G${i}`, type:"Ավտոտնակ", title:`Ավտոտնակ ${i}`, desc:`Քարե, ապահով ավտոտնակ։`, price:5000+(i*1000), rentInc:5+(i*1), imgIcon:"warehouse"});
+    estateMarketData.push({ id:`H${i}`, type:'house',  num:i, descKey:'estate.desc.apartment', price:40000+(i*15000), rentInc:30+(i*5),  imgIcon:'business'   });
+    estateMarketData.push({ id:`L${i}`, type:'land',   num:i, descKey:'estate.desc.land',      price:10000+(i*3000),  rentInc:10+(i*2),  imgIcon:'agriculture' });
+    estateMarketData.push({ id:`G${i}`, type:'garage', num:i, descKey:'estate.desc.garage',    price:5000+(i*1000),   rentInc:5+(i*1),   imgIcon:'warehouse'  });
 }
 estateMarketData.sort(() => Math.random() - 0.5);
 
@@ -3798,77 +3798,77 @@ let newCarsMarket = [], usedCarsMarket = [];
 // ── NEW CARS (Ավտոսալոն) ──────────────────────────────────────────────
 const newCarsData = [
     {
-        id: 'NBMWM2', type: 'Սպորտային',
+        id: 'NBMWM2', type: 'sport',
         title: 'BMW M2 Coupé 2024',
         desc: '🏎 460 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 4.1 վ | Վ.արագ.՝ 285 կմ/ժ | 6-փ. ավտ. | M xDrive | Ֆ. արտ. լ.',
         price: 68500, condition: 100,
         imgUrl: 'images.jfif', isNew: true
     },
     {
-        id: 'NBMWM3', type: 'Սեդան',
+        id: 'NBMWM3', type: 'sedan',
         title: 'BMW M3 Competition 2026',
         desc: '🏎 530 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.5 վ | Վ.արագ.՝ 290 կմ/ժ | M xDrive | Carbon հատ. | 0 կմ',
         price: 89900, condition: 100,
         imgUrl: '2026-bmw-m3-front-angle-view-ak.webp', isNew: true
     },
     {
-        id: 'NBMWM4', type: 'Սպորտային',
+        id: 'NBMWM4', type: 'sport',
         title: 'BMW M4 Competition 2024',
         desc: '🏎 510 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.9 վ | Վ.արագ.՝ 290 կմ/ժ | M Adaptive Susp. | 0 կմ',
         price: 109900, condition: 100,
         imgUrl: 'opener-w-CreditDrewPhillips5.webp', isNew: true
     },
     {
-        id: 'NBMWM5', type: 'Սեդան',
+        id: 'NBMWM5', type: 'sedan',
         title: 'BMW M5 Competition 2022',
         desc: '🏎 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | Վ.արագ.՝ 305 կմ/ժ | M xDrive | 8-փ. ավտ. | 0 կմ',
         price: 119900, condition: 100,
         imgUrl: 'banner-1.webp', isNew: true
     },
     {
-        id: 'NBMWM8', type: 'Սպորտային',
+        id: 'NBMWM8', type: 'sport',
         title: 'BMW M8 Gran Coupé Competition 2020',
         desc: '🏎 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | Վ.արագ.՝ 305 կմ/ժ | M xDrive | Burgundy Red',
         price: 185000, condition: 100,
         imgUrl: '2020-bmw-m8-gran-coupe-competition.webp', isNew: true
     },
     {
-        id: 'NBMWX5', type: 'Ամենագնաց',
+        id: 'NBMWX5', type: 'suv',
         title: 'BMW X5 xDrive40i 2024',
         desc: '🚙 340 ձ.ու. | V6 3.0L Turbo | 0–100 կմ/ժ՝ 5.5 վ | xDrive AWD | Panorama | 7 տեղ | 0 կմ | Navy Blue',
         price: 74900, condition: 100,
         imgUrl: 'BMW-X5-xDrive40i-MY24-Stills-12-scaled.jpg', isNew: true
     },
     {
-        id: 'NAMC63', type: 'Սեդան',
+        id: 'NAMC63', type: 'sedan',
         title: 'Mercedes-AMG C63 S 2020',
         desc: '🏎 510 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 3.9 վ | Վ.արագ.՝ 290 կմ/ժ | AMG Night Pkg | 0 կմ',
         price: 92000, condition: 100,
         imgUrl: 'Mercedes-AMG-C63-2020 (6).jpg', isNew: true
     },
     {
-        id: 'NAМЕ63', type: 'Սեդան',
+        id: 'NAМЕ63', type: 'sedan',
         title: 'Mercedes-AMG E63 S 2022',
         desc: '🏎 612 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 3.4 վ | Վ.արագ.՝ 300 կմ/ժ | 4MATIC+ | AMG Dynamics | 0 կմ',
         price: 115000, condition: 100,
         imgUrl: 'Mercedes-Benz-E63_S_AMG-2021-Front_Three-Quarter.c453cb68.jpg', isNew: true
     },
     {
-        id: 'NAMG63', type: 'Ամենագնաց',
+        id: 'NAMG63', type: 'suv',
         title: 'Mercedes-AMG G63 2023',
         desc: '🚙 585 ձ.ու. | V8 4.0L Biturbo | 0–100 կմ/ժ՝ 4.5 վ | 3 Diff Lock | AMG Magno Black | Designo | 0 կմ',
         price: 179000, condition: 100,
         imgUrl: 'mercedes-benz-g-klasse-w463-g63-2023-magno.webp', isNew: true
     },
     {
-        id: 'NAMCLS', type: 'Սպորտային',
+        id: 'NAMCLS', type: 'sport',
         title: 'Mercedes-AMG CLS 63 S 2016',
         desc: '🏎 585 ձ.ու. | V8 5.5L Biturbo | 0–100 կմ/ժ՝ 3.6 վ | Վ.արագ.՝ 300 կմ/ժ | AMG Sportpaket | 0 կմ',
         price: 58000, condition: 100,
         imgUrl: 'cattouchretcr.webp', isNew: true
     },
     {
-        id: 'NBMWM4B', type: 'Սպորտային',
+        id: 'NBMWM4B', type: 'sport',
         title: 'BMW M4 CSL 2024',
         desc: '🏎 550 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.7 վ | Վ.արագ.՝ 307 կմ/ժ | Carbon Roof | Limited Edition | 0 կմ',
         price: 145000, condition: 100,
@@ -3879,112 +3879,112 @@ const newCarsData = [
 // ── USED CARS (Օկ. Ավտ.) ─────────────────────────────────────────────
 const usedCarsData = [
     {
-        id: 'UNIVAU', type: 'Ամենագնաց',
+        id: 'UNIVAU', type: 'suv',
         title: 'Lada Niva Urban',
         desc: '🏎 89 ձ.ու. | 1.7 | 0–100 կմ/ժ՝ 12.5 վ | Վ.արագ.՝ 170 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
         price: 10000, condition: 68,
         imgUrl: 'images (2).jfif', isNew: false
     },
     {
-        id: 'UNIVA', type: 'Ամենագնաց',
+        id: 'UNIVA', type: 'suv',
         title: 'Lada Niva Legend',
         desc: '🏎 89 ձ.ու. | 1.7 | 0–100 կմ/ժ՝ 12.5 վ | Վ.արագ.՝ 170 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
         price: 8000, condition: 68,
         imgUrl: '97098357.webp', isNew: false
     },
     {
-        id: 'UOPELG', type: 'Սեդան',
+        id: 'UOPELG', type: 'sedan',
         title: 'Օpel Astra G',
         desc: '🏎 109 ձ.ու. | EcoTec 1.6 | 0–100 կմ/ժ՝ 8.5 վ | Վ.արագ.՝ 230 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
         price: 6000, condition: 68,
         imgUrl: 'opel-astra-g.jpg', isNew: false
     },
     {
-        id: 'UOPELG', type: 'Սեդան',
+        id: 'UOPELG', type: 'sedan',
         title: 'Օpel Astra G Caravan',
         desc: '🏎 109 ձ.ու. | EcoTec 1.6 | 0–100 կմ/ժ՝ 8.5 վ | Վ.արագ.՝ 230 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
         price: 6000, condition: 70,
         imgUrl: 'opel-astra-g-caravan.jpg', isNew: false
     },
     {
-        id: 'UOPELOPC', type: 'Սեդան',
+        id: 'UOPELOPC', type: 'sedan',
         title: 'Օpel Astra G OPC',
         desc: '🏎 214 ձ.ու. | EcoTec 2.0 Turbo | 0–100 կմ/ժ՝ 6.5 վ | Վ.արագ.՝ 285 կմ/ժ | 6-փ. մեխ․ | Ֆ. արտ. լ.',
         price: 10000, condition: 80,
         imgUrl: '8b8294ac0c4d153f35cbf5db3512058413eb9b24.jpeg', isNew: false
     },
     {
-        id: 'UBMWM3', type: 'Սեդան',
+        id: 'UBMWM3', type: 'sedan',
         title: 'BMW M3 Competition 2023',
         desc: '🔧 510 ձ.ու. | V6 Biturbo | 0–100 կմ/ժ՝ 3.9 վ | 28,400 կմ | Մ.Ս.: 79% | Dark Green | Carfax ✓',
         price: 64500, condition: 79,
         imgUrl: '2026-bmw-m3-front-angle-view-ak.webp', isNew: false
     },
     {
-        id: 'UBMWM5', type: 'Սեդան',
+        id: 'UBMWM5', type: 'sedan',
         title: 'BMW M5 CS 2021',
         desc: '🔧 627 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.1 վ | 41,200 կմ | Մ.Ս.: 72% | Frozen Grey',
         price: 82000, condition: 72,
         imgUrl: 'banner-1.webp', isNew: false
     },
     {
-        id: 'UBMWM8', type: 'Սպորտային',
+        id: 'UBMWM8', type: 'sport',
         title: 'BMW M8 Gran Coupé 2020',
         desc: '🔧 625 ձ.ու. | V8 4.4L Biturbo | 0–100 կմ/ժ՝ 3.3 վ | 52,800 կմ | Մ.Ս.: 68% | Burgundy Red',
         price: 118000, condition: 68,
         imgUrl: '2020-bmw-m8-gran-coupe-competition.webp', isNew: false
     },
     {
-        id: 'UBMWM4', type: 'Սպորտային',
+        id: 'UBMWM4', type: 'sport',
         title: 'BMW M4 Competition 2022',
         desc: '🔧 510 ձ.ու. | V6 Biturbo | 35,600 կմ | Մ.Ս.: 74% | Sapphire Black | M xDrive',
         price: 77000, condition: 74,
         imgUrl: 'opener-w-CreditDrewPhillips5.webp', isNew: false
     },
     {
-        id: 'UBMWM2', type: 'Սպորտային',
+        id: 'UBMWM2', type: 'sport',
         title: 'BMW M2 Coupé 2022',
         desc: '🔧 460 ձ.ու. | V6 Biturbo | 22,100 կմ | Մ.Ս.: 85% | Brooklyn Grey | M Differential',
         price: 49500, condition: 85,
         imgUrl: 'images.jfif', isNew: false
     },
     {
-        id: 'UBMWX5', type: 'Ամենագնաց',
+        id: 'UBMWX5', type: 'suv',
         title: 'BMW X5 M50i 2022',
         desc: '🔧 523 ձ.ու. | V8 4.4L Biturbo | 48,300 կմ | Մ.Ս.: 70% | Deep Blue | Panorama',
         price: 54000, condition: 70,
         imgUrl: 'BMW-X5-xDrive40i-MY24-Stills-12-scaled.jpg', isNew: false
     },
     {
-        id: 'UAMC63', type: 'Սեդան',
+        id: 'UAMC63', type: 'sedan',
         title: 'Mercedes-AMG C63 S 2019',
         desc: '🔧 510 ձ.ու. | V8 4.0L Biturbo | 61,700 կմ | Մ.Ս.: 65% | Polar White | AMG Night Pkg',
         price: 52000, condition: 65,
         imgUrl: 'Mercedes-AMG-C63-2020 (6).jpg', isNew: false
     },
     {
-        id: 'UAMG63', type: 'Ամենագնաց',
+        id: 'UAMG63', type: 'suv',
         title: 'Mercedes-AMG G63 2021',
         desc: '🔧 585 ձ.ու. | V8 4.0L Biturbo | 39,200 կմ | Մ.Ս.: 73% | Matte Black | AMG Designo',
         price: 128000, condition: 73,
         imgUrl: 'mercedes-benz-g-klasse-w463-g63-2023-magno.webp', isNew: false
     },
     {
-        id: 'UAME63', type: 'Սեդան',
+        id: 'UAME63', type: 'sedan',
         title: 'Mercedes-AMG E63 S 2020',
         desc: '🔧 612 ձ.ու. | V8 4.0L Biturbo | 55,400 կմ | Մ.Ս.: 67% | Selenite Grey | Burmester Audio',
         price: 74000, condition: 67,
         imgUrl: 'Mercedes-Benz-E63_S_AMG-2021-Front_Three-Quarter.c453cb68.jpg', isNew: false
     },
     {
-        id: 'UAMCLS', type: 'Սպորտային',
+        id: 'UAMCLS', type: 'sport',
         title: 'Mercedes-AMG CLS 63 2015',
         desc: '🔧 585 ձ.ու. | V8 5.5L Biturbo | 88,500 կմ | Մ.Ս.: 58% | Diamond White | AMG Exhaust',
         price: 32000, condition: 58,
         imgUrl: 'cattouchretcr.webp', isNew: false
     },
     {
-        id: 'UMERC', type: 'Սեդան',
+        id: 'UMERC', type: 'sedan',
         title: 'Mercedes-Benz S600 W140 1999',
         desc: '🔧 394 ձ.ու. | V12 6.0L | 112,000 կմ | Մ.Ս.: 60% | Classic Obsidian Black | Legendary Don\'s car',
         price: 28000, condition: 60,
@@ -3994,6 +3994,32 @@ const usedCarsData = [
 
 newCarsMarket = newCarsData.map(c => ({ ...c }));
 usedCarsMarket = usedCarsData.map(c => ({ ...c }));
+
+// ── i18n Helpers ──────────────────────────────────────────────────────────
+function getEstateTitle(x) {
+  if (!x) return '';
+  if (x.num === undefined) return x.title || '';
+  const base = t('estate.title.' + (x.type === 'house' ? 'apartment' : x.type));
+  const loc  = x.type === 'house' ? ' ' + t('estate.title.location') : '';
+  return base + ' ' + x.num + loc;
+}
+function localizeCarDesc(desc) {
+  if (!desc) return desc;
+  return desc
+    .replace(/ձ\.ու\./g,         t('dealer.spec.hp'))
+    .replace(/կմ\/ժ/g,           t('dealer.spec.kmh'))
+    .replace(/ վ /g,             ' ' + t('dealer.spec.sec') + ' ')
+    .replace(/Վ\.արագ\./g,       t('dealer.spec.topSpeed'))
+    .replace(/6-փ\. ավտ\./g,     t('dealer.spec.auto6'))
+    .replace(/8-փ\. ավտ\./g,     t('dealer.spec.auto8'))
+    .replace(/6-փ\. մեխ[\.֊]?/g, t('dealer.spec.mech6'))
+    .replace(/Ֆ\. արտ\. լ\./g,   t('dealer.spec.fullPkg'))
+    .replace(/Carbon հատ\./g,    t('dealer.spec.carbon'))
+    .replace(/(\d+) տեղ/g,       (_, n) => n + ' ' + t('dealer.spec.seats'))
+    .replace(/0 կմ/g,             t('dealer.spec.newKm'))
+    .replace(/([\d,]+) կմ/g,     (_, n) => n + ' ' + t('dealer.spec.km'))
+    .replace(/Մ\.Ս\./g,           t('dealer.spec.cond'));
+}
 
 // Realistic Cars for stealing
 const cheapCars = [
@@ -4483,7 +4509,7 @@ function renderGarage() {
     safe('garage-cap-display', `${player.garage.length}/${player.garageLimit}`);
     let cont = document.getElementById('garage-list');
     if (!cont) return;
-    cont.innerHTML = player.garage.length === 0 ? `<p style="color:var(--text);font-size:16px;">${t('page.garage_empty')}</p>` : '';
+    cont.innerHTML = player.garage.length === 0 ? `<p style="color:var(--text);font-size:16px;">${t('garage.empty')}</p>` : '';
     player.garage.forEach((car, i) => {
         let isCrime = player.activeCrimeCarIndex === i;
         cont.innerHTML += `<div class="card" style="${isCrime ? 'border:2px solid var(--ok);' : ''} padding:0; overflow:hidden;">
@@ -4492,10 +4518,10 @@ function renderGarage() {
             </div>
             <div style="padding:20px;">
                 <h3 style="color:var(--text-l);"><i class="material-icons" style="color:#0a84ff;">directions_car</i> ${car.name}</h3>
-                <p style="font-size:15px;font-weight:700;">Շուկայական գին: <span style="color:var(--ok)">$${car.price.toLocaleString()}</span></p>
+                <p style="font-size:15px;font-weight:700;">${t('garage.marketPrice')} <span style="color:var(--ok)">$${car.price.toLocaleString()}</span></p>
                 <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
-                    <button style="background:${isCrime?'var(--ok)':'var(--border)'};color:${isCrime?'#fff':'var(--text-l)'};" onclick="toggleCrimeCar(${i})">${isCrime?'✅ Հանց. Մեքենա':'🚔 Դարձնել Հանց.'}</button>
-                    <button style="background:var(--accent);" onclick="sellCar(${i})">💰 Վաճառել ($${Math.floor(car.price*0.7).toLocaleString()})</button>
+                    <button style="background:${isCrime?'var(--ok)':'var(--border)'};color:${isCrime?'#fff':'var(--text-l)'};" onclick="toggleCrimeCar(${i})">${isCrime?t('garage.crimeCar'):t('garage.makeCrime')}</button>
+                    <button style="background:var(--accent);" onclick="sellCar(${i})">💰 ${t('btn.sell')} ($${Math.floor(car.price*0.7).toLocaleString()})</button>
                 </div>
             </div>
         </div>`;
@@ -4513,7 +4539,7 @@ function sellCar(i) {
     spawnFloatMoney(sellPrice, true);
     player.money += sellPrice;
     player.stats.earnings += sellPrice;
-    showNotification(`Վաճառվեց $${sellPrice.toLocaleString()}`, true);
+    showNotification(`${t('notif.sold')} $${sellPrice.toLocaleString()}`, true);
     playTone('coin', .2);
     player.garage.splice(i, 1);
     renderGarage(); updateUI();
@@ -4550,14 +4576,14 @@ function renderDealership() {
         html += `<div class="list-am-card" onclick="openDealerModal('${item.id}')">
             <div class="list-am-img" style="position:relative;overflow:hidden;">
                 <img src="${item.imgUrl}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;">
-                <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">${item.type}</div>
+                <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">${t('dealer.type.' + item.type)}</div>
                 ${item.isNew ? `<div style="position:absolute;top:8px;left:8px;background:var(--ok);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;">${t('dealer.badge.new')}</div>` : ''}
             </div>
             <div class="list-am-info">
                 <div style="font-size:16px;font-weight:800;margin-bottom:6px;color:var(--text-l);">${item.title}</div>
                 <div style="font-size:20px;color:var(--ok);font-weight:800;margin-bottom:8px;">$${item.price.toLocaleString()}</div>
                 <div style="font-size:12px;color:${condColor};font-weight:700;margin-bottom:6px;">⚙️ ${t('dealer.cond')} ${item.condition}%</div>
-                <p style="color:var(--text);font-size:12px;line-height:1.5;margin-bottom:10px;">${item.desc.split('|').slice(0,2).join('|')}</p>
+                <p style="color:var(--text);font-size:12px;line-height:1.5;margin-bottom:10px;">${localizeCarDesc(item.desc).split('|').slice(0,2).join('|')}</p>
                 <button style="background:var(--border);color:var(--text-l);margin-top:4px;" onclick="event.stopPropagation();openDealerModal('${item.id}')">${t('dealer.viewBtn')}</button>
             </div>
         </div>`;
@@ -4573,9 +4599,9 @@ function openDealerModal(id) {
     document.getElementById('dealer-modal-icon').innerHTML = `<img src="${item.imgUrl}" style="width:100%;height:100%;object-fit:cover;">`;
     document.getElementById('dealer-modal-title').innerText = item.title;
     document.getElementById('dealer-modal-price').innerText = `$${item.price.toLocaleString()}`;
-    document.getElementById('dealer-modal-type').innerText = item.type;
+    document.getElementById('dealer-modal-type').innerText = t('dealer.type.' + item.type);
     document.getElementById('dealer-modal-cond').innerText = `${item.condition}%`;
-    document.getElementById('dealer-modal-desc').innerText = item.desc;
+    document.getElementById('dealer-modal-desc').innerText = localizeCarDesc(item.desc);
     document.getElementById('dealer-modal-buy-btn').onclick = () => buyDealershipCar(item.id);
     document.getElementById('dealer-modal').style.display = 'flex';
 }
@@ -4590,7 +4616,7 @@ function buyDealershipCar(id) {
         player.money -= item.price;
         player.garage.push({ name:item.title, price:Math.floor(item.price*0.8), imgUrl: item.imgUrl });
         market.splice(idx, 1);
-        showNotification(`🚗 Գնեցիք ${item.title}`, true);
+        showNotification(`${t('notif.bought')} ${item.title}`, true);
         spawnFloatMoney(item.price, false);
         playTone('upgrade', .25);
         closeDealerModal(); updateUI(); renderDealership();
@@ -5431,23 +5457,23 @@ function renderEstate() {
         let s=document.getElementById('sort-price').value;
         let list=estateMarketData.filter(x=>(ft==='all'||x.type===ft)&&x.price>=fmin&&x.price<=fmax);
         if(s==='asc')list.sort((a,b)=>a.price-b.price);else if(s==='desc')list.sort((a,b)=>b.price-a.price);
-        let html=list.length===0?'<p style="color:var(--text);">Չգտնվեց</p>':'';
-        list.forEach(x=>{html+=`<div class="list-am-card" onclick="openEstateModal('${x.id}')"><div class="list-am-img"><i class="material-icons" style="font-size:60px;color:var(--text);">${x.imgIcon}</i></div><div class="list-am-info"><div style="font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text-l);">${x.title}</div><div style="font-size:19px;color:var(--ok);font-weight:800;margin-bottom:6px;">$${x.price.toLocaleString()}</div><p style="color:var(--text);font-size:13px;">Վ/10վ: +$${x.rentInc}</p><button style="background:var(--border);color:var(--text-l);margin-top:12px;" onclick="event.stopPropagation();openEstateModal('${x.id}')">Դիտել</button></div></div>`;});
+        let html=list.length===0?`<p style="color:var(--text);">${t('estate.notFound')}</p>`:'';
+        list.forEach(x=>{html+=`<div class="list-am-card" onclick="openEstateModal('${x.id}')"><div class="list-am-img"><i class="material-icons" style="font-size:60px;color:var(--text);">${x.imgIcon}</i></div><div class="list-am-info"><div style="font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text-l);">${getEstateTitle(x)}</div><div style="font-size:19px;color:var(--ok);font-weight:800;margin-bottom:6px;">$${x.price.toLocaleString()}</div><p style="color:var(--text);font-size:13px;">${t('estate.rentPer10s')} +$${x.rentInc}</p><button style="background:var(--border);color:var(--text-l);margin-top:12px;" onclick="event.stopPropagation();openEstateModal('${x.id}')">${t('estate.viewBtn')}</button></div></div>`;});
         document.getElementById('estate-market-view').innerHTML=html;
     } else {
-        let html=player.realEstate.length===0?'<p style="color:var(--text);">Գույք չկա</p>':'';
-        player.realEstate.forEach((x,i)=>{html+=`<div class="list-am-card"><div class="list-am-img"><i class="material-icons" style="font-size:60px;color:var(--text);">${x.imgIcon}</i></div><div class="list-am-info"><div style="font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text-l);">${x.title}</div><div style="font-size:19px;color:var(--ok);font-weight:800;margin-bottom:10px;">$${x.price.toLocaleString()}</div><button style="background:${x.isRented?'var(--border)':'var(--ok)'};color:${x.isRented?'var(--text-l)':'#fff'};margin-bottom:8px;" onclick="toggleRent(${i})">${x.isRented?'Հանել վարձակալությունից':'Տալ վարձով +$'+x.rentInc}</button><button style="background:var(--accent);" onclick="sellEstate(${i})">Վաճառել $${Math.floor(x.price*.8).toLocaleString()}</button></div></div>`;});
+        let html=player.realEstate.length===0?`<p style="color:var(--text);">${t('estate.empty')}</p>`:'';
+        player.realEstate.forEach((x,i)=>{html+=`<div class="list-am-card"><div class="list-am-img"><i class="material-icons" style="font-size:60px;color:var(--text);">${x.imgIcon}</i></div><div class="list-am-info"><div style="font-size:17px;font-weight:700;margin-bottom:6px;color:var(--text-l);">${getEstateTitle(x)}</div><div style="font-size:19px;color:var(--ok);font-weight:800;margin-bottom:10px;">$${x.price.toLocaleString()}</div><button style="background:${x.isRented?'var(--border)':'var(--ok)'};color:${x.isRented?'var(--text-l)':'#fff'};margin-bottom:8px;" onclick="toggleRent(${i})">${x.isRented?t('estate.unrent'):t('estate.rent')+' +$'+x.rentInc}</button><button style="background:var(--accent);" onclick="sellEstate(${i})">${t('btn.sell')} $${Math.floor(x.price*.8).toLocaleString()}</button></div></div>`;});
         document.getElementById('estate-my-view').innerHTML=html;
     }
 }
 function openEstateModal(id) {
     let x=estateMarketData.find(e=>e.id===id); if(!x)return;
     document.getElementById('modal-icon').innerHTML=`<i class="material-icons">${x.imgIcon}</i>`;
-    document.getElementById('modal-title').innerText=x.title;
+    document.getElementById('modal-title').innerText=getEstateTitle(x);
     document.getElementById('modal-price').innerText=`$${x.price.toLocaleString()}`;
-    document.getElementById('modal-type').innerText=x.type;
+    document.getElementById('modal-type').innerText=t('estate.type.'+x.type);
     document.getElementById('modal-rent').innerText=`+$${x.rentInc.toLocaleString()}`;
-    document.getElementById('modal-desc').innerText=x.desc;
+    document.getElementById('modal-desc').innerText=t(x.descKey||'estate.desc.apartment');
     document.getElementById('modal-buy-btn').onclick=()=>buyEstate(x.id);
     document.getElementById('estate-modal').style.display='flex';
 }
@@ -5455,11 +5481,11 @@ function closeEstateModal() { document.getElementById('estate-modal').style.disp
 function buyEstate(id) {
     let i=estateMarketData.findIndex(e=>e.id===id); if(i===-1)return;
     let x=estateMarketData[i];
-    if(player.money>=x.price){player.money-=x.price;player.realEstate.push(new RealEstate({...x,isRented:false}));estateMarketData.splice(i,1);showNotification(`🏠 ${x.title}`,true);spawnFloatMoney(x.price,false);playTone('upgrade',.25);closeEstateModal();updateUI();renderEstate();}
+    if(player.money>=x.price){const _et=getEstateTitle(x);player.money-=x.price;player.realEstate.push(new RealEstate({...x,title:_et,desc:t(x.descKey),isRented:false}));estateMarketData.splice(i,1);showNotification(`🏠 ${_et}`,true);spawnFloatMoney(x.price,false);playTone('upgrade',.25);closeEstateModal();updateUI();renderEstate();}
     else showNotification(t('notif.no_money'),false);
 }
 function toggleRent(i){player.realEstate[i].isRented=!player.realEstate[i].isRented;showNotification(player.realEstate[i].isRented?t('notif.rented'):t('notif.unrented'),true);playTone('coin',.1);renderEstate();}
-function sellEstate(i){let p=Math.floor(player.realEstate[i].price*.8);player.money+=p;player.stats.earnings+=p;spawnFloatMoney(p,true);player.realEstate.splice(i,1);showNotification(`Վաճառվեց $${p.toLocaleString()}`,true);playTone('coin',.2);updateUI();renderEstate();}
+function sellEstate(i){let p=Math.floor(player.realEstate[i].price*.8);player.money+=p;player.stats.earnings+=p;spawnFloatMoney(p,true);player.realEstate.splice(i,1);showNotification(`${t('notif.sold')} $${p.toLocaleString()}`,true);playTone('coin',.2);updateUI();renderEstate();}
 
 // ==========================================
 //   NEW FEATURES (HOSPITAL, TRAINING, ETC)
