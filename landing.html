@@ -2107,7 +2107,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
         <h1><i class="material-icons">handshake</i> <span data-i18n="page.reputation">Համբավ</span></h1>
         <p style="color:var(--text); margin-bottom: 24px;" data-i18n="rep.desc">Քո հեղինակությունը քաղաքում։ Բարձր համբավը նվազեցնում է ձերբակալման ռիսկը և բացում է նոր բիզնեսներ։</p>
         <div class="form-box" style="max-width:500px;">
-            <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);"><span data-i18n="rep.level">Մակարդակ: <span</span> id="rep-level" style="color:var(--warn)">50</span>/100</h2>
+            <h2 style="text-align:center; margin-bottom: 24px; color:var(--text-l);"><span data-i18n="rep.level">Մակարդակ:</span> <span id="rep-level" style="color:var(--warn)">50</span>/100</h2>
             <div class="card" style="border: 1px solid var(--border); box-shadow:none;">
                 <h3><i class="material-icons">payments</i> <span data-i18n="rep.donation">Բարեգործություն / Կաշառք Քաղաքապետարանին</span></h3>
                 <p data-i18n="rep.donDesc">Նվիրաբերելով գումար, դուք գնում եք քաղաքի լռությունը: +5 Համբավ</p>
@@ -2959,6 +2959,7 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
     </div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
 // ==========================================
 //   PRELOADER
@@ -3004,6 +3005,18 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     if (!res.ok) throw new Error(data.message || 'Սերвери схал');
     return data;
 }
+
+
+// ── Family API stubs (apiCall-based) ──────────────────────────────────────
+async function apiGetFamilyInvites()             { try { return await apiCall('/families/invites'); }          catch(e) { return []; } }
+async function apiGetMyFamily()                   { try { return await apiCall('/families/mine'); }             catch(e) { return null; } }
+async function apiCreateFamily(name, color)       { return apiCall('/families', 'POST', { name, color }); }
+async function apiInviteToFamily(accountId)       { return apiCall('/families/invite', 'POST', { accountId }); }
+async function apiRespondFamilyInvite(id, action) { return apiCall('/families/invites/' + id + '/respond', 'POST', { action }); }
+async function apiFamilyUpgradePower()            { return apiCall('/families/upgrade/power', 'POST'); }
+async function apiFamilyRecruit()                 { return apiCall('/families/upgrade/recruit', 'POST'); }
+async function apiLeaveFamily()                   { return apiCall('/families/leave', 'POST'); }
+async function apiKickFamilyMember(userId)        { return apiCall('/families/kick', 'POST', { userId }); }
 
 // ── Backward-compat shims ──────────────────────
 // Old code used getUsers()[email] — now returns from currentUser cache
@@ -6679,6 +6692,7 @@ window.onFamilyInviteReceived = function(data) {
     </div>
 </div>
 
+
 <script>
 // ═══════════════════════════════════════════════
 //   MOBILE TOP APP BAR — JS
@@ -7134,6 +7148,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- socket.io — loaded last (non-blocking) -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
-<script src="i18n.js"></script>
 </body>
 </html>
