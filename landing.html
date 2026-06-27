@@ -16,7 +16,7 @@
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
-      #game-map-canvas { display:none; } /* canvas disabled */
+      #game-map-canvas { display:block; width:100%; height:520px; } /* canvas enabled */
       #gta-map-wrap {
         position: relative; width: 100%; border-radius: 16px; overflow: hidden;
         border: 2px solid rgba(255,200,0,0.22);
@@ -3174,10 +3174,22 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     if (token) headers['Authorization'] = 'Bearer ' + token;
     const cfg = { method, headers };
     if (body) cfg.body = JSON.stringify(body);
-    const res  = await fetch(API_BASE + '/api' + endpoint, cfg);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Սերвери схал');
-    return data;
+
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 10000);
+    cfg.signal = controller.signal;
+
+    try {
+        const res  = await fetch(API_BASE + '/api' + endpoint, cfg);
+        clearTimeout(timeoutId);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Սերвери схал');
+        return data;
+    } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') throw new Error('Սերվերը չի պատասխանում (timeout 10s)');
+        throw err;
+    }
 }
 
 
@@ -4799,7 +4811,7 @@ function buyDealershipCar(id) {
     let item = market[idx];
     if (player.money >= item.price) {
         player.money -= item.price;
-        player.garage.push({ name:item.title, price:Math.floor(item.price*0.8), imgUrl: item.imgUrl });
+        player.garage.push(new Car({ name: item.title, price: Math.floor(item.price * 0.8), imgUrl: item.imgUrl }));
         market.splice(idx, 1);
         showNotification(`${t('notif.bought')} ${item.title}`, true);
         spawnFloatMoney(item.price, false);
@@ -4812,7 +4824,7 @@ function buyDealershipCar(id) {
 //   BANK
 // ==========================================
 function bankAction(type) {
-    let amt = parseInt(document.getElementById('bankAmt').value);
+    let amt = Math.floor(Number(document.getElementById('bankAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0) return;
     if (type==='deposit' && player.money>=amt) { player.money-=amt; player.bank+=amt; showNotification(`🏦 +$${amt.toLocaleString()} բանկ`, true); playTone('coin',.15); spawnFloatMoney(amt, false); }
     else if (type==='withdraw' && player.bank>=amt) { player.bank-=amt; player.money+=amt; showNotification(`💵 $${amt.toLocaleString()} կանխ.`, true); playTone('coin',.15); spawnFloatMoney(amt, true); }
@@ -4828,7 +4840,7 @@ async function bankTransfer() {
     const amtEl = document.getElementById('bankTransferAmt');
 
     const acc = (accEl.value || '').trim().toUpperCase();
-    const amt = parseInt(amtEl.value, 10);
+    const amt = Math.floor(Number(amtEl.value));
 
     // ── Local validatsia ──────────────────────────────────────────
     if (!acc || !/^AM\d{6}$/.test(acc)) {
@@ -4864,7 +4876,7 @@ async function bankTransfer() {
         if (typeof spawnFloatMoney === 'function') spawnFloatMoney(amt, false);
 
         // Auto-save sender-i nor vichak
-        try { await apiSaveGame(player.toSave ? player.toSave() : player); } catch(e) {}
+        try { await apiSaveGame(player.toJSON ? player.toJSON() : player); } catch(e) {}
 
     } catch (err) {
         showNotification('❌ ' + (err.message || t('notif.transfer_fail')), false);
@@ -4873,7 +4885,7 @@ async function bankTransfer() {
     }
 }
 function bankLoanAction(type) {
-    let amt = parseInt(document.getElementById('bankLoanAmt').value);
+    let amt = Math.floor(Number(document.getElementById('bankLoanAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0) return showNotification(t('notif.wrong_amount'), false);
     if (type==='take') {
         if (player.loan+amt>50000) return showNotification(t('notif.loan_max'), false);
@@ -5031,7 +5043,7 @@ function sellBusiness(i, sp) {
 //   MONEY LAUNDERING (CHARITY FUND)
 // ==========================================
 function launderMoney() {
-    let amt = parseInt(document.getElementById('launderAmt').value);
+    let amt = Math.floor(Number(document.getElementById('launderAmt').value));
     if (isNaN(amt)||amt<=0) return showNotification(t('notif.wrong_amount'), false);
     if ((player.dirtyMoney||0) < amt) return showNotification(t('notif.no_dirty'), false);
     let clean = Math.floor(amt * 0.70);
@@ -5081,9 +5093,7 @@ function renderFamilies() {
     const mySection = document.getElementById('my-family-section');
     if (!mySection) return;
 
-    const canCreate = ['Մاֆиoz','Kapo','Capo','Don','Godfather'].some(r =>
-        (player.rank||'').toLowerCase().includes(r.toLowerCase())
-    ) || player.rank === 'Մafioz' || player.rank === 'Մаfiоз';
+    const canCreate = ['Մաֆիոզ','Capo','Don','Godfather'].includes(player.rank || '');
 
     // Show family invites first
     _renderFamilyInvites(mySection, canCreate);
@@ -5197,6 +5207,7 @@ async function createMyFamilyAPI() {
     if (!name || !name.trim()) return showNotification(t('fam.nameErr'), false);
     const btn = document.querySelector('#my-family-section button');
     if (btn) { btn.disabled = true; btn.textContent = t('fam.create.creating'); }
+    if (player.money < 250000) return showNotification(t('notif.no_money'), false);
     try {
         await apiCreateFamily(name.trim(), color);
         showNotification(`🏰 ${name.trim()} yntaniqy himmnvec!`, true);
@@ -5500,7 +5511,7 @@ function toggleCasinoTab(tab) {
 }
 function gamble(chosen) {
     if (isSpinning||player.inPrison) return;
-    let amt = parseInt(document.getElementById('betAmt').value);
+    let amt = Math.floor(Number(document.getElementById('betAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification(t('notif.wrong_amount'), false);
     // Max bet cap to limit easy winnings
     const MAX_BET = 5000;
@@ -5550,10 +5561,11 @@ function gamble(chosen) {
 // ==========================================
 const slotSymbols=['🍒','🍋','🔔','💎','7️⃣']; let isSlotSpinning=false;
 function spinSlots() {
-    let donExp = ranks.find(r=>r.name==='Մաֆիոզ').exp; // Իջեցված է Մաֆիոզի մակարդակ
+    let _donRank = ranks.find(r=>r.name==='Մաֆիոզ');
+    let donExp = _donRank ? _donRank.exp : 5000; // Fallback if rank not found
     if (player.exp<donExp) return showNotification(t('notif.only_mafioso'), false);
     if (isSlotSpinning||player.inPrison) return;
-    let amt=parseInt(document.getElementById('slotBetAmt').value);
+    let amt=Math.floor(Number(document.getElementById('slotBetAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification(t('notif.wrong_amount'), false);
     player.money-=amt; updateUI(); isSlotSpinning=true;
     document.getElementById('btn-spin-slot').disabled=true;
@@ -5689,8 +5701,8 @@ function healPlayer(amount, cost) {
 function trainSkill(type) {
     if (player.money < 500) return showNotification(t('notif.no_money'), false);
     player.money -= 500;
-    if (type === 'hp') { player.maxHp += 5; showNotification(t('notif.train_hp'), true); }
-    else if (type === 'energy') { player.maxEnergy += 5; showNotification(t('notif.train_en'), true); }
+    if (type === 'hp') { player.maxHp = Math.min(500, player.maxHp + 5); showNotification(t('notif.train_hp'), true); }
+    else if (type === 'energy') { player.maxEnergy = Math.min(500, player.maxEnergy + 5); showNotification(t('notif.train_en'), true); }
     playTone('upgrade', .2);
     updateUI();
 }
@@ -5707,7 +5719,7 @@ function donateReputation() {
 
 function stashAction(type) {
     let inputId = type === 'in' ? 'stashInAmt' : 'stashOutAmt';
-    let amt = parseInt(document.getElementById(inputId).value);
+    let amt = Math.floor(Number(document.getElementById(inputId).value));
     if (isNaN(amt) || amt <= 0) return;
 
     if (type === 'in') {
