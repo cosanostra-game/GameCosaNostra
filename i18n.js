@@ -612,6 +612,38 @@ const RU = {
   'notif.no_money':      'Недостаточно средств',
   'notif.insufficient':  'На банковском счёте недостаточно средств'
 
+  // ── New keys (added) ──────────────────────────────────
+  'mob.settings': 'Настройки',
+  'mob.logout': 'Выход (Logout)',
+  'mob.more': 'Ещё',
+  'section.explore': 'Разведка',
+  'log.title': 'Журнал',
+  'btn.close': 'Закрыть',
+  'dealer.modal.title': 'Автосалон',
+  'estate.modal.title': 'Недвижимость',
+  'fp.remove': 'Удалить',
+  'map.legend.you': 'Ты',
+  'map.legend.strip': 'Стрип-клуб',
+  'map.legend.ammunation': 'Оружейный магазин',
+  'map.legend.airport': 'Аэропорт',
+  'biz.max_level': 'Максимум',
+  'biz.per_10s': '/10с',
+  'inv.already_owned': '✅ Куплено',
+  'inv.rank_required': '🔒 Требуется: {rank}',
+  'btn.sell_short': 'Пр.',
+  'leaderboard.you': 'Вы (Игрок)',
+  'chat.online': 'Онлайн',
+  'map.label.hospital': 'Больница',
+  'map.label.prison': 'Тюрьма',
+  'map.label.bank': 'Банк',
+  'map.label.casino': 'Казино',
+  'map.label.ammunation': 'Оружейный магазин',
+  'map.label.garage': 'Гараж',
+  'map.label.airport': 'Аэропорт',
+  'map.label.gym': 'Тренажерный зал',
+  'map.label.police': 'Полиция',
+  'map.label.strip': 'Стрип-клуб',
+
 };
 
 // ── Armenian translations (full) ────────────────────────
@@ -1064,7 +1096,7 @@ const HY = {
   // ── Chat ──────────────────────────────────────────────
   'chat.loading':         'Бернvum е...',
   'chat.noMessages':      'Хaghordagrut\'yunner chkan. Грel аrajin-у!',
-  'chat.offline':         'Офлайн',
+  'chat.offline':         'Օֆлայն',
 
   // ── Auth errors ───────────────────────────────────────
   'auth.err.nameShort':   'Ануны petq е лini аrnazсayr 2 нish',
@@ -1222,6 +1254,38 @@ const HY = {
   'notif.garage_full2':  'Ավտոտնակը լիքն է',
   'notif.no_money':      'Недостаточно средств',
   'notif.insufficient':  'Банkain հашвin недостаточно средств'
+
+  // ── New keys (added) ──────────────────────────────────
+  'mob.settings': 'Կարգավորումներ',
+  'mob.logout': 'Ելք (Logout)',
+  'mob.more': 'Ավելին',
+  'section.explore': 'Հետախուզում',
+  'log.title': 'Մատյան',
+  'btn.close': 'Փակել',
+  'dealer.modal.title': 'Ավտոսրահ',
+  'estate.modal.title': 'Անշարժ գույք',
+  'fp.remove': 'Հեռացնել',
+  'map.legend.you': 'Դու',
+  'map.legend.strip': 'Ստրիպ ակումբ',
+  'map.legend.ammunation': 'Զենքի խանութ',
+  'map.legend.airport': 'Օդանավակայան',
+  'biz.max_level': 'Մաքսիմում',
+  'biz.per_10s': '/10վ',
+  'inv.already_owned': '✅ Գնված',
+  'inv.rank_required': '🔒 Պահանջվում է՝ {rank}',
+  'btn.sell_short': 'Վ.',
+  'leaderboard.you': 'Դուք (Խաղացող)',
+  'chat.online': 'Օնլայն',
+  'map.label.hospital': 'Հիվանդանոց',
+  'map.label.prison': 'Բանտ',
+  'map.label.bank': 'Բանկ',
+  'map.label.casino': 'Կազինո',
+  'map.label.ammunation': 'Զենքի խանութ',
+  'map.label.garage': 'Ավտոտնակ',
+  'map.label.airport': 'Օդանավակայան',
+  'map.label.gym': 'Մարզասրահ',
+  'map.label.police': 'Ոստիկանություն',
+  'map.label.strip': 'Ստրիպ ակումբ',
 };
 
 // ═══════════════════════════════════════════════════════
