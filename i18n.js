@@ -644,6 +644,35 @@ const RU = {
   'map.label.police': 'Полиция',
   'map.label.strip': 'Стрип-клуб',
 
+  // ── Extra coverage keys ─────────────────────────────────────
+  'confirm.logout':         'Выйти из профиля?',
+  'confirm.delete':         '⚠️ Удалить профиль? Это необратимо!',
+  'confirm.reset':          '🗑️ Удалить весь прогресс?',
+  'confirm.remove_friend':  'Удалить этого друга?',
+  'fam.boss_label':         'Босс:',
+  'fam.terr_label':         'Тер.:',
+  'npc.family.suffix':      ' Сем.',
+  'biz.none':               'Бизнесов нет',
+  'chat.empty_preview':     'Нет сообщений',
+  'chat.no_friends':        'Добавьте друзей сначала!',
+  'chat.contacts_err':      'Не удалось загрузить.',
+  'chat.just_now':          'Сейчас',
+  'friend.removed':         'Друг удалён',
+  'mob.map':                'Карта',
+  'mob.daynight':           'Ночь/День',
+  'mob.events':             'События',
+  'mob.stats':              'Статистика',
+  'mob.dd.profile':         'Мой профиль',
+  'mob.dd.settings':        'Настройки',
+  'mob.drawer.hdr':         'Все разделы',
+  'slots.sorry':            'Не повезло, попробуйте',
+  'daily.activity':         'Ежедневный бонус +$100',
+  'preloader.s1':           'Загрузка...',
+  'preloader.s2':           'Подготовка...',
+  'preloader.s3':           'Готово',
+  'confirm.leave_family':   'Покинуть семью?',
+  'main.estate.unit':       'объ.'
+
 };
 
 // ── Armenian translations (full) ────────────────────────
@@ -1285,7 +1314,36 @@ const HY = {
   'map.label.airport': 'Օդանավակայան',
   'map.label.gym': 'Մարզասրահ',
   'map.label.police': 'Ոստիկանություն',
-  'map.label.strip': 'Ստրիպ ակումբ',
+  'map.label.strip': 'Ստրիպ ակումբ',,
+
+  // ── Extra coverage keys ─────────────────────────────────────
+  'confirm.logout':         'Ելե՞լ հաշвіцись:',
+  'confirm.delete':         '⚠️ Ջнджел ձer профілн:',
+  'confirm.reset':          '🗑️ Ынchel adzh arajnthacy:',
+  'confirm.remove_friend':  'Heracнel ynkerogy:',
+  'fam.boss_label':         'Босс:',
+  'fam.terr_label':         'Տ-ք:',
+  'npc.family.suffix':      ' Yndaniq',
+  'biz.none':               'Biznes chka',
+  'chat.empty_preview':     'Hagh. chka',
+  'chat.no_friends':        'Avlacreq ynkerner nakhord!',
+  'chat.contacts_err':      'Kapi chen hastatvel.',
+  'chat.just_now':          'Hmchaper',
+  'friend.removed':         'Ynkern jnjvec',
+  'mob.map':                'Qaghy Kart.',
+  'mob.daynight':           'Gish./Cered',
+  'mob.events':             'Irad-ner',
+  'mob.stats':              'Wich-utyun',
+  'mob.dd.profile':         'Im Profily',
+  'mob.dd.settings':        'Karqavorumner',
+  'mob.drawer.hdr':         'Bolory Bazhinnery',
+  'slots.sorry':            'Afsoc, krknеq',
+  'daily.activity':         'Omenorya bonus +$100',
+  'preloader.s1':           'Berndum...',
+  'preloader.s2':           'Karg prastvel...',
+  'preloader.s3':           'Patrast e',
+  'confirm.leave_family':   'Lqve՞l yntaniqic:',
+  'main.estate.unit':       'obj.'
 };
 
 // ═══════════════════════════════════════════════════════

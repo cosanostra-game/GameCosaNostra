@@ -1676,14 +1676,14 @@ canvas {
         </div>
     </div>
     <div class="mob-dd-item" onclick="switchTab('profile');closeMobDropdown()">
-        <i class="material-icons">account_circle</i> Իմ Պրոֆիլը
+        <i class="material-icons">account_circle</i> <span data-i18n="mob.dd.profile">Իմ Պրոֆիլը</span>
     </div>
     <div class="mob-dd-item" onclick="switchTab('settings');closeMobDropdown()">
-        <i class="material-icons">settings</i> Կարգավորումներ
+        <i class="material-icons">settings</i> <span data-i18n="mob.dd.settings">Կարգավորումներ</span>
     </div>
     <div class="mob-dd-divider"></div>
     <div class="mob-dd-item mob-dd-danger" onclick="authLogout()">
-        <i class="material-icons">logout</i> Ելք (Logout)
+        <i class="material-icons">logout</i> <span data-i18n="mob.logout">Ելք (Logout)</span>
     </div>
 </div>
 <div id="mob-dd-backdrop" onclick="closeMobDropdown()"></div>
@@ -1692,46 +1692,46 @@ canvas {
 <div id="mob-more-drawer">
     <div class="mob-drawer-grip"></div>
     <div class="mob-drawer-hdr">
-        <span>Բոլոր Բաժինները</span>
+        <span data-i18n="mob.drawer.hdr">Բոլոր Բաժինները</span>
         <button class="mob-drawer-close-btn" onclick="closeMobDrawer()"><i class="material-icons">close</i></button>
     </div>
 
-    <div class="mob-drawer-section">Հիմնական</div>
+    <div class="mob-drawer-section" data-i18n="drawer.main">Հիմնական</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="navigateTo('cars');closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label">Ավտոառևանգ.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('garage');closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label">Ավտոտնակ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('inventory');closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label">Զինանոց</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('dealership');closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label">Ավտոսալոն</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('cars');closeMobDrawer()"><i class="material-icons">directions_car</i><span class="mob-dc-label" data-i18n="mob.cars">Ավտոառևանգ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('garage');closeMobDrawer()"><i class="material-icons">warehouse</i><span class="mob-dc-label" data-i18n="mob.garage">Ավտոտնակ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('inventory');closeMobDrawer()"><i class="material-icons">security</i><span class="mob-dc-label" data-i18n="mob.inventory">Զինանոց</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('dealership');closeMobDrawer()"><i class="material-icons">car_rental</i><span class="mob-dc-label" data-i18n="mob.dealership">Ավտոսալոն</span></div>
     </div>
 
-    <div class="mob-drawer-section">Ֆինանսներ</div>
+    <div class="mob-drawer-section" data-i18n="drawer.finance">Ֆինանսներ</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="navigateTo('business');closeMobDrawer()"><i class="material-icons">work</i><span class="mob-dc-label">Բիզնես</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('crypto');closeMobDrawer()"><i class="material-icons">currency_bitcoin</i><span class="mob-dc-label">Կրիպտո</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('estate');closeMobDrawer()"><i class="material-icons">business</i><span class="mob-dc-label">Անշ. Գույք</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('stash');closeMobDrawer()"><i class="material-icons">inventory_2</i><span class="mob-dc-label">Գաղտ. Պահ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('business');closeMobDrawer()"><i class="material-icons">work</i><span class="mob-dc-label" data-i18n="mob.business">Բիզնես</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('crypto');closeMobDrawer()"><i class="material-icons">currency_bitcoin</i><span class="mob-dc-label" data-i18n="mob.crypto">Կրիպտո</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('estate');closeMobDrawer()"><i class="material-icons">business</i><span class="mob-dc-label" data-i18n="mob.estate">Անշ. Գույք</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('stash');closeMobDrawer()"><i class="material-icons">inventory_2</i><span class="mob-dc-label" data-i18n="mob.stash">Գաղտ. Պահ.</span></div>
     </div>
 
-    <div class="mob-drawer-section">Ընդհատակ</div>
+    <div class="mob-drawer-section" data-i18n="drawer.underground">Ընդհատակ</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="navigateTo('prison');closeMobDrawer()"><i class="material-icons">lock</i><span class="mob-dc-label">Բանտ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('hospital');closeMobDrawer()"><i class="material-icons">local_hospital</i><span class="mob-dc-label">Հիվանդ.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('training');closeMobDrawer()"><i class="material-icons">fitness_center</i><span class="mob-dc-label">Վարժեցում</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('reputation');closeMobDrawer()"><i class="material-icons">handshake</i><span class="mob-dc-label">Համբավ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('families');closeMobDrawer()"><i class="material-icons">groups</i><span class="mob-dc-label">Ընտանիքն.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('friends');closeMobDrawer()"><i class="material-icons">people</i><span class="mob-dc-label">Ընկերներ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('prison');closeMobDrawer()"><i class="material-icons">lock</i><span class="mob-dc-label" data-i18n="mob.prison">Բանտ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('hospital');closeMobDrawer()"><i class="material-icons">local_hospital</i><span class="mob-dc-label" data-i18n="mob.hospital">Հիվանդ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('training');closeMobDrawer()"><i class="material-icons">fitness_center</i><span class="mob-dc-label" data-i18n="mob.training">Վարժեցում</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('reputation');closeMobDrawer()"><i class="material-icons">handshake</i><span class="mob-dc-label" data-i18n="mob.reputation">Համբավ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('families');closeMobDrawer()"><i class="material-icons">groups</i><span class="mob-dc-label" data-i18n="mob.families">Ընտանիքն.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('friends');closeMobDrawer()"><i class="material-icons">people</i><span class="mob-dc-label" data-i18n="mob.friends">Ընկերներ</span></div>
     </div>
 
-    <div class="mob-drawer-section">Հետախուզում</div>
+    <div class="mob-drawer-section" data-i18n="section.explore">Հետախուզում</div>
     <div class="mob-drawer-grid">
-        <div class="mob-drawer-cell" onclick="navigateTo('map');closeMobDrawer()"><i class="material-icons">map</i><span class="mob-dc-label">Քաղ. Քարտ.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('quests');closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label">Օրվա Խնդ.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('daynight');closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label">Գիշ./Ցերեկ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('events');closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label">Իրադ-ներ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('stats');closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label">Վիճ-ություն</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('leaderboard');closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label">Լիդերբորդ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('profile');closeMobDrawer()"><i class="material-icons">account_circle</i><span class="mob-dc-label">Պրոֆիլ</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('settings');closeMobDrawer()"><i class="material-icons">settings</i><span class="mob-dc-label">Կարգ-ներ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('map');closeMobDrawer()"><i class="material-icons">map</i><span class="mob-dc-label" data-i18n="mob.map">Քաղ. Քարտ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('quests');closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label" data-i18n="mob.quests">Օրվա Խնդ.</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('daynight');closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label" data-i18n="mob.daynight">Գիշ./Ցերեկ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('events');closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label" data-i18n="mob.events">Իրադ-ներ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('stats');closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label" data-i18n="mob.stats">Վիճ-ություն</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('leaderboard');closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label" data-i18n="mob.leaderboard">Լիդերբորդ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('profile');closeMobDrawer()"><i class="material-icons">account_circle</i><span class="mob-dc-label" data-i18n="mob.profile">Պրոֆիլ</span></div>
+        <div class="mob-drawer-cell" onclick="navigateTo('settings');closeMobDrawer()"><i class="material-icons">settings</i><span class="mob-dc-label" data-i18n="mob.settings">Կարգ-ներ</span></div>
     </div>
 </div>
 <div id="mob-drawer-backdrop" onclick="closeMobDrawer()"></div>
@@ -1898,7 +1898,7 @@ canvas {
             <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#af52de;margin-bottom:16px;">business</i>
                 <h3 style="justify-content:center;" data-i18n="stats.time">Անշ. Գույք</h3>
-                <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-estate">0</span> օբյ.</p>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-estate">0</span> <span data-i18n="main.estate.unit">օբյ.</span></p>
             </div>
         </div>
     </section>
@@ -2016,15 +2016,15 @@ canvas {
         </div>
         <div id="dealer-filters" class="filter-bar">
             <select id="dealer-filter-type" onchange="renderDealership()">
-                <option value="all">Բոլոր տեսակները</option>
-                <option value="sedan">Սեդան</option>
-                <option value="suv">Ամենագնաց</option>
-                <option value="sport">Սպորտային</option>
+                <option value="all" data-i18n="dealer.filterAll">Բոլոր տեսակները</option>
+                <option value="sedan" data-i18n="dealer.filterSedan">Սեդան</option>
+                <option value="suv" data-i18n="dealer.filterSuv">Ամենագնաց</option>
+                <option value="sport" data-i18n="dealer.filterSport">Սպորտային</option>
             </select>
             <select id="dealer-sort-price" onchange="renderDealership()">
-                <option value="default">Սովորական</option>
-                <option value="asc">Գինը ↑</option>
-                <option value="desc">Գինը ↓</option>
+                <option value="default" data-i18n="dealer.sortDefault">Սովորական</option>
+                <option value="asc" data-i18n="dealer.sortAsc">Գինը ↑</option>
+                <option value="desc" data-i18n="dealer.sortDesc">Գինը ↓</option>
             </select>
             <input type="number" id="dealer-filter-min" placeholder="Մին. գին ($)" data-i18n-ph="filter.min" oninput="renderDealership()">
             <input type="number" id="dealer-filter-max" placeholder="Մաքս. գին ($)" data-i18n-ph="filter.max" oninput="renderDealership()">
@@ -2207,10 +2207,10 @@ canvas {
         </div>
         <div id="estate-filters" class="filter-bar">
             <select id="filter-type" onchange="renderEstate()">
-                <option value="all">Բոլոր տեսակները</option>
-                <option value="house">Բնակարան</option>
-                <option value="land">Հողատարածք</option>
-                <option value="garage">Ավտոտնակ</option>
+                <option value="all" data-i18n="estate.filterAll">Բոլոր տեսակները</option>
+                <option value="house" data-i18n="estate.type.house">Բնակարան</option>
+                <option value="land" data-i18n="estate.type.land">Հողատարածք</option>
+                <option value="garage" data-i18n="estate.type.garage">Ավտոտնակ</option>
             </select>
             <select id="sort-price" onchange="renderEstate()">
                 <option value="default">Սովորական</option>
@@ -3060,7 +3060,7 @@ canvas {
 <div id="dealer-modal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="dealer-modal-title" style="margin:0;font-size:18px;color:var(--text-l);">Ավտոսրահ</h2>
+            <h2 id="dealer-modal-title" style="margin:0;font-size:18px;color:var(--text-l);" data-i18n="dealer.modal.title">Ավտոսրահ</h2>
             <button class="close-btn" onclick="closeDealerModal()" data-i18n="dealer.closeBtn"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
@@ -3073,7 +3073,7 @@ canvas {
             <p style="font-size:14px;line-height:1.8;color:var(--text-l);background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;border:1px solid var(--border);" id="dealer-modal-desc"></p>
         </div>
         <div class="modal-footer">
-            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeDealerModal()">Փակել</button>
+            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeDealerModal()" data-i18n="btn.close">Փակել</button>
             <button id="dealer-modal-buy-btn" style="background:var(--ok);" data-i18n="dealer.buyBtn">Գնել</button>
         </div>
     </div>
@@ -3082,19 +3082,19 @@ canvas {
 <div id="estate-modal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modal-title" style="margin:0;font-size:18px;color:var(--text-l);">Անշ. Գույք</h2>
+            <h2 id="modal-title" style="margin:0;font-size:18px;color:var(--text-l);" data-i18n="estate.modal.title">Անշ. Գույք</h2>
             <button class="close-btn" onclick="closeEstateModal()"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
             <div style="text-align:center;font-size:72px;color:var(--text);margin-bottom:20px;" id="modal-icon"></div>
             <div style="font-size:28px;font-weight:800;color:var(--text-l);margin-bottom:16px;" id="modal-price"></div>
-            <div style="margin-bottom:8px;color:var(--text);"><strong>Տեսակ:</strong> <span id="modal-type" style="color:var(--text-l);"></span></div>
-            <div style="margin-bottom:20px;color:var(--text);"><strong>Եկամուտ (վարձ):</strong> <span id="modal-rent" style="color:var(--ok);"></span> / 10վ</div>
+            <div style="margin-bottom:8px;color:var(--text);"><strong data-i18n="estate.typeLabel">Տեսակ:</strong> <span id="modal-type" style="color:var(--text-l);"></span></div>
+            <div style="margin-bottom:20px;color:var(--text);"><strong data-i18n="estate.incomeLabel">Եկամուտ (վարձ):</strong> <span id="modal-rent" style="color:var(--ok);"></span> / 10վ</div>
             <p style="font-size:15px;line-height:1.6;color:var(--text-l);" id="modal-desc"></p>
         </div>
         <div class="modal-footer">
-            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeEstateModal()">Փակել</button>
-            <button id="modal-buy-btn" style="background:var(--ok);">Գնել</button>
+            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeEstateModal()" data-i18n="btn.close">Փակել</button>
+            <button id="modal-buy-btn" style="background:var(--ok);" data-i18n="btn.buy">Գնել</button>
         </div>
     </div>
 </div>
@@ -3116,7 +3116,7 @@ canvas {
             <ul id="ranks-list-modal"></ul>
         </div>
         <div class="modal-footer">
-            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeRankModal()">Փակել</button>
+            <button style="background:var(--border);color:var(--text-l);box-shadow:none;" onclick="closeRankModal()" data-i18n="btn.close">Փակել</button>
         </div>
     </div>
 </div>
@@ -3125,7 +3125,7 @@ canvas {
 
 <div id="activity-log">
     <div class="log-header">
-        <h4><i class="material-icons" style="color:var(--text);margin-right:8px;">history</i> Մատյան</h4>
+        <h4><i class="material-icons" style="color:var(--text);margin-right:8px;">history</i> <span data-i18n="log.title">Մատյան</span></h4>
         <button class="log-close" onclick="toggleActivityLog()"><i class="material-icons">close</i></button>
     </div>
     <div class="log-list" id="log-list">
@@ -3417,7 +3417,7 @@ function showAuthScreen() {
 
 // ── Logout ─────────────────────────────────────
 async function authLogout() {
-    if (!confirm('Ужо՞м еq елнел профилicic:')) return;
+    if (!confirm(t('confirm.logout'))) return;
     stopTransferPolling();
     disconnectSocket(); // Socket andzevum
     if (typeof player !== 'undefined' && currentUser) {
@@ -3432,7 +3432,7 @@ async function authLogout() {
 // ── Delete account ─────────────────────────────
 async function deleteCurrentProfile() {
     if (!currentUser) return;
-    if (!confirm('⚠️ Ջнджел ձer профилн? Айс чи кармнa дарна:')) return;
+    if (!confirm(t('confirm.delete'))) return;
     try {
         await apiCall('/auth/account', 'DELETE');
         clearToken();
@@ -3552,7 +3552,7 @@ async function saveEditProfile() {
 //   PRELOADER (5 seconds)
 // ==========================================
 window.addEventListener('load', () => {
-    const statusTexts = ['Բեռնում...', 'Կapв ham...', 'Patrast e'];
+    const statusTexts = [t('preloader.s1'), t('preloader.s2'), t('preloader.s3')];
     const statusEl = document.getElementById('pre-status');
     let idx = 0;
     const textInterval = setInterval(() => {
@@ -3717,17 +3717,17 @@ class NPCFamily {
 
     toCard() {
         return `<div class="card" style="border-left:4px solid ${this.color};">
-            <h3 style="color:${this.color};"><i class="material-icons">groups</i> ${this.name} Ընտ.</h3>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Բոսս:</b> ${this.boss}</p>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">Տ-ք:</b> ${this.territory}</p>
+            <h3 style="color:${this.color};"><i class="material-icons">groups</i> ${this.name}${t('npc.family.suffix')}</h3>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">${t('fam.boss_label')}</b> ${this.boss}</p>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">${t('fam.terr_label')}</b> ${this.territory}</p>
             <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;">
                 <div style="text-align:center;">
                     <div style="font-size:20px;font-weight:800;color:${this.color};">${this.power}</div>
-                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Ուժ</div>
+                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">${t('fam.power')}</div>
                 </div>
                 <div style="text-align:center;">
                     <div style="font-size:20px;font-weight:800;color:var(--text-l);">${this.members}</div>
-                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">Անդամներ</div>
+                    <div style="font-size:11px;color:var(--text);text-transform:uppercase;">${t('fam.mem.count')}</div>
                 </div>
             </div>
         </div>`;
@@ -4381,7 +4381,7 @@ function claimDailyBonus() {
     showNotification(t('notif.daily_bonus'), true);
     spawnFloatMoney(100, true);
     playTone('upgrade', 0.35);
-    addActivity('Ամենօրյա բոնուս +$100', true);
+    addActivity(t('daily.activity'), true);
     updateUI();
 }
 // ==========================================
@@ -5257,7 +5257,7 @@ async function familyRecruitAPI() {
 }
 
 async function leaveFamilyAPI() {
-    const msg = confirm('Vstarelu ek?');
+    const msg = confirm(t('confirm.leave_family'));
     if (!msg) return;
     try {
         const res = await apiLeaveFamily();
@@ -5575,7 +5575,7 @@ function checkSlotWin(res, bet) {
     if (r1===r2&&r2===r3) { if(r1==='7️⃣')w=bet*15; else if(r1==='💎')w=bet*8; else if(r1==='🔔')w=bet*4; else w=bet*2; }
     else if (r1===r2||r2===r3||r1===r3) w=Math.floor(bet*1.2);
     if (w>0) { player.money+=w; player.stats.earnings+=w-bet; showNotification(`🎰 +$${w}`, true); playTone('success',.4); spawnFloatMoney(w,true); document.getElementById('slot-result').innerHTML=`<span style="color:var(--ok)">+$${w}!</span>`; }
-    else { showNotification(t('notif.casino_sorry'), false); playTone('fail',.3); document.getElementById('slot-result').innerHTML=`<span style="color:var(--accent)">Ափսոս, կրկնեք</span>`; }
+    else { showNotification(t('notif.casino_sorry'), false); playTone('fail',.3); document.getElementById('slot-result').innerHTML=`<span style="color:var(--accent)">${t('notif.casino_sorry')}</span>`; }
     updateUI();
 }
 
@@ -5949,7 +5949,7 @@ async function _syncCloudSave(manual = false) {
 }
 
 async function resetGame() {
-    if (confirm('🗑️ Амбожд аркгынтхуцы кджнджви:')) {
+    if (confirm(t('confirm.reset'))) {
         localStorage.removeItem(getSaveKey());
         if (getToken()) {
             try { await apiCall('/game/save', 'DELETE'); } catch(e) {}
@@ -6009,7 +6009,7 @@ setInterval(() => {
     
     if (pageTime) pageTime.innerText = timeStr;
     if (pageType) {
-        const typeVal = isNight ? '🌙 Գիշեր' : '☀️ Ցերեկ';
+        const typeVal = isNight ? t('cycle.night') : t('cycle.day');
         if (pageType._pv !== typeVal) {
             pageType._pv = typeVal;
             pageType.innerText = typeVal;
@@ -6325,14 +6325,14 @@ async function respondFriendRequest(fromUserId, action, btn) {
 }
 
 async function removeFriend(userId, btn) {
-    if (!confirm('Ystapat eli hekanacel ynkery?')) return;
+    if (!confirm(t('confirm.remove_friend'))) return;
     btn.disabled = true;
     try {
         await apiCall('/game/friends/' + userId, 'DELETE');
         btn.closest('.friend-card').remove();
         _cachedFriendsData = null; // invalidate cache
         _chatFriends = _chatFriends.filter(f => String(f.userId) !== String(userId));
-        showNotification('Ynkern jnjvec', true);
+        showNotification(t('friend.removed'), true);
     } catch (err) {
         btn.disabled = false;
         showNotification('❌ ' + err.message, false);
@@ -6363,7 +6363,7 @@ async function openFriendProfile(userId) {
     document.getElementById('fp-rank').textContent = '';
     document.getElementById('fp-account').textContent = '';
     document.getElementById('fp-status').innerHTML = '';
-    document.getElementById('fp-stats-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text);padding:16px;">Բեռնվում է...</div>';
+    document.getElementById('fp-stats-grid').innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text);padding:16px;">${t('msg.loadingList')}</div>`;
     modal.style.display = 'flex';
 
     try {
@@ -6521,7 +6521,7 @@ async function loadChatContacts() {
         console.warn('loadChatContacts error:', err.message);
         if (!_chatFriends.length) {
             document.getElementById('chat-contacts-list').innerHTML =
-                '<div class="chat-contacts-empty" style="color:var(--accent);">Կapи chen hastatvel.</div>';
+                `<div class="chat-contacts-empty" style="color:var(--accent);">${t(\'chat.contacts_err\')}</div>`;
         }
     }
 }
@@ -6530,7 +6530,7 @@ async function loadChatContacts() {
 function renderChatContacts() {
     const container = document.getElementById('chat-contacts-list');
     if (!_chatFriends.length) {
-        container.innerHTML = '<div class="chat-contacts-empty">Avlacreq ynkerner nakhord, heto kxosel eq nranc het!</div>';
+        container.innerHTML = `<div class="chat-contacts-empty">${t(\'chat.no_friends\')}</div>`;
         return;
     }
     container.innerHTML = _chatFriends.map(f => {
@@ -6552,7 +6552,7 @@ function renderChatContacts() {
             <div class="chat-contact-avatar" style="background:${color};">${avatarHtml}${onlineDot}</div>
             <div class="chat-contact-body">
                 <div class="chat-contact-name">${escHtml(f.name||'?')}</div>
-                <div class="chat-contact-preview">${lastTxt || '<span style="opacity:.45;">Հաղ. չկա</span>'}</div>
+                <div class="chat-contact-preview">${lastTxt || `<span style="opacity:.45;">${t('chat.empty_preview')}</span>`}</div>
             </div>
             <div class="chat-contact-meta">
                 <span class="chat-contact-time">${lastTime}</span>
@@ -6743,7 +6743,7 @@ function formatChatTime(date) {
     const d   = new Date(date);
     const now = new Date();
     const diffMs = now - d;
-    if (diffMs < 60000)           return 'Հmchaper';
+    if (diffMs < 60000)           return t('chat.just_now');
     if (diffMs < 3600000)         return Math.floor(diffMs/60000) + 'р';
     if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('hy-AM', {hour:'2-digit',minute:'2-digit'});
     return d.toLocaleDateString('hy-AM', { day:'numeric', month:'short' });
@@ -6799,7 +6799,7 @@ window.onFamilyInviteReceived = function(data) {
 <div class="modal-overlay" id="edit-profile-modal" style="z-index:5000;">
     <div class="modal-content" style="max-width:460px;">
         <div class="modal-header">
-            <h2 style="margin:0;font-size:18px;color:var(--text-l);">✏️ Խմբագրել Պրոֆիլը</h2>
+            <h2 style="margin:0;font-size:18px;color:var(--text-l);" data-i18n="modal.editProfile">✏️ Խմբագրել Պրոֆիլը</h2>
             <button class="close-btn" onclick="closeEditProfileModal()"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
@@ -6812,7 +6812,7 @@ window.onFamilyInviteReceived = function(data) {
                         <div class="avatar-edit-overlay"><i class="material-icons">photo_camera</i></div>
                     </div>
                     <div>
-                        <div style="font-size:12px;color:var(--text);margin-bottom:8px;">Ֆոնի Գույն</div>
+                        <div style="font-size:12px;color:var(--text);margin-bottom:8px;" data-i18n="modal.avatarBgColor">Ֆոնի Գույն</div>
                         <div class="avatar-color-grid" id="avatar-color-grid"></div>
                     </div>
                 </div>
