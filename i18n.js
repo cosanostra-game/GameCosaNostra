@@ -1314,7 +1314,7 @@ const HY = {
   'map.label.airport': 'Օդանավակայան',
   'map.label.gym': 'Մարզասրահ',
   'map.label.police': 'Ոստիկանություն',
-  'map.label.strip': 'Ստրիպ ակումբ',,
+  'map.label.strip': 'Ստրիպ ակումբ',
 
   // ── Extra coverage keys ─────────────────────────────────────
   'confirm.logout':         'Ելե՞լ հաշвіцись:',

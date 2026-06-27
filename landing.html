@@ -5098,7 +5098,7 @@ function renderFamilies() {
     const mySection = document.getElementById('my-family-section');
     if (!mySection) return;
 
-    const canCreate = ['Մաֆիոզ','Capo','Don','Godfather'].includes(player.rank || '');
+    const canCreate = ['Մաֆիոզ','Կապո','Դոն','Կնքահայր'].includes(player.rank || '');
 
     // Show family invites first
     _renderFamilyInvites(mySection, canCreate);
@@ -7338,7 +7338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <!-- socket.io — loaded last (non-blocking) -->
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
 <script>
 /* ══ MOBILE JS PERFORMANCE PATCH ══════════════════════════════════ */
@@ -7466,15 +7466,8 @@ window.navigateTo = function(page) {
 };
 
 // ── 11. Map page: init canvas when navigating to it ────────────────
-var _origSwitchTab = window.switchTab;
-if (typeof _origSwitchTab === 'function') {
-  window.switchTab = function(id) {
-    _origSwitchTab(id);
-    if (id === 'map' && typeof initGameMap === 'function') {
-      setTimeout(initGameMap, 50);
-    }
-  };
-}
+// (Handled by the map IIFE hook above — _origSwitchTab2 already calls
+//  initGameMap() + renderMapBusinesses() on tab === 'map')
 
 console.log('[MobileOptPatch] Applied ✓');
 })();
