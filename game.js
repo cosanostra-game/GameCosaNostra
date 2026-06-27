@@ -138,10 +138,17 @@ router.get('/search', async (req, res) => {
     const regex = new RegExp(name.trim(), 'i');
     const saves = await GameSave.find({ 'playerData.name': regex }).limit(8).lean();
     const userSockets = req.app.get('userSockets');
+    // avatarImg/avatarColor live in User model, not GameSave.playerData
+    const User = require('./User');
+    const saveUserIds = saves.map(s => s.user);
+    const searchUsers = await User.find({ _id: { $in: saveUserIds } }, { avatarImg: 1, avatarColor: 1 }).lean();
+    const searchAvatarMap = {};
+    searchUsers.forEach(u => { searchAvatarMap[String(u._id)] = { avatarImg: u.avatarImg || null, avatarColor: u.avatarColor || '#ff3b30' }; });
     const results = saves.filter(s => String(s.user) !== String(req.user._id)).map(s => {
         const pd  = s.playerData || {};
         const uid = String(s.user);
-        return { userId: uid, name: pd.name || 'Անանուն', rank: pd.rank || 'Դատարկապորտ', bankAccount: pd.bankAccount || '—', avatarColor: pd.avatarColor || '#ff3b30', avatarImg: pd.avatarImg || null, online: !!(userSockets && userSockets.has(uid)) };
+        const ua  = searchAvatarMap[uid] || {};
+        return { userId: uid, name: pd.name || 'Անanun', rank: pd.rank || 'Datatarkaporth', bankAccount: pd.bankAccount || '—', avatarColor: ua.avatarColor || '#ff3b30', avatarImg: ua.avatarImg || null, online: !!(userSockets && userSockets.has(uid)) };
       });
     res.json({ success: true, results });
   } catch (err) {
