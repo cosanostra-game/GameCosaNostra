@@ -3196,7 +3196,7 @@ canvas {
   </div>
 </div>
 <!-- iPhone message tone -->
-<audio id="ios-notif-sound" src="/iphone_tone.mp3" preload="auto" volume="0.85"></audio>
+<audio id="ios-notif-sound" src="iphone_tone.mp3" preload="auto"></audio>
 
 <div id="activity-log">
     <div class="log-header">
@@ -6294,8 +6294,12 @@ function buildFriendCard(u, relation) {
 
 function buildRequestCard(r) {
     const initials = (r.fromName || '?').charAt(0).toUpperCase();
+    const reqAvatarHtml = r.fromAvatarImg
+        ? '<img src="' + r.fromAvatarImg + '" alt="">'
+        : initials;
+    const reqAvatarBg = r.fromAvatarColor || 'var(--accent)';
     return '<div class="friend-card" id="freq-' + r.fromUserId + '">' +
-        '<div class="friend-avatar" style="background:var(--accent);">' + initials + '</div>' +
+        '<div class="friend-avatar" style="background:' + reqAvatarBg + ';">' + reqAvatarHtml + '</div>' +
         '<div class="friend-info">' +
             '<div class="friend-name">' + escHtml(r.fromName) + '</div>' +
             '<div class="friend-rank">' + escHtml(r.fromRank || '') + '</div>' +
@@ -7551,6 +7555,21 @@ console.log('[MobileOptPatch] Applied ✓');
 // ══════════════════════════════════════════════════════════════════
 var _iosBannerTimeout  = null;
 var _iosBannerFriendId = null;
+
+// Unlock audio on first user gesture — required by mobile browsers
+(function() {
+    function _unlockNotifAudio() {
+        var a = document.getElementById('ios-notif-sound');
+        if (!a) return;
+        a.volume = 0.85;
+        var p = a.play();
+        if (p) p.then(function() { a.pause(); a.currentTime = 0; }).catch(function(){});
+        document.removeEventListener('touchstart', _unlockNotifAudio, true);
+        document.removeEventListener('click',      _unlockNotifAudio, true);
+    }
+    document.addEventListener('touchstart', _unlockNotifAudio, { once: true, capture: true });
+    document.addEventListener('click',      _unlockNotifAudio, { once: true, capture: true });
+})();
 
 function showIosBanner(data) {
     var fromId   = String(data.from);
