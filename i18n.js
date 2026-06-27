@@ -1568,3 +1568,8 @@ if (document.readyState === 'loading') {
 } else {
   setTimeout(applyLang, 0);
 }
+
+// Language toggle (hy ↔ ru)
+function toggleLanguage() {
+  setLang(getLang() === 'hy' ? 'ru' : 'hy');
+}

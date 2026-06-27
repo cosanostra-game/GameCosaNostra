@@ -1724,7 +1724,7 @@ canvas {
     <div class="mob-drawer-grid">
         <div class="mob-drawer-cell" onclick="navigateTo('map');closeMobDrawer()"><i class="material-icons">map</i><span class="mob-dc-label" data-i18n="mob.map">Քաղ. Քարտ.</span></div>
         <div class="mob-drawer-cell" onclick="navigateTo('quests');closeMobDrawer()"><i class="material-icons">checklist</i><span class="mob-dc-label" data-i18n="mob.quests">Օրվա Խնդ.</span></div>
-        <div class="mob-drawer-cell" onclick="navigateTo('daynight');closeMobDrawer()"><i class="material-icons">dark_mode</i><span class="mob-dc-label" data-i18n="mob.daynight">Գիշ./Ցերեկ</span></div>
+        <div class="mob-drawer-cell" onclick="toggleLanguage();closeMobDrawer()"><i class="material-icons">language</i><span class="mob-dc-label">Լեզու</span></div>
         <div class="mob-drawer-cell" onclick="navigateTo('events');closeMobDrawer()"><i class="material-icons">bolt</i><span class="mob-dc-label" data-i18n="mob.events">Իրադ-ներ</span></div>
         <div class="mob-drawer-cell" onclick="navigateTo('stats');closeMobDrawer()"><i class="material-icons">pie_chart</i><span class="mob-dc-label" data-i18n="mob.stats">Վիճ-ություն</span></div>
         <div class="mob-drawer-cell" onclick="navigateTo('leaderboard');closeMobDrawer()"><i class="material-icons">emoji_events</i><span class="mob-dc-label" data-i18n="mob.leaderboard">Լիդերբորդ</span></div>
@@ -1789,7 +1789,7 @@ canvas {
         <div class="menu-section-title" data-i18n="section.extra">Հավելյալ</div>
         <li><a onclick="switchTab('quests',this)"><i class="material-icons">checklist</i><span class="menu-label" data-i18n="menu.quests">Օրվա Խնդիրներ</span></a></li>
         <li><a onclick="switchTab('map',this)"><i class="material-icons">map</i><span class="menu-label" data-i18n="menu.map">Քաղաքի Քարտեզ</span></a></li>
-        <li><a onclick="switchTab('daynight',this)"><i class="material-icons">dark_mode</i><span class="menu-label" data-i18n="menu.daynight">Գիշեր/Ցերեկ</span></a></li>
+        <li><a onclick="toggleLanguage()"><i class="material-icons">language</i><span class="menu-label">Լեզու / Язык</span></a></li>
         <li><a onclick="switchTab('events',this)"><i class="material-icons">bolt</i><span class="menu-label" data-i18n="menu.events">Իրադարձություններ</span></a></li>
         <li><a onclick="switchTab('stats',this)"><i class="material-icons">pie_chart</i><span class="menu-label" data-i18n="menu.stats">Վիճակագրություն</span></a></li>
         <li><a onclick="switchTab('leaderboard',this)"><i class="material-icons">emoji_events</i><span class="menu-label" data-i18n="menu.leaderboard">Լիդերբորդ</span></a></li>
@@ -1842,7 +1842,7 @@ canvas {
         <div class="topbar-actions">
             <button class="icon-btn" onclick="toggleActivityLog()" title="Գործունեության մատյան"><i class="material-icons">history</i></button>
             <button class="icon-btn" id="toggleSoundBtn" onclick="toggleSoundMute()" title="Ձայն"><i class="material-icons">volume_up</i></button>
-            <button class="theme-btn" onclick="changeTheme()"><i class="material-icons">contrast</i> <span data-i18n="topbar.theme">Թեմա</span></button>
+            <button class="theme-btn" id="lang-toggle-btn" onclick="setLang(getLang()==='hy'?'ru':'hy')"><i class="material-icons">translate</i> <span data-i18n="topbar.lang">🇦🇲 ՀՅ</span></button>
         </div>
     </header>
 
@@ -4270,13 +4270,7 @@ const ranks = [
 //   THEMES (iOS Toggle)
 // ==========================================
 function changeTheme() {
-    const body = document.body;
-    if (body.getAttribute('data-theme') === 'light') {
-        body.setAttribute('data-theme', 'dark');
-    } else {
-        body.setAttribute('data-theme', 'light');
-    }
-    playTone('upgrade', .1);
+    document.body.setAttribute('data-theme', 'dark');
 }
 
 // ==========================================
