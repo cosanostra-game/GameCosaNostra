@@ -117,6 +117,28 @@ router.patch('/profile', protect, async (req, res) => {
     Object.assign(user, updates);
     await user.save();
 
+    // Notify all online friends instantly about name/avatar change
+    try {
+      const GameSave = require('./GameSave');
+      const io          = req.app.get('io');
+      const userSockets = req.app.get('userSockets');
+      if (io && userSockets) {
+        const save = await GameSave.findOne({ user: req.user._id }).lean();
+        if (save && save.friends && save.friends.length > 0) {
+          const payload = {
+            userId:      String(req.user._id),
+            name:        user.name,
+            avatarColor: user.avatarColor || '#ff3b30',
+            avatarImg:   user.avatarImg   || null,
+          };
+          for (const f of save.friends) {
+            const sid = userSockets.get(String(f.userId));
+            if (sid) io.to(sid).emit('friendProfileUpdated', payload);
+          }
+        }
+      }
+    } catch (_e) { /* non-critical */ }
+
     res.json({ success: true, user });
   } catch (err) {
     console.error('Profile update error:', err);

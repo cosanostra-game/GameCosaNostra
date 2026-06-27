@@ -45,8 +45,10 @@ const gameSaveSchema = new mongoose.Schema(
         fromUserId:  { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         fromName:    { type: String },
         fromAccount: { type: String },
-        fromRank:    { type: String },
-        sentAt:      { type: Date, default: Date.now },
+        fromRank:        { type: String },
+        fromAvatarImg:   { type: String, default: null },
+        fromAvatarColor: { type: String, default: '#ff3b30' },
+        sentAt:          { type: Date, default: Date.now },
       },
     ],
 

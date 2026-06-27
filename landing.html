@@ -3471,6 +3471,7 @@ function authSuccess(user) {
     initSocket();
     setTimeout(() => { if (typeof window._friendSocketInit === 'function') window._friendSocketInit(); }, 800); // Real-time socket connection
     setTimeout(() => { if (typeof window._chatSocketInit   === 'function') window._chatSocketInit();   }, 850); // Chat socket
+    setTimeout(() => { if (typeof requestPushPermission === 'function') requestPushPermission(); }, 1200); // Ask for browser push permission
     refreshAvatarUI(user.name, user.email);
     updateProfilePage();
     if (typeof addActivity === 'function') addActivity(t('auth.ok.welcome') + 'Cosa Nostra, ' + user.name + '!', true);
@@ -6554,6 +6555,61 @@ window._friendSocketInit = function() {
         if (document.getElementById('page-friends') && document.getElementById('page-friends').classList.contains('active')) {
             renderFriendsPage();
         }
+        // Reload contacts so new friend appears with avatar
+        loadChatContacts();
+    });
+
+    // ── Real-time profile update: friend changed name/avatar ──────
+    _socket.on('friendProfileUpdated', (data) => {
+        const uid = String(data.userId);
+
+        // 1. Patch _chatFriends cache
+        if (_chatFriends) {
+            const idx = _chatFriends.findIndex(f => String(f.userId) === uid);
+            if (idx !== -1) {
+                _chatFriends[idx] = Object.assign({}, _chatFriends[idx], {
+                    name:        data.name,
+                    avatarColor: data.avatarColor,
+                    avatarImg:   data.avatarImg
+                });
+            }
+        }
+
+        // 2. Patch _cachedFriendsData so friends page re-renders correctly
+        if (_cachedFriendsData && _cachedFriendsData.friends) {
+            const idx = _cachedFriendsData.friends.findIndex(f => String(f.userId) === uid);
+            if (idx !== -1) {
+                _cachedFriendsData.friends[idx] = Object.assign({}, _cachedFriendsData.friends[idx], {
+                    name:        data.name,
+                    avatarColor: data.avatarColor,
+                    avatarImg:   data.avatarImg
+                });
+            }
+        }
+
+        // 3. Re-render contacts list (messages section)
+        if (typeof renderChatContacts === 'function') renderChatContacts();
+
+        // 4. Re-render friends page if cached
+        if (typeof _applyFriendsData === 'function' && _cachedFriendsData) {
+            _applyFriendsData(_cachedFriendsData);
+        }
+
+        // 5. Update active chat header in real-time
+        if (_chatActiveFriendId === uid) {
+            const avatarEl = document.getElementById('chat-header-avatar');
+            if (avatarEl) {
+                const onlineDot = avatarEl.querySelector('.chat-online-dot');
+                avatarEl.style.background = data.avatarColor || '#ff3b30';
+                avatarEl.innerHTML = data.avatarImg
+                    ? `<img src="${escHtml(data.avatarImg)}" alt="">`
+                    : `<span>${(data.name || '?')[0].toUpperCase()}</span>`;
+                if (onlineDot) avatarEl.appendChild(onlineDot);
+            }
+            const nameEl = document.getElementById('chat-header-name');
+            if (nameEl) nameEl.textContent = data.name || '?';
+            _chatActiveFriendName = data.name || _chatActiveFriendName;
+        }
     });
 };
 
@@ -6845,9 +6901,12 @@ function formatChatTime(date) {
 function updateMsgBadge() {
     const total = Object.values(_chatUnread).reduce((s, v) => s + v, 0);
     const badge = document.getElementById('msg-unread-badge');
-    if (!badge) return;
-    if (total > 0) { badge.textContent = total; badge.style.display = ''; }
-    else           { badge.style.display = 'none'; }
+    if (badge) {
+        if (total > 0) { badge.textContent = total; badge.style.display = ''; }
+        else           { badge.style.display = 'none'; }
+    }
+    // Update browser tab title
+    document.title = total > 0 ? '(' + total + ') 🌹 Cosa Nostra' : '🌹 Cosa Nostra';
 }
 
 // ── Socket handler for incoming messages ─────────────────────────
@@ -7571,6 +7630,59 @@ var _iosBannerFriendId = null;
     document.addEventListener('click',      _unlockNotifAudio, { once: true, capture: true });
 })();
 
+// ── Request browser push notification permission ──────────────────
+function requestPushPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted' || Notification.permission === 'denied') return;
+    // Small delay so the user has settled into the game first
+    setTimeout(function() {
+        Notification.requestPermission().catch(function(){});
+    }, 600);
+}
+
+// ── Show system push notification (when tab is hidden) ────────────
+function _showSystemNotif(fromId, fromName, text, avatarImg) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    var lang  = (typeof getLang === 'function') ? getLang() : 'hy';
+    var title = 'Cosa Nostra · ' + fromName;
+    var opts  = {
+        body: text,
+        icon: avatarImg || 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🌹</text></svg>',
+        badge:'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🌹</text></svg>',
+        tag:  'cn-msg-' + fromId,
+        renotify: true,
+        silent: false
+    };
+    try {
+        var n = new Notification(title, opts);
+        n.onclick = function() {
+            window.focus();
+            n.close();
+            _iosBannerFriendId = fromId;
+            // Small delay to let window focus settle
+            setTimeout(function() {
+                var fid    = fromId;
+                var fname  = fromName;
+                var friend = (typeof _chatFriends !== 'undefined' && _chatFriends)
+                             ? _chatFriends.find(function(f){ return String(f.userId) === fid; })
+                             : null;
+                if (typeof switchTab === 'function') switchTab('messages');
+                setTimeout(function() {
+                    if (typeof openChatWithFriend === 'function') {
+                        openChatWithFriend(fid, fname);
+                    } else if (typeof openChat === 'function' && friend) {
+                        openChat(fid, fname, friend.avatarColor || '#ff3b30', friend.avatarImg || '', !!friend.online);
+                    } else if (typeof openChat === 'function') {
+                        openChat(fid, fname, '#ff3b30', '', false);
+                    }
+                }, 220);
+            }, 150);
+        };
+    } catch(e) {}
+}
+
 function showIosBanner(data) {
     var fromId   = String(data.from);
     var fromName = data.fromName || '?';
@@ -7585,6 +7697,12 @@ function showIosBanner(data) {
     var avatarImg = (friend && friend.avatarImg)   || '';
     var initials  = (fromName[0] || '?').toUpperCase();
 
+    // ── System push notification when tab is hidden / not focused ──
+    if (document.hidden || !document.hasFocus()) {
+        _showSystemNotif(fromId, fromName, text, avatarImg);
+    }
+
+    // ── In-app iOS banner (always show even if tab is visible) ─────
     // Fill avatar
     var avatarEl = document.getElementById('ios-banner-avatar');
     if (avatarEl) {

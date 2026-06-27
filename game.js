@@ -164,14 +164,20 @@ router.post('/friend-request', async (req, res) => {
     if ((recipientSave.friendRequests || []).some(f => String(f.fromUserId) === String(req.user._id))) return res.status(400).json({ success: false, message: 'Հայտն արդեն ուղարկված է' });
 
     const sd = senderSave.playerData || {};
-    recipientSave.friendRequests.push({ fromUserId: req.user._id, fromName: sd.name || req.user.name || 'Անանուն', fromAccount: sd.bankAccount || '?', fromRank: sd.rank || '', sentAt: new Date() });
+    // Fetch sender's avatar from User record for fresh data
+    const User = require('./User');
+    const senderUser = await User.findById(req.user._id).select('avatarImg avatarColor').lean();
+    const fromAvatarImg   = (senderUser && senderUser.avatarImg)   || null;
+    const fromAvatarColor = (senderUser && senderUser.avatarColor) || '#ff3b30';
+
+    recipientSave.friendRequests.push({ fromUserId: req.user._id, fromName: sd.name || req.user.name || 'Անanun', fromAccount: sd.bankAccount || '?', fromRank: sd.rank || '', fromAvatarImg, fromAvatarColor, sentAt: new Date() });
     await recipientSave.save();
 
     const io = req.app.get('io');
     const userSockets = req.app.get('userSockets');
     const socketId = userSockets && userSockets.get(String(toUserId));
     if (io && socketId) {
-      io.to(socketId).emit('friendRequest', { fromUserId: String(req.user._id), fromName: sd.name || req.user.name, fromAccount: sd.bankAccount || '?', fromRank: sd.rank || '' });
+      io.to(socketId).emit('friendRequest', { fromUserId: String(req.user._id), fromName: sd.name || req.user.name, fromAccount: sd.bankAccount || '?', fromRank: sd.rank || '', fromAvatarImg, fromAvatarColor });
     }
     res.json({ success: true, message: 'Ընկերության հայտն ուղարկված է' });
   } catch (err) {
