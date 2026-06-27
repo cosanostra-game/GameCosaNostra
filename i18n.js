@@ -610,7 +610,7 @@ const RU = {
   // ── Missing notification keys ─────────────────────────
   'notif.garage_full2':  'Гараж заполнен',
   'notif.no_money':      'Недостаточно средств',
-  'notif.insufficient':  'На банковском счёте недостаточно средств'
+  'notif.insufficient':  'На банковском счёте недостаточно средств',
 
   // ── New keys (added) ──────────────────────────────────
   'mob.settings': 'Настройки',
@@ -1253,7 +1253,7 @@ const HY = {
   // ── Missing notification keys ─────────────────────────
   'notif.garage_full2':  'Ավտոտնակը լիքն է',
   'notif.no_money':      'Недостаточно средств',
-  'notif.insufficient':  'Банkain հашвin недостаточно средств'
+  'notif.insufficient':  'Банkain հашвin недостаточно средств',
 
   // ── New keys (added) ──────────────────────────────────
   'mob.settings': 'Կարգավորումներ',
