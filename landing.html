@@ -6538,7 +6538,7 @@ async function loadChatContacts() {
         console.warn('loadChatContacts error:', err.message);
         if (!_chatFriends.length) {
             document.getElementById('chat-contacts-list').innerHTML =
-                `<div class="chat-contacts-empty" style="color:var(--accent);">${t(\'chat.contacts_err\')}</div>`;
+                `<div class="chat-contacts-empty" style="color:var(--accent);">${t('chat.contacts_err')}</div>`;
         }
     }
 }
@@ -6547,7 +6547,7 @@ async function loadChatContacts() {
 function renderChatContacts() {
     const container = document.getElementById('chat-contacts-list');
     if (!_chatFriends.length) {
-        container.innerHTML = `<div class="chat-contacts-empty">${t(\'chat.no_friends\')}</div>`;
+        container.innerHTML = `<div class="chat-contacts-empty">${t('chat.no_friends')}</div>`;
         return;
     }
     container.innerHTML = _chatFriends.map(f => {
