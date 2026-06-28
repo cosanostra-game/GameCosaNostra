@@ -3251,7 +3251,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     if (body) cfg.body = JSON.stringify(body);
 
     const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), 10000);
+    const timeoutId  = setTimeout(() => controller.abort(), 60000);
     cfg.signal = controller.signal;
 
     try {
@@ -5994,6 +5994,10 @@ async function loadGame(manual = false) {
     player = getDefaultPlayerState();
     cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
 
+    if (currentUser) {
+        player.name = currentUser.name;
+    }
+
     // ── Step 1: Load localStorage IMMEDIATELY (zero delay) ──────
     const saved = localStorage.getItem(getSaveKey());
     if (saved) {
@@ -6022,6 +6026,7 @@ async function _syncCloudSave(manual = false) {
             if (currentUser) player.name = currentUser.name;
             if (manual) showNotification(t('notif.cloud_loaded'), true);
             updateUI(); renderGarage(); renderMyBusinesses();
+            if (currentUser) refreshAvatarUI(currentUser.name, currentUser.email);
 
             if (res.pendingTransfers && res.pendingTransfers.length > 0) {
                 res.pendingTransfers.forEach((t, i) => {
@@ -6033,6 +6038,7 @@ async function _syncCloudSave(manual = false) {
         startTransferPolling(5000);
     } catch (e) {
         console.warn('Cloud sync failed, playing from local save:', e.message);
+        if (currentUser) refreshAvatarUI(currentUser.name, currentUser.email);
         startTransferPolling(5000);
     }
 }
