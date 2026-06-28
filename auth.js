@@ -117,23 +117,14 @@ router.patch('/profile', protect, async (req, res) => {
     Object.assign(user, updates);
     await user.save();
 
-    // Sync avatar to GameSave.playerData AND notify online friends via socket
+    // Notify all online friends instantly about name/avatar change
     try {
-      const GameSave    = require('./GameSave');
+      const GameSave = require('./GameSave');
       const io          = req.app.get('io');
       const userSockets = req.app.get('userSockets');
-
-      // Write avatarImg/avatarColor into GameSave so all game routes read from one place
-      const save = await GameSave.findOne({ user: req.user._id });
-      if (save) {
-        if (!save.playerData) save.playerData = {};
-        save.playerData.avatarImg   = user.avatarImg   || null;
-        save.playerData.avatarColor = user.avatarColor || '#ff3b30';
-        save.markModified('playerData');
-        await save.save();
-
-        // Notify online friends instantly about name/avatar change
-        if (io && userSockets && save.friends && save.friends.length > 0) {
+      if (io && userSockets) {
+        const save = await GameSave.findOne({ user: req.user._id }).lean();
+        if (save && save.friends && save.friends.length > 0) {
           const payload = {
             userId:      String(req.user._id),
             name:        user.name,
