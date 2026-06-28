@@ -33,7 +33,18 @@ router.post('/save', async (req, res) => {
   try {
     const { playerData } = req.body;
     if (!playerData || typeof playerData !== 'object') return res.status(400).json({ success: false, message: 'playerData-ն բացակայում է' });
-    
+
+    // Always preserve avatar/name from the User model so auto-save never wipes them
+    try {
+      const User = require('./User');
+      const user = await User.findById(req.user._id).select('avatarImg avatarColor name').lean();
+      if (user) {
+        playerData.avatarImg   = user.avatarImg   || null;
+        playerData.avatarColor = user.avatarColor || '#ff3b30';
+        playerData.name        = user.name;
+      }
+    } catch (_e) { /* non-critical — proceed with what the client sent */ }
+
     const save = await GameSave.findOneAndUpdate({ user: req.user._id }, { $set: { playerData, savedAt: new Date() } }, { new: true, upsert: true, runValidators: true });
     res.json({ success: true, message: 'Պահպանվեց', savedAt: save.savedAt });
   } catch (err) {
