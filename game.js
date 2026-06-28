@@ -138,17 +138,11 @@ router.get('/search', async (req, res) => {
     const regex = new RegExp(name.trim(), 'i');
     const saves = await GameSave.find({ 'playerData.name': regex }).limit(8).lean();
     const userSockets = req.app.get('userSockets');
-    // avatarImg/avatarColor live in User model, not GameSave.playerData
-    const User = require('./User');
-    const saveUserIds = saves.map(s => s.user);
-    const searchUsers = await User.find({ _id: { $in: saveUserIds } }, { avatarImg: 1, avatarColor: 1 }).lean();
-    const searchAvatarMap = {};
-    searchUsers.forEach(u => { searchAvatarMap[String(u._id)] = { avatarImg: u.avatarImg || null, avatarColor: u.avatarColor || '#ff3b30' }; });
+    // avatarImg/avatarColor are synced into GameSave.playerData on every PATCH /auth/profile
     const results = saves.filter(s => String(s.user) !== String(req.user._id)).map(s => {
         const pd  = s.playerData || {};
         const uid = String(s.user);
-        const ua  = searchAvatarMap[uid] || {};
-        return { userId: uid, name: pd.name || 'Անanun', rank: pd.rank || 'Datatarkaporth', bankAccount: pd.bankAccount || '—', avatarColor: ua.avatarColor || '#ff3b30', avatarImg: ua.avatarImg || null, online: !!(userSockets && userSockets.has(uid)) };
+        return { userId: uid, name: pd.name || 'Անanun', rank: pd.rank || 'Datatarkaporth', bankAccount: pd.bankAccount || '—', avatarColor: pd.avatarColor || '#ff3b30', avatarImg: pd.avatarImg || null, online: !!(userSockets && userSockets.has(uid)) };
       });
     res.json({ success: true, results });
   } catch (err) {
@@ -171,11 +165,9 @@ router.post('/friend-request', async (req, res) => {
     if ((recipientSave.friendRequests || []).some(f => String(f.fromUserId) === String(req.user._id))) return res.status(400).json({ success: false, message: 'Հայտն արդեն ուղարկված է' });
 
     const sd = senderSave.playerData || {};
-    // Fetch sender's avatar from User record for fresh data
-    const User = require('./User');
-    const senderUser = await User.findById(req.user._id).select('avatarImg avatarColor').lean();
-    const fromAvatarImg   = (senderUser && senderUser.avatarImg)   || null;
-    const fromAvatarColor = (senderUser && senderUser.avatarColor) || '#ff3b30';
+    // avatarImg/avatarColor are synced into senderSave.playerData on every PATCH /auth/profile
+    const fromAvatarImg   = sd.avatarImg   || null;
+    const fromAvatarColor = sd.avatarColor || '#ff3b30';
 
     recipientSave.friendRequests.push({ fromUserId: req.user._id, fromName: sd.name || req.user.name || 'Անanun', fromAccount: sd.bankAccount || '?', fromRank: sd.rank || '', fromAvatarImg, fromAvatarColor, sentAt: new Date() });
     await recipientSave.save();
