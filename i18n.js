@@ -671,7 +671,14 @@ const RU = {
   'preloader.s2':           'Подготовка...',
   'preloader.s3':           'Готово',
   'confirm.leave_family':   'Покинуть семью?',
-  'main.estate.unit':       'объ.'
+  'main.estate.unit':       'объ.',
+  'friends.loading':        'Загрузка...',
+  'friends.connError':      'Не удалось установить соединение.',
+  'friends.emptyList':      'Список друзей пуст. Найдите и добавьте друзей!',
+  'notif.fam_created':      '🏰 Семья успешно основана:',
+  'notif.fam_power_up':     '💪 Сила семьи возросла до:',
+  'notif.fam_new_member':   '👤 Новый участник! Всего:',
+  'notif.fam_kicked':       '👤 Участник исключен из семьи.'
 
 };
 
@@ -1343,7 +1350,14 @@ const HY = {
   'preloader.s2':           'Karg prastvel...',
   'preloader.s3':           'Patrast e',
   'confirm.leave_family':   'Lqve՞l yntaniqic:',
-  'main.estate.unit':       'obj.'
+  'main.estate.unit':       'obj.',
+  'friends.loading':        'Բեռնվում է...',
+  'friends.connError':      'Կապը հնարավոր չէ հաստատել։',
+  'friends.emptyList':      'Ընկերների ցանկը դատարկ է։ Գտեք և ավելացրեք ընկերներ։',
+  'notif.fam_created':      '🏰 Ընտանիքը հաջողությամբ հիմնադրվեց:',
+  'notif.fam_power_up':     '💪 Ընտանիքի ուժը դարձավ՝',
+  'notif.fam_new_member':   '👤 Նոր անդամ միացավ: Ընդհանուր՝',
+  'notif.fam_kicked':       '👤 Անդամը հեռացվեց ընտանիքից:'
 };
 
 // ═══════════════════════════════════════════════════════

@@ -3388,9 +3388,9 @@ function updateProfilePage() {
     setVal('psc-cars',   (player.garage || []).length);
     setVal('psc-hp',     player.hp || 100);
     setVal('psc-level',  player.level || 1);
-    const sbr = document.getElementById('sb-profile-rank-label'); if (sbr) sbr.textContent = player.rank || '';
-    const phr = document.getElementById('profile-hero-rank');     if (phr) phr.textContent = player.rank || '';
-    const ar  = document.getElementById('acc-rank');              if (ar)  ar.textContent  = player.rank || '';
+    const sbr = document.getElementById('sb-profile-rank-label'); if (sbr) sbr.textContent = getRankName(player.rank || '');
+    const phr = document.getElementById('profile-hero-rank');     if (phr) phr.textContent = getRankName(player.rank || '');
+    const ar  = document.getElementById('acc-rank');              if (ar)  ar.textContent  = getRankName(player.rank || '');
 }
 
 // ── Auth tab switch ────────────────────────────
@@ -5287,7 +5287,7 @@ async function createMyFamilyAPI() {
     if (player.money < 250000) return showNotification(t('notif.no_money'), false);
     try {
         await apiCreateFamily(name.trim(), color);
-        showNotification(`🏰 ${name.trim()} yntaniqy himmnvec!`, true);
+        showNotification(t('notif.fam_created') + ' ' + name.trim(), true);
         playTone && playTone('upgrade', .35);
         spawnFloatMoney && spawnFloatMoney(250000, false);
         player.money -= 250000;
@@ -5328,7 +5328,7 @@ async function familyUpgradePowerAPI() {
     try {
         const res = await apiFamilyUpgradePower();
         player.money -= 50000;
-        showNotification('💪 Ujhy ' + res.power, true);
+        showNotification(t('notif.fam_power_up') + ' ' + res.power, true);
         playTone && playTone('upgrade', .2);
         updateUI(); renderFamilies();
     } catch(err) { showNotification('✕ ' + err.message, false); }
@@ -5338,7 +5338,7 @@ async function familyRecruitAPI() {
     try {
         const res = await apiFamilyRecruit();
         player.money -= 10000;
-        showNotification(`👤 Nor andam! Chak ${res.totalMembers}`, true);
+        showNotification(t('notif.fam_new_member') + ' ' + res.totalMembers, true);
         playTone && playTone('coin', .2);
         updateUI(); renderFamilies();
     } catch(err) { showNotification('✕ ' + err.message, false); }
@@ -5357,7 +5357,7 @@ async function leaveFamilyAPI() {
 async function kickFamilyMember(userId) {
     try {
         await apiKickFamilyMember(userId);
-        showNotification('👤 Andamy hanel eq', true);
+        showNotification(t('notif.fam_kicked'), true);
         renderFamilies();
     } catch(err) { showNotification('✕ ' + err.message, false); }
 }
@@ -5817,9 +5817,9 @@ function stashAction(type) {
 
 function generateQuests() {
     player.quests = [
-        { id: 1, desc: t('quest.1'), target: 3, current: 0, reward: 300 },
-        { id: 2, desc: t('quest.2'), target: 1, current: 0, reward: 600 },
-        { id: 3, desc: t('quest.3'), target: 1500, current: 0, reward: 250 }
+        { id: 1, descKey: 'quest.1.desc', target: 3, current: 0, reward: 300 },
+        { id: 2, descKey: 'quest.2.desc', target: 1, current: 0, reward: 600 },
+        { id: 3, descKey: 'quest.3.desc', target: 1500, current: 0, reward: 250 }
     ];
     showNotification(t('notif.quests_refresh'), true);
     renderQuests();
@@ -5844,7 +5844,7 @@ function renderQuests() {
         }
         newHtml += `
         <div class="card" style="animation:none;${isDone && !isClaimed ? 'border: 1px solid var(--ok);' : ''}">
-            <h3 style="color:${isClaimed ? 'var(--text)' : 'var(--text-l)'};">${q.desc}</h3>
+            <h3 style="color:${isClaimed ? 'var(--text)' : 'var(--text-l)'};">${q.descKey ? t(q.descKey) : q.desc}</h3>
             <p style="color:var(--text);">${t('quest.reward')}: <span style="color:var(--ok); font-weight:bold;">$${q.reward}</span></p>
             ${btnHtml}
         </div>`;
@@ -6331,7 +6331,7 @@ async function renderFriendsPage() {
         _applyFriendsData(_cachedFriendsData);
     } else {
         document.getElementById('friends-list-container').innerHTML =
-            '<div class="friends-empty" style="opacity:.5;">Բеռнваum e...</div>';
+            '<div class="friends-empty" style="opacity:.5;">' + t('friends.loading') + '</div>';
     }
     // ── Fetch fresh data silently ────────────────────────────────
     try {
@@ -6341,7 +6341,7 @@ async function renderFriendsPage() {
     } catch (err) {
         if (!_cachedFriendsData) {
             document.getElementById('friends-list-container').innerHTML =
-                '<div class="friends-empty" style="color:var(--accent);">Կapи chen hastatvel.</div>';
+                '<div class="friends-empty" style="color:var(--accent);">' + t('friends.connError') + '</div>';
         }
     }
 }
@@ -6359,7 +6359,7 @@ function _applyFriendsData(data) {
     }
     const fl = document.getElementById('friends-list-container');
     if (!data.friends || data.friends.length === 0) {
-        fl.innerHTML = '<div class="friends-empty">Ընkerneri tsutsakn dataрk е։ Gtеq ав avlacreq ynkerner!</div>';
+        fl.innerHTML = '<div class="friends-empty">' + t('friends.emptyList') + '</div>';
     } else {
         fl.innerHTML = data.friends.map(f => buildFriendCard(f, 'friend')).join('');
     }
@@ -6481,7 +6481,7 @@ async function openFriendProfile(userId) {
 
         // Info
         document.getElementById('fp-name').textContent = p.name || '—';
-        document.getElementById('fp-rank').textContent = p.rank || '';
+        document.getElementById('fp-rank').textContent = getRankName(p.rank || '');
         document.getElementById('fp-account').textContent = p.bankAccount || '—';
         document.getElementById('fp-status').innerHTML = p.online
             ? '<span class="status-dot online" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#32d74b;box-shadow:0 0 6px #32d74b;margin-right:5px;"></span><span style="color:var(--ok);font-size:12px;font-weight:700;">Օnlajn</span>'
