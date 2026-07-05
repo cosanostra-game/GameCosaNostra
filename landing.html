@@ -4504,7 +4504,7 @@ function getNextBonusCountdown() {
 
 function initDailyBonus() {
     updateDailyBonusUI();
-    setInterval(updateDailyBonusUI, 10000);
+    setInterval(updateDailyBonusUI, 1000);
 }
 
 function updateDailyBonusUI() {
@@ -4770,7 +4770,7 @@ function switchTab(id, el) {
 // ==========================================
 function attemptAction(type, cost, min, max, chance) {
     if (player.inPrison) return showNotification(t('notif.in_prison'), false);
-    if (player.energy < cost) return showNotification(t('notif.no_energy2'), false);
+    if (player.energy < cost) return showNotification(t('notif.no_energy'), false);
     if (player.hp <= 0) return showNotification(t('notif.unconscious'), false);
 
     player.energy -= cost;
@@ -4812,9 +4812,9 @@ function attemptAction(type, cost, min, max, chance) {
 // ==========================================
 function attemptCarTheft(type, cost, chance) {
     if (player.inPrison) return;
-    if (player.hp <= 0) return showNotification(t('notif.unconscious2'), false);
+    if (player.hp <= 0) return showNotification(t('notif.unconscious'), false);
     if (player.garage.length >= player.garageLimit) return showNotification(t('notif.garage_full'), false);
-    if (player.energy < cost) return showNotification(t('notif.no_energy3'), false);
+    if (player.energy < cost) return showNotification(t('notif.no_energy'), false);
     
     player.energy -= cost;
     let isNight = player.dayTime < 6 || player.dayTime >= 18;
@@ -5436,7 +5436,7 @@ const weaponsData = [
     new Weapon({ id:'pistol',   nameKey:'weapon.pistol.name',   price:2500,   crimeBonus:0.10, hpProtect:5,  descKey:'weapon.pistol.desc',   color:'#ff9f0a' }),
     new Weapon({ id:'revolver', nameKey:'weapon.revolver.name', price:5000,   crimeBonus:0.15, hpProtect:8,  descKey:'weapon.revolver.desc', color:'#ff9500' }),
     new Weapon({ id:'shotgun',  nameKey:'weapon.shotgun.name',  price:9000,   crimeBonus:0.18, hpProtect:12, descKey:'weapon.shotgun.desc',  color:'#ff6b35' }),
-    new Weapon({ id:'thomson',  nameKey:'weapon.thomson.name',  price:18000,  crimeBonus:0.25, hpProtect:18, descKey:'weapon.thomson.desc',  color:'var(--accent)', reqRank:'Կапо' }),
+    new Weapon({ id:'thomson',  nameKey:'weapon.thomson.name',  price:18000,  crimeBonus:0.25, hpProtect:18, descKey:'weapon.thomson.desc',  color:'var(--accent)', reqRank:'Կապո' }),
     new Weapon({ id:'ak47',     nameKey:'weapon.ak47.name',     price:30000,  crimeBonus:0.32, hpProtect:25, descKey:'weapon.ak47.desc',     color:'var(--ok)',    reqRank:'Դոն' }),
 ];
 
@@ -5489,8 +5489,8 @@ function renderInventory() {
     const eaEl = document.getElementById('inv-equipped-armor');
     const cbEl = document.getElementById('inv-crime-bonus');
     const hbEl = document.getElementById('inv-hp-bonus');
-    if (ewEl) ewEl.textContent = ew ? ew.name : '— Ոչ —';
-    if (eaEl) eaEl.textContent = ea ? ea.name : '— Ոչ —';
+    if (ewEl) ewEl.textContent = ew ? t(ew.name) : '— Ոչ —';
+    if (eaEl) eaEl.textContent = ea ? t(ea.name) : '— Ոչ —';
     if (cbEl) cbEl.textContent = '+' + Math.round(getInventoryCrimeBonus()*100) + '%';
     if (hbEl) hbEl.textContent = '-' + getInventoryHpProtect() + ' HP';
 
@@ -5502,8 +5502,8 @@ function renderInventory() {
             const canBuy  = !owned && player.money >= w.price && playerHasRank(w.reqRank);
             const blocked = w.reqRank && !playerHasRank(w.reqRank);
             wHtml += `<div class="card" style="border-left:4px solid ${w.color}${blocked?';opacity:.55':''};">
-                <h3 style="color:${w.color};">${w.name}</h3>
-                <p style="margin-bottom:10px;">${w.desc}</p>
+                <h3 style="color:${w.color};">${t(w.name)}</h3>
+                <p style="margin-bottom:10px;">${t(w.desc)}</p>
                 <p style="font-size:13px;margin-bottom:4px;">⚡ +${Math.round(w.crimeBonus*100)}% հ. &nbsp;|&nbsp; 🛡️ -${w.hpProtect} HP</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">$${w.price.toLocaleString()}</p>
                 ${owned
@@ -5522,8 +5522,8 @@ function renderInventory() {
             const owned   = inv.ownedArmorIds.includes(a.id);
             const blocked = a.reqRank && !playerHasRank(a.reqRank);
             aHtml += `<div class="card" style="border-left:4px solid ${a.color}${blocked?';opacity:.55':''};">
-                <h3 style="color:${a.color};">${a.name}</h3>
-                <p style="margin-bottom:10px;">${a.desc}</p>
+                <h3 style="color:${a.color};">${t(a.name)}</h3>
+                <p style="margin-bottom:10px;">${t(a.desc)}</p>
                 <p style="font-size:13px;margin-bottom:4px;">🛡️ -${a.hpProtect} HP կ.</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">$${a.price.toLocaleString()}</p>
                 ${owned
@@ -5544,7 +5544,7 @@ function renderInventory() {
             const w = weaponsData.find(x=>x.id===id); if (!w) return;
             const isEq = inv.equippedWeaponId === id;
             wHtml += `<div class="card" style="border:2px solid ${isEq?'var(--ok)':w.color};">
-                <h3 style="color:${w.color};">${w.name} ${isEq?'<span style="color:var(--ok);font-size:12px;">[ԿԲ]</span>':''}</h3>
+                <h3 style="color:${w.color};">${t(w.name)} ${isEq?'<span style="color:var(--ok);font-size:12px;">[ԿԲ]</span>':''}</h3>
                 <p style="font-size:13px;margin-bottom:12px;">⚡ +${Math.round(w.crimeBonus*100)}% &nbsp;|&nbsp; 🛡️ -${w.hpProtect} HP</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button style="background:${isEq?'var(--ok)':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipWeapon('${id}')">${isEq?'✅ Կ. Բ.':'🔫 Հ. Կ.'}</button>
@@ -5562,7 +5562,7 @@ function renderInventory() {
             const a = armorData.find(x=>x.id===id); if (!a) return;
             const isEq = inv.equippedArmorId === id;
             aHtml += `<div class="card" style="border:2px solid ${isEq?'#0a84ff':a.color};">
-                <h3 style="color:${a.color};">${a.name} ${isEq?'<span style="color:#0a84ff;font-size:12px;">[ԿԲ]</span>':''}</h3>
+                <h3 style="color:${a.color};">${t(a.name)} ${isEq?'<span style="color:#0a84ff;font-size:12px;">[ԿԲ]</span>':''}</h3>
                 <p style="font-size:13px;margin-bottom:12px;">🛡️ -${a.hpProtect} HP կ.</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button style="background:${isEq?'#0a84ff':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipArmor('${id}')">${isEq?'✅ Կ. Բ.':'🛡️ Հ. Կ.'}</button>

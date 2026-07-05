@@ -292,6 +292,38 @@ const RU = {
   'notif.wrong_amount': 'Пожалуйста, введите корректную сумму.',
   'notif.bad_amount':   'Пожалуйста, введите корректную сумму или количество.',
   'notif.only_mafioso': 'Доступно только со звания Мафиози.',
+  'notif.already_have':  'У вас уже есть этот предмет.',
+  'notif.arrested':      '🚔 Вы арестованы!',
+  'notif.avatar_error':  'Ошибка при обновлении аватара',
+  'notif.avatar_updated':'Аватар обновлён ✓',
+  'notif.bribe_ok':      'Взятка удалась, вы на свободе!',
+  'notif.car_removed':   'Автомобиль снят с преступлений',
+  'notif.car_selected':  'Автомобиль выбран для преступлений',
+  'notif.cloud_loaded':  'Облачное сохранение загружено ✓',
+  'notif.delete_error':  'Ошибка при удалении профиля',
+  'notif.error_generic': 'Произошла ошибка',
+  'notif.escape_fail':   'Побег не удался! Срок увеличен.',
+  'notif.escape_ok':     'Побег удался, вы на свободе!',
+  'notif.freed':         'Вы вышли на свободу',
+  'notif.friend_added':  'Заявка в друзья принята',
+  'notif.friend_declined':'Заявка в друзья отклонена',
+  'notif.friend_req_ok': 'Заявка в друзья отправлена',
+  'notif.loan_max':      'Максимальный размер кредита — пятьдесят тысяч долларов.',
+  'notif.loan_no_cash':  'Недостаточно денег для погашения кредита.',
+  'notif.loan_none':     'У вас нет кредита для погашения.',
+  'notif.max_bet':       'Максимальная ставка —',
+  'notif.no_1000':       'Требуется одна тысяча долларов.',
+  'notif.no_2500':       'Требуется две тысячи пятьсот долларов.',
+  'notif.no_money5':     'Требуется две тысячи долларов.',
+  'notif.profile_updated':'Профиль обновлён ✓',
+  'notif.rented':        'Недвижимость сдана в аренду',
+  'notif.transfer_bad_acc':'Неверный номер счёта.',
+  'notif.transfer_done': 'успешно переведено на счёт',
+  'notif.transfer_fail': 'Ошибка перевода',
+  'notif.transfer_no_amt':'Введите корректную сумму перевода.',
+  'notif.transfer_no_bank':'Недостаточно средств на счету',
+  'notif.transfer_self': 'Нельзя перевести деньги самому себе.',
+  'notif.unrented':      'Недвижимость снята с аренды',
   'notif.casino_sorry': 'К сожалению, в этот раз не повезло. Попробуйте еще раз!',
   'notif.already_full_hp':'Ваше здоровье уже на максимальном уровне.',
   'notif.train_hp':     'Тренировка прошла успешно! Максимальное здоровье увеличено на пять единиц.',
@@ -1064,6 +1096,38 @@ const HY = {
   'notif.wrong_amount': 'Խնդրում ենք մուտքագրել ճիշտ և դրական գումար:',
   'notif.bad_amount':   'Խնդրում ենք մուտքագրել ճիշտ և վավեր գումար կամ քանակ:',
   'notif.only_mafioso': 'Այս խաղն հասանելի է միայն Մաֆիոզ և բարձր կոչում ունեցողներին:',
+  'notif.already_have':  'Այս իրը դուք արդեն ունեք:',
+  'notif.arrested':      '🚔 Դուք ձերբակալված եք:',
+  'notif.avatar_error':  'Սխալ ավատարը թարմացնելիս',
+  'notif.avatar_updated':'Ավատարը թարմացվեց ✓',
+  'notif.bribe_ok':      'Կաշառքը հաջողվեց, դուք ազատ եք:',
+  'notif.car_removed':   'Ավտոմեքենան հանվեց հանցագործություններից',
+  'notif.car_selected':  'Ավտոմեքենան ընտրվեց հանցագործությունների համար',
+  'notif.cloud_loaded':  'Ամպային պահուստը բեռնվեց ✓',
+  'notif.delete_error':  'Սխալ պրոֆիլը ջնջելիս',
+  'notif.error_generic': 'Տեղի ունեցավ սխալ',
+  'notif.escape_fail':   'Փախուստը ձախողվեց: Ժամկետը մեծացավ:',
+  'notif.escape_ok':     'Փախուստը հաջողվեց, դուք ազատ եք:',
+  'notif.freed':         'Դուք դուրս եկաք ազատության մեջ',
+  'notif.friend_added':  'Ընկերության հայտը ընդունվեց',
+  'notif.friend_declined':'Ընկերության հայտը մերժվեց',
+  'notif.friend_req_ok': 'Ընկերության հայտն ուղարկվեց',
+  'notif.loan_max':      'Առավելագույն վարկը՝ հիսուն հազար դոլար:',
+  'notif.loan_no_cash':  'Բավարար գումար չկա վարկը մարելու համար:',
+  'notif.loan_none':     'Դուք վարկ չունեք մարելու համար:',
+  'notif.max_bet':       'Առավելագույն խաղադրույքը՝',
+  'notif.no_1000':       'Անհրաժեշտ է մեկ հազար դոլար:',
+  'notif.no_2500':       'Անհրաժեշտ է երկու հազար հինգ հարյուր դոլար:',
+  'notif.no_money5':     'Անհրաժեշտ է երկու հազար դոլար:',
+  'notif.profile_updated':'Պրոֆիլը թարմացվեց ✓',
+  'notif.rented':        'Անշարժ գույքը հանձնվեց վարձակալության',
+  'notif.transfer_bad_acc':'Սխալ հաշվի համար:',
+  'notif.transfer_done': 'հաջողությամբ փոխանցվեց հաշվին',
+  'notif.transfer_fail': 'Փոխանցման սխալ',
+  'notif.transfer_no_amt':'Մուտքագրեք փոխանցման ճիշտ գումարը:',
+  'notif.transfer_no_bank':'Բավարար միջոցներ չկան հաշվում',
+  'notif.transfer_self': 'Չեք կարող գումար փոխանցել ինքներդ ձեզ:',
+  'notif.unrented':      'Անշարժ գույքը հանվեց վարձակալությունից',
   'notif.casino_sorry': 'Ցավոք այս անգամ չհաջողվեց հաղթել: Փորձեք նորից:',
   'notif.already_full_hp':'Ձեր առողջությունն արդեն առավելագույն մակարդակի վրա է:',
   'notif.train_hp':     'Մարզումը հաջողվեց! Առավելագույն առողջությունը մեծացավ հինգ միավորով:',
@@ -1716,13 +1780,14 @@ function applyLang() {
 
   // 11. Re-render dynamically-built pages so their JS-generated text
   //     (families, friends, leaderboard, quests) switches language too
-  ['families', 'friends', 'leaderboard', 'quests'].forEach(function(pageId) {
+  ['families', 'friends', 'leaderboard', 'quests', 'inventory'].forEach(function(pageId) {
     const pg = document.getElementById('page-' + pageId);
     if (pg && pg.classList.contains('active')) {
       if (pageId === 'families' && typeof renderFamilies === 'function') renderFamilies();
       if (pageId === 'friends' && typeof renderFriendsPage === 'function') renderFriendsPage();
       if (pageId === 'leaderboard' && typeof renderLeaderboard === 'function') renderLeaderboard();
       if (pageId === 'quests' && typeof renderQuests === 'function') renderQuests();
+      if (pageId === 'inventory' && typeof renderInventory === 'function') renderInventory();
     }
   });
 }
