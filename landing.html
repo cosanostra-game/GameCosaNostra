@@ -3166,7 +3166,7 @@ canvas {
             <button class="close-btn" onclick="closeRankModal()"><i class="material-icons">close</i></button>
         </div>
         <div class="modal-body">
-            <div style="text-align:center;font-size:18px;font-weight:700;color:var(--text-l);margin-bottom:16px;"><span data-i18n="rank.current">Ներկայիս:</span> <span id="modal-current-rank" style="color:var(--accent);">—</span></div>
+            <div style="text-align:center;font-size:18px;font-weight:700;color:var(--text-l);margin-bottom:16px;"><span data-i18n="rank.current">Ներկայիս:</span> <span id="modal-current-rank" style="color:var(--accent);">Դататarkaport</span></div>
             <div style="margin-bottom:24px;text-align:center;">
                 <p style="color:var(--text);margin-bottom:10px;font-size:13px;text-transform:uppercase;font-weight:600;" data-i18n="rank.progress">Առաջընthաc</p>
                 <div class="rank-bar-track"><div id="rank-progress-bar" class="rank-bar-fill" style="width:0%;"></div></div>
@@ -3413,11 +3413,11 @@ function refreshAvatarUI(name, email) {
     const phn = document.getElementById('profile-hero-name'); if (phn) phn.textContent = name;
     const phe = document.getElementById('profile-hero-email');
     if (phe && email) { const parts = email.split('@'); phe.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = getRankName((typeof player !== 'undefined' && player.rank) ? player.rank : 'newbie');
+    const phr = document.getElementById('profile-hero-rank'); if (phr) phr.textContent = getRankName((typeof player !== 'undefined' ? player.rank : '') || 'Դататarkaport');
     const an  = document.getElementById('acc-name');  if (an)  an.textContent  = name;
     const ae  = document.getElementById('acc-email');
     if (ae && email) { const parts = email.split('@'); ae.textContent = parts[0].slice(0,3)+'***@'+parts[1]; }
-    const ar  = document.getElementById('acc-rank');  if (ar)  ar.textContent  = getRankName((typeof player !== 'undefined' && player.rank) ? player.rank : 'newbie');
+    const ar  = document.getElementById('acc-rank');  if (ar)  ar.textContent  = getRankName((typeof player !== 'undefined' ? player.rank : '') || 'Դататarkaport');
 
     if (currentUser && currentUser.createdAt) {
         const d   = new Date(currentUser.createdAt).toLocaleDateString('hy-AM');
@@ -4668,7 +4668,7 @@ function openRankModal() {
     let nextRank = null;
     for (let i = 0; i < ranks.length; i++) { if (player.exp < ranks[i].exp) { nextRank = ranks[i]; break; } }
     let pct = nextRank ? (player.exp / nextRank.exp) * 100 : 100;
-    let text = nextRank ? `${player.exp} / ${nextRank.exp} ${t('ui.exp_points')}` : `${player.exp} ${t('ui.exp_points')} (${t('rank.max')})`;
+    let text = nextRank ? `${player.exp} / ${nextRank.exp} XP` : `${player.exp} XP (${t('rank.max')})`;
     document.getElementById('rank-progress-text').innerText = text;
     document.getElementById('rank-progress-bar').style.width = pct + '%';
     let html = '';
@@ -4793,7 +4793,7 @@ function attemptAction(type, cost, min, max, chance) {
         player.stats.crimes++;
         player.stats.earnings += prize;
 
-        showNotification(`✅ Հաջողություն! +$${prize} (+${cost} ${t('ui.exp_points')})`, true);
+        showNotification(`✅ Հաջողություն! +$${prize} (+${cost} XP)`, true);
         spawnFloatMoney(prize, true);
         playTone('coin', .25);
     } else {
@@ -4828,7 +4828,7 @@ function attemptCarTheft(type, cost, chance) {
         player.garage.push(new Car({ name: car.name, price, imgUrl: car.imgUrl }));
         player.exp += cost;
         player.stats.cars++;
-        showNotification(`🚗 Գողացվել է ${car.name} (+${cost} ${t('ui.exp_points')})`, true);
+        showNotification(`🚗 Գողացվել է ${car.name} (+${cost} XP)`, true);
         spawnFloatMoney(price, true);
         playTone('success', .2);
     } else { 
@@ -4965,8 +4965,8 @@ function buyDealershipCar(id) {
 function bankAction(type) {
     let amt = Math.floor(Number(document.getElementById('bankAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0) return;
-    if (type==='deposit' && player.money>=amt) { player.money-=amt; player.bank+=amt; showNotification(`🏦 +$${amt.toLocaleString()} ${t('bank.deposited')}`, true); playTone('coin',.15); spawnFloatMoney(amt, false); }
-    else if (type==='withdraw' && player.bank>=amt) { player.bank-=amt; player.money+=amt; showNotification(`💵 $${amt.toLocaleString()} ${t('bank.withdrawn')}`, true); playTone('coin',.15); spawnFloatMoney(amt, true); }
+    if (type==='deposit' && player.money>=amt) { player.money-=amt; player.bank+=amt; showNotification(`🏦 +$${amt.toLocaleString()} բանկ`, true); playTone('coin',.15); spawnFloatMoney(amt, false); }
+    else if (type==='withdraw' && player.bank>=amt) { player.bank-=amt; player.money+=amt; showNotification(`💵 $${amt.toLocaleString()} կանխ.`, true); playTone('coin',.15); spawnFloatMoney(amt, true); }
     else showNotification(t('notif.insufficient'), false);
     updateUI();
 }
@@ -5492,7 +5492,7 @@ function renderInventory() {
     if (ewEl) ewEl.textContent = ew ? ew.name : '— Ոչ —';
     if (eaEl) eaEl.textContent = ea ? ea.name : '— Ոչ —';
     if (cbEl) cbEl.textContent = '+' + Math.round(getInventoryCrimeBonus()*100) + '%';
-    if (hbEl) hbEl.textContent = '-' + getInventoryHpProtect() + ' ' + t('ui.hp_units');
+    if (hbEl) hbEl.textContent = '-' + getInventoryHpProtect() + ' HP';
 
     if (activeInvTab === 'shop') {
         // WEAPONS SHOP
@@ -5832,7 +5832,7 @@ function healPlayer(amount, cost) {
     if (player.hp >= player.maxHp) return showNotification(t('notif.already_full_hp'), false);
     player.money -= cost;
     player.hp = Math.min(player.maxHp, player.hp + amount);
-    showNotification(`🏥 Բուժվեցիք +${amount} ${t('ui.hp_units')}`, true);
+    showNotification(`🏥 Բուժվեցիք +${amount} HP`, true);
     playTone('upgrade', .2);
     updateUI();
 }
