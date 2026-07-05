@@ -1650,8 +1650,7 @@ const RANK_NAMES_HY = {
 
 function getRankName(name) {
   if (!name) return name || '';
-  const id = RANK_ID_BY_HY_NAME[name];
-  if (!id) return name;
+  const id = RANK_ID_BY_HY_NAME[name] || name;
   const dict = getLang() === 'ru' ? RANK_NAMES_RU : RANK_NAMES_HY;
   return dict[id] || name;
 }
