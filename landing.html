@@ -3799,10 +3799,11 @@ class RealEstate extends Item {
 //   OOP — NPC FAMILY CLASS
 // ==========================================
 class NPCFamily {
-    constructor({ name, boss, territory, power, members, color }) {
-        this.name      = name;
-        this.boss      = boss;
-        this.territory = territory;
+    constructor({ name, boss, territory, territoryKey, power, members, color }) {
+        this.name         = name;
+        this.boss         = boss;
+        this.territory    = territory;
+        this.territoryKey = territoryKey;
         this.power     = power;
         this.members   = members;
         this.color     = color;
@@ -3814,7 +3815,7 @@ class NPCFamily {
         return `<div class="card" style="border-left:4px solid ${this.color};">
             <h3 style="color:${this.color};"><i class="material-icons">groups</i> ${this.name}${t('npc.family.suffix')}</h3>
             <p style="margin-bottom:8px;"><b style="color:var(--text-l);">${t('fam.boss_label')}</b> ${this.boss}</p>
-            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">${t('fam.terr_label')}</b> ${this.territory}</p>
+            <p style="margin-bottom:8px;"><b style="color:var(--text-l);">${t('fam.terr_label')}</b> ${t(this.territoryKey)}</p>
             <div style="display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;">
                 <div style="text-align:center;">
                     <div style="font-size:20px;font-weight:800;color:${this.color};">${this.power}</div>
@@ -5150,11 +5151,11 @@ function launderAll() {
 //   FAMILIES
 // ==========================================
 const mafiaFamilies = [
-    new NPCFamily({ name:"Genovese", boss:"Don Liborio Bellomo",  territory:"Հյուսիսային Թաղ",  power:98, members:250, color:"#ff9f0a" }),
-    new NPCFamily({ name:"Gambino",  boss:"Don Domenico Cefalù", territory:"Կentrakakan Թagh",  power:92, members:200, color:"#ff3b30" }),
-    new NPCFamily({ name:"Lucchese", boss:"Don Steven Crea Sr.",  territory:"Արevelyan Թagh",   power:80, members:160, color:"#0a84ff" }),
-    new NPCFamily({ name:"Bonanno",  boss:"Don Michael Mancuso", territory:"Արevmtyan Թagh",   power:75, members:130, color:"#32d74b" }),
-    new NPCFamily({ name:"Colombo",  boss:"Don Andrew Russo",    territory:"Հaravayin Թagh",   power:65, members:90,  color:"#bf5af2" }),
+    new NPCFamily({ name:"Genovese", boss:"Don Liborio Bellomo",  territoryKey:"fam.terr.north",  power:98, members:250, color:"#ff9f0a" }),
+    new NPCFamily({ name:"Gambino",  boss:"Don Domenico Cefalù",  territoryKey:"fam.terr.center", power:92, members:200, color:"#ff3b30" }),
+    new NPCFamily({ name:"Lucchese", boss:"Don Steven Crea Sr.",  territoryKey:"fam.terr.east",   power:80, members:160, color:"#0a84ff" }),
+    new NPCFamily({ name:"Bonanno",  boss:"Don Michael Mancuso",  territoryKey:"fam.terr.west",   power:75, members:130, color:"#32d74b" }),
+    new NPCFamily({ name:"Colombo",  boss:"Don Andrew Russo",     territoryKey:"fam.terr.south",  power:65, members:90,  color:"#bf5af2" }),
 ];
 
 function renderFamilies() {
@@ -5370,18 +5371,18 @@ function createMyFamily() { createMyFamilyAPI(); }
 //   WEAPONS & INVENTORY DATA
 // ==========================================
 const weaponsData = [
-    new Weapon({ id:'knife',    name:'🔪 Դanakk',          price:500,    crimeBonus:0.05, hpProtect:0,  desc:'Fpolocain himnakan zenk. +5% hajolutyun.',   color:'#8e8e93' }),
-    new Weapon({ id:'pistol',   name:'🔫 Atrch. (PM)',      price:2500,   crimeBonus:0.10, hpProtect:5,  desc:'Standart atchanak. +10% h., -5 HP.',         color:'#ff9f0a' }),
-    new Weapon({ id:'revolver', name:'🔫 Revolver',         price:5000,   crimeBonus:0.15, hpProtect:8,  desc:'Tsanak revolver. +15% h., -8 HP.',           color:'#ff9500' }),
-    new Weapon({ id:'shotgun',  name:'💥 Razm.Hrad.',       price:9000,   crimeBonus:0.18, hpProtect:12, desc:'Kark h. razm. +18% h., -12 HP.',             color:'#ff6b35' }),
-    new Weapon({ id:'thomson',  name:'🔫 Thomson (SMG)',     price:18000,  crimeBonus:0.25, hpProtect:18, desc:'Ent. h. aparat. +25% h., -18 HP. | Kapo',   color:'var(--accent)', reqRank:'Կapо' }),
-    new Weapon({ id:'ak47',     name:'⚙️ AK-47',            price:30000,  crimeBonus:0.32, hpProtect:25, desc:'Tsank razm. +32% h., -25 HP. | Don',        color:'var(--ok)',    reqRank:'Դon' }),
+    new Weapon({ id:'knife',    nameKey:'weapon.knife.name',    price:500,    crimeBonus:0.05, hpProtect:0,  descKey:'weapon.knife.desc',    color:'#8e8e93' }),
+    new Weapon({ id:'pistol',   nameKey:'weapon.pistol.name',   price:2500,   crimeBonus:0.10, hpProtect:5,  descKey:'weapon.pistol.desc',   color:'#ff9f0a' }),
+    new Weapon({ id:'revolver', nameKey:'weapon.revolver.name', price:5000,   crimeBonus:0.15, hpProtect:8,  descKey:'weapon.revolver.desc', color:'#ff9500' }),
+    new Weapon({ id:'shotgun',  nameKey:'weapon.shotgun.name',  price:9000,   crimeBonus:0.18, hpProtect:12, descKey:'weapon.shotgun.desc',  color:'#ff6b35' }),
+    new Weapon({ id:'thomson',  nameKey:'weapon.thomson.name',  price:18000,  crimeBonus:0.25, hpProtect:18, descKey:'weapon.thomson.desc',  color:'var(--accent)', reqRank:'Կапо' }),
+    new Weapon({ id:'ak47',     nameKey:'weapon.ak47.name',     price:30000,  crimeBonus:0.32, hpProtect:25, descKey:'weapon.ak47.desc',     color:'var(--ok)',    reqRank:'Դոն' }),
 ];
 
 const armorData = [
-    new Armor({ id:'jacket',    name:'🧥 Kash. Bachk.',      price:800,   hpProtect:8,  desc:'Him. pashtpan. -8 HP.',             color:'#8e8e93' }),
-    new Armor({ id:'vest',      name:'🦺 H. Bzrk. Bak.',     price:6000,  hpProtect:20, desc:'S. h. bzrk. bak. -20 HP. | Avazak', color:'#0a84ff', reqRank:'Avasakk' }),
-    new Armor({ id:'heavyarmor',name:'🛡️ Tsank Zrah.',        price:20000, hpProtect:35, desc:'Tsank h. razm. -35 HP. | Mafioz',   color:'#5e5ce6', reqRank:'Маfioz' }),
+    new Armor({ id:'jacket',    nameKey:'armor.jacket.name',    price:800,   hpProtect:8,  descKey:'armor.jacket.desc',    color:'#8e8e93' }),
+    new Armor({ id:'vest',      nameKey:'armor.vest.name',      price:6000,  hpProtect:20, descKey:'armor.vest.desc',      color:'#0a84ff', reqRank:'Ավազակ' }),
+    new Armor({ id:'heavyarmor',nameKey:'armor.heavy.name',     price:20000, hpProtect:35, descKey:'armor.heavy.desc',     color:'#5e5ce6', reqRank:'Մաֆիոզ' }),
 ];
 
 // Full name map for req ranks display
@@ -6490,11 +6491,11 @@ async function openFriendProfile(userId) {
         // Stats grid
         const stats = [
             { icon: '⭐', val: (p.exp || 0).toLocaleString(), label: 'XP' },
-            { icon: '🔫', val: (p.crimes || 0).toLocaleString(), label: 'Հանցկ.' },
-            { icon: '🚗', val: (p.garage || 0).toLocaleString(), label: 'Ավտո' },
-            { icon: '🏠', val: (p.realEstate || 0).toLocaleString(), label: 'Կայք.' },
-            { icon: '💼', val: (p.businesses || 0).toLocaleString(), label: 'Բիզ.' },
-            { icon: '🏆', val: (p.level || 1), label: 'Lvl' },
+            { icon: '🔫', val: (p.crimes || 0).toLocaleString(), label: t('stats.crimes') },
+            { icon: '🚗', val: (p.garage || 0).toLocaleString(), label: t('stats.cars') },
+            { icon: '🏠', val: (p.realEstate || 0).toLocaleString(), label: t('menu.estate') },
+            { icon: '💼', val: (p.businesses || 0).toLocaleString(), label: t('menu.business') },
+            { icon: '🏆', val: (p.level || 1), label: t('profile.level') },
         ];
         document.getElementById('fp-stats-grid').innerHTML = stats.map(s =>
             '<div class="fps-card"><div style="font-size:20px;">' + s.icon + '</div>' +
