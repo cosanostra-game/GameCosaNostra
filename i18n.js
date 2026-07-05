@@ -499,6 +499,8 @@ const RU = {
   'auth.err.passShort':   'Пароль должен быть не менее шести символов',
   'auth.err.passMatch':   'Пароли не совпадают',
   'auth.err.fillAll':     'Заполните все поля',
+  'auth.err.emailTaken':  'Эта электронная почта уже зарегистрирована',
+  'auth.err.invalidCreds':'Неверная электронная почта или пароль',
   'auth.ok.registered':   'Регистрация успешна! Добро пожаловать, ',
   'auth.ok.welcome':      'Добро пожаловать, ',
   'btn.registering':      'Регистрация...',
@@ -1091,7 +1093,7 @@ const HY = {
   'auth.confPassPh':  'Կրկնեք գաղտնաբառը',
 
   // ── Preloader ────────────────────────────────────────
-  'pre.sub':          'Մուք գործել հանցավոր աշխարհ',
+  'pre.sub':          'Մուտք գործել հանցավոր աշխարհ',
   'pre.quote':        '"Ամեն մարդ իր ճակատագիրն ունի..."',
   'pre.loading':      'Բեռնում...',
   'loading':          'Բեռնում...',
@@ -1170,7 +1172,7 @@ const HY = {
   'login.subtitle':'Մուտք Cosa Nostra · Ձեր հաշիվը',
   'login.email':   'Էլ. փոստ',
   'login.pass':    'Գաղտնաբառ',
-  'login.submit':  'Մուք ➤',
+  'login.submit':  'Մուտք ➤',
   'login.noAcc':   'Չունե՞ք հաշիվ:',
   'login.register':'Գրանցվեք',
   'reg.title':     'Գրանցում',
@@ -1549,30 +1551,45 @@ const HY = {
 // ═══════════════════════════════════════════════════════
 //   RANK NAME TRANSLATIONS
 // ═══════════════════════════════════════════════════════
+// Locale-agnostic rank IDs decouple the RU/HY translations from the raw
+// Armenian rank strings still used internally by game logic, so editing the
+// Armenian label no longer risks silently breaking the Russian mapping.
+const RANK_ID_BY_HY_NAME = {
+  'Դատարկապորտ': 'newbie',
+  'Գրպանահատ':   'pickpocket',
+  'Ավազակ':      'bandit',
+  'Մաֆիոզ':      'mafioso',
+  'Կապո':        'capo',
+  'Դոն':         'don',
+  'Կնքահայր':    'godfather'
+};
+
 const RANK_NAMES_RU = {
-  'Դատարկապորտ': 'Бродяга',
-  'Գրպանահատ': 'Карманник',
-  'Ավազակ': 'Бандит',
-  'Մաֆիոզ': 'Мафиози',
-  'Կապո': 'Капо',
-  'Դոն': 'Дон',
-  'Կնքահայր': 'Крёстный Отец'
+  newbie:     'Бродяга',
+  pickpocket: 'Карманник',
+  bandit:     'Бандит',
+  mafioso:    'Мафиози',
+  capo:       'Капо',
+  don:        'Дон',
+  godfather:  'Крёстный Отец'
 };
 
 const RANK_NAMES_HY = {
-  'Դատարկապորտ': 'Դատարկապորտ',
-  'Գրպանահատ': 'Գրպանահատ',
-  'Ավազակ': 'Ավազակ',
-  'Մաֆիոզ': 'Մաֆիոզ',
-  'Կապո': 'Կապո',
-  'Դոն': 'Դոն',
-  'Կնքահայր': 'Կնքահայր'
+  newbie:     'Դատարկապորտ',
+  pickpocket: 'Գրպանահատ',
+  bandit:     'Ավազակ',
+  mafioso:    'Մաֆիոզ',
+  capo:       'Կապո',
+  don:        'Դոն',
+  godfather:  'Կնքահայր'
 };
 
 function getRankName(name) {
   if (!name) return name || '';
+  const id = RANK_ID_BY_HY_NAME[name];
+  if (!id) return name;
   const dict = getLang() === 'ru' ? RANK_NAMES_RU : RANK_NAMES_HY;
-  return dict[name] || name;
+  return dict[id] || name;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1614,16 +1631,18 @@ function applyLang() {
         if (n.nodeType === Node.TEXT_NODE) raw += n.textContent;
       });
       el.dataset.i18nOrigText = raw.trim();
+      el.dataset.i18nOrigLeadWs = (raw.match(/^\s*/) || [''])[0];
     }
-    const key   = el.dataset.i18nText;
-    const newTx = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nOrigText;
+    const key    = el.dataset.i18nText;
+    const leadWs = el.dataset.i18nOrigLeadWs || '';
+    const newTx  = (dict && dict[key] !== undefined) ? dict[key] : el.dataset.i18nOrigText;
     let done = false;
     el.childNodes.forEach(n => {
       if (n.nodeType !== Node.TEXT_NODE) return;
-      if (!done) { n.textContent = ' ' + newTx; done = true; }
+      if (!done) { n.textContent = leadWs + newTx; done = true; }
       else n.textContent = '';
     });
-    if (!done) el.appendChild(document.createTextNode(' ' + newTx));
+    if (!done) el.appendChild(document.createTextNode(leadWs + newTx));
   });
 
   // 3. data-i18n-ph
