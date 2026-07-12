@@ -5897,13 +5897,13 @@ function renderQuests() {
         if (isClaimed) {
             btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">✅ ${t('quest.done')}</button>`;
         } else if (isDone) {
-            let claimText = t('quest.claim').replace('{reward}', q.reward.toLocaleString());
+            let claimText = (t('quest.claim') || '').replace('{reward}', q.reward.toLocaleString());
             btnHtml = `<button style="background:var(--ok);" onclick="claimQuest(${idx})">🎁 ${claimText}</button>`;
         } else {
             btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">${q.current} / ${q.target}</button>`;
         }
 
-        let descText = t(q.descKey).replace('{target}', q.target.toLocaleString());
+        let descText = (t(q.descKey) || '').replace('{target}', q.target.toLocaleString());
 
         newHtml += `
         <div class="card" style="animation:none;${isDone && !isClaimed ? 'border: 1px solid var(--ok);' : ''}">
