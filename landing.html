@@ -3741,11 +3741,19 @@ class Entity {
 //   OOP — ITEM BASE CLASS
 // ==========================================
 class Item {
-    constructor({ id, name, price = 0, desc = '', color = '#8e8e93' } = {}) {
+    constructor({ id, name, nameKey, price = 0, desc = '', descKey, color = '#8e8e93' } = {}) {
         this.id    = id;
-        this.name  = name;
+        // Weapon/Armor are built with nameKey/descKey (translation keys), while
+        // Car is built with a plain literal `name`. Previously this constructor
+        // only ever read `name`/`desc`, so nameKey/descKey were silently dropped
+        // and this.name stayed undefined — every call site does t(item.name), so
+        // t(undefined) rendered the literal string "undefined" in the shop.
+        // Storing the *key* itself in this.name/this.desc when present means
+        // every existing t(item.name)/t(item.desc) call keeps working unchanged,
+        // and correctly re-translates whenever the language is switched.
+        this.name  = nameKey || name;
         this.price = price;
-        this.desc  = desc;
+        this.desc  = descKey || desc;
         this.color = color;
     }
 
@@ -5453,8 +5461,8 @@ function renderInventory() {
     const eaEl = document.getElementById('inv-equipped-armor');
     const cbEl = document.getElementById('inv-crime-bonus');
     const hbEl = document.getElementById('inv-hp-bonus');
-    if (ewEl) ewEl.textContent = ew ? t(ew.name) : '— Ոչ —';
-    if (eaEl) eaEl.textContent = ea ? t(ea.name) : '— Ոչ —';
+    if (ewEl) ewEl.textContent = ew ? t(ew.name) : t('inv.none');
+    if (eaEl) eaEl.textContent = ea ? t(ea.name) : t('inv.none');
     if (cbEl) cbEl.textContent = '+' + Math.round(getInventoryCrimeBonus()*100) + '%';
     if (hbEl) hbEl.textContent = '-' + getInventoryHpProtect() + ' HP';
 
@@ -5471,10 +5479,10 @@ function renderInventory() {
                 <p style="font-size:13px;margin-bottom:4px;">⚡ +${Math.round(w.crimeBonus*100)}% հ. &nbsp;|&nbsp; 🛡️ -${w.hpProtect} HP</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">$${w.price.toLocaleString()}</p>
                 ${owned
-                    ? `<button disabled style="background:var(--border);color:var(--text);">✅ Գնված</button>`
+                    ? `<button disabled style="background:var(--border);color:var(--text);">${t('inv.already_owned')}</button>`
                     : blocked
-                        ? `<button disabled style="background:var(--border);color:var(--text);">🔒 Պ. ${w.reqRank}</button>`
-                        : `<button style="background:${w.color==='var(--accent)'?'var(--accent)':w.color};${w.color==='var(--ok)'||w.color==='#0a84ff'?'':''}color:#fff;" onclick="buyWeapon('${w.id}')">Գնել</button>`}
+                        ? `<button disabled style="background:var(--border);color:var(--text);">${t('inv.rank_required').replace('{rank}', w.reqRank)}</button>`
+                        : `<button style="background:${w.color==='var(--accent)'?'var(--accent)':w.color};${w.color==='var(--ok)'||w.color==='#0a84ff'?'':''}color:#fff;" onclick="buyWeapon('${w.id}')">${t('btn.buy')}</button>`}
             </div>`;
         });
         const ws = document.getElementById('inv-weapons-shop');
@@ -5491,10 +5499,10 @@ function renderInventory() {
                 <p style="font-size:13px;margin-bottom:4px;">🛡️ -${a.hpProtect} HP կ.</p>
                 <p style="font-weight:700;color:var(--text-l);margin-bottom:14px;">$${a.price.toLocaleString()}</p>
                 ${owned
-                    ? `<button disabled style="background:var(--border);color:var(--text);">✅ Գնված</button>`
+                    ? `<button disabled style="background:var(--border);color:var(--text);">${t('inv.already_owned')}</button>`
                     : blocked
-                        ? `<button disabled style="background:var(--border);color:var(--text);">🔒 Պ. ${a.reqRank}</button>`
-                        : `<button style="background:${a.color};color:#fff;" onclick="buyArmor('${a.id}')">Գնել</button>`}
+                        ? `<button disabled style="background:var(--border);color:var(--text);">${t('inv.rank_required').replace('{rank}', a.reqRank)}</button>`
+                        : `<button style="background:${a.color};color:#fff;" onclick="buyArmor('${a.id}')">${t('btn.buy')}</button>`}
             </div>`;
         });
         const as = document.getElementById('inv-armor-shop');
@@ -5503,16 +5511,16 @@ function renderInventory() {
     } else {
         // OWNED WEAPONS
         let wHtml = inv.ownedWeaponIds.length === 0
-            ? '<p style="color:var(--text);">Զենք չկա — գնիր Խ. ներդիրից</p>' : '';
+            ? `<p style="color:var(--text);">${t('inv.empty_weapons')}</p>` : '';
         inv.ownedWeaponIds.forEach(id => {
             const w = weaponsData.find(x=>x.id===id); if (!w) return;
             const isEq = inv.equippedWeaponId === id;
             wHtml += `<div class="card" style="border:2px solid ${isEq?'var(--ok)':w.color};">
-                <h3 style="color:${w.color};">${t(w.name)} ${isEq?'<span style="color:var(--ok);font-size:12px;">[ԿԲ]</span>':''}</h3>
+                <h3 style="color:${w.color};">${t(w.name)} ${isEq?'<span style="color:var(--ok);font-size:12px;">['+t('inv.equipped')+']</span>':''}</h3>
                 <p style="font-size:13px;margin-bottom:12px;">⚡ +${Math.round(w.crimeBonus*100)}% &nbsp;|&nbsp; 🛡️ -${w.hpProtect} HP</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button style="background:${isEq?'var(--ok)':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipWeapon('${id}')">${isEq?'✅ Կ. Բ.':'🔫 Հ. Կ.'}</button>
-                    ${isEq?'':'<button style="background:var(--accent);width:auto;padding:10px 16px;" onclick="sellWeapon(\''+id+'\')">Վ. ($'+Math.floor(w.price*0.5).toLocaleString()+')</button>'}
+                    <button style="background:${isEq?'var(--ok)':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipWeapon('${id}')">${isEq?t('inv.equipped'):t('inv.equip')}</button>
+                    ${isEq?'':'<button style="background:var(--accent);width:auto;padding:10px 16px;" onclick="sellWeapon(\''+id+'\')">'+t('inv.sell')+' ($'+Math.floor(w.price*0.5).toLocaleString()+')</button>'}
                 </div>
             </div>`;
         });
@@ -5521,16 +5529,16 @@ function renderInventory() {
 
         // OWNED ARMOR
         let aHtml = inv.ownedArmorIds.length === 0
-            ? '<p style="color:var(--text);">Զրահ չկա — գնիր Խ. ներդիրից</p>' : '';
+            ? `<p style="color:var(--text);">${t('inv.empty_armor')}</p>` : '';
         inv.ownedArmorIds.forEach(id => {
             const a = armorData.find(x=>x.id===id); if (!a) return;
             const isEq = inv.equippedArmorId === id;
             aHtml += `<div class="card" style="border:2px solid ${isEq?'#0a84ff':a.color};">
-                <h3 style="color:${a.color};">${t(a.name)} ${isEq?'<span style="color:#0a84ff;font-size:12px;">[ԿԲ]</span>':''}</h3>
+                <h3 style="color:${a.color};">${t(a.name)} ${isEq?'<span style="color:#0a84ff;font-size:12px;">['+t('inv.equipped')+']</span>':''}</h3>
                 <p style="font-size:13px;margin-bottom:12px;">🛡️ -${a.hpProtect} HP կ.</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button style="background:${isEq?'#0a84ff':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipArmor('${id}')">${isEq?'✅ Կ. Բ.':'🛡️ Հ. Կ.'}</button>
-                    ${isEq?'':'<button style="background:var(--accent);width:auto;padding:10px 16px;" onclick="sellArmor(\''+id+'\')">Վ. ($'+Math.floor(a.price*0.5).toLocaleString()+')</button>'}
+                    <button style="background:${isEq?'#0a84ff':'var(--border)'};color:${isEq?'#fff':'var(--text-l)'};width:auto;padding:10px 18px;" onclick="equipArmor('${id}')">${isEq?t('inv.equipped'):t('inv.wear')}</button>
+                    ${isEq?'':'<button style="background:var(--accent);width:auto;padding:10px 16px;" onclick="sellArmor(\''+id+'\')">'+t('inv.sell')+' ($'+Math.floor(a.price*0.5).toLocaleString()+')</button>'}
                 </div>
             </div>`;
         });
@@ -5543,11 +5551,11 @@ function buyWeapon(id) {
     if (!player.inventory) player.inventory = { ownedWeaponIds:[], equippedWeaponId:null, ownedArmorIds:[], equippedArmorId:null };
     const w = weaponsData.find(x=>x.id===id); if (!w) return;
     if (player.inventory.ownedWeaponIds.includes(id)) return showNotification(t('notif.already_have'), false);
-    if (!playerHasRank(w.reqRank)) return showNotification(`Կոչ. ${w.reqRank} անհ.`, false);
-    if (player.money < w.price) return showNotification(`$${w.price.toLocaleString()} չկա`, false);
+    if (!playerHasRank(w.reqRank)) return showNotification(t('inv.rank_required').replace('{rank}', w.reqRank), false);
+    if (player.money < w.price) return showNotification(t('notif.no_money'), false);
     player.money -= w.price;
     player.inventory.ownedWeaponIds.push(id);
-    showNotification(`🔫 ${w.name} գնվեց!`, true);
+    showNotification(t('notif.item_bought').replace('{item}', t(w.name)), true);
     spawnFloatMoney(w.price, false);
     playTone('upgrade', .25);
     updateUI(); renderInventory();
@@ -5556,11 +5564,11 @@ function buyArmor(id) {
     if (!player.inventory) player.inventory = { ownedWeaponIds:[], equippedWeaponId:null, ownedArmorIds:[], equippedArmorId:null };
     const a = armorData.find(x=>x.id===id); if (!a) return;
     if (player.inventory.ownedArmorIds.includes(id)) return showNotification(t('notif.already_have'), false);
-    if (!playerHasRank(a.reqRank)) return showNotification(`Կոչ. ${a.reqRank} անհ.`, false);
-    if (player.money < a.price) return showNotification(`$${a.price.toLocaleString()} չկա`, false);
+    if (!playerHasRank(a.reqRank)) return showNotification(t('inv.rank_required').replace('{rank}', a.reqRank), false);
+    if (player.money < a.price) return showNotification(t('notif.no_money'), false);
     player.money -= a.price;
     player.inventory.ownedArmorIds.push(id);
-    showNotification(`🛡️ ${a.name} գնվեց!`, true);
+    showNotification(t('notif.item_bought').replace('{item}', t(a.name)), true);
     spawnFloatMoney(a.price, false);
     playTone('upgrade', .25);
     updateUI(); renderInventory();
@@ -5569,14 +5577,14 @@ function equipWeapon(id) {
     if (!player.inventory) return;
     player.inventory.equippedWeaponId = player.inventory.equippedWeaponId === id ? null : id;
     const w = weaponsData.find(x=>x.id===id);
-    showNotification(player.inventory.equippedWeaponId ? `🔫 ${w?w.name:''} հ. կ.` : '🔫 Հ. կ. հ.', true);
+    showNotification(player.inventory.equippedWeaponId ? t('notif.item_equipped').replace('{item}', w?t(w.name):'') : t('notif.item_unequipped'), true);
     playTone('coin', .1); renderInventory();
 }
 function equipArmor(id) {
     if (!player.inventory) return;
     player.inventory.equippedArmorId = player.inventory.equippedArmorId === id ? null : id;
     const a = armorData.find(x=>x.id===id);
-    showNotification(player.inventory.equippedArmorId ? `🛡️ ${a?a.name:''} հ. կ.` : '🛡️ Հ. կ. հ.', true);
+    showNotification(player.inventory.equippedArmorId ? t('notif.item_equipped').replace('{item}', a?t(a.name):'') : t('notif.item_unequipped'), true);
     playTone('coin', .1); renderInventory();
 }
 function sellWeapon(id) {
@@ -5586,7 +5594,7 @@ function sellWeapon(id) {
     player.inventory.ownedWeaponIds = player.inventory.ownedWeaponIds.filter(x=>x!==id);
     if (player.inventory.equippedWeaponId === id) player.inventory.equippedWeaponId = null;
     player.money += sp;
-    showNotification(`Վ. ${w.name} $${sp.toLocaleString()}`, true);
+    showNotification(t('notif.item_sold').replace('{item}', t(w.name)).replace('{amount}', sp.toLocaleString()), true);
     spawnFloatMoney(sp, true); playTone('coin', .2);
     updateUI(); renderInventory();
 }
@@ -5597,7 +5605,7 @@ function sellArmor(id) {
     player.inventory.ownedArmorIds = player.inventory.ownedArmorIds.filter(x=>x!==id);
     if (player.inventory.equippedArmorId === id) player.inventory.equippedArmorId = null;
     player.money += sp;
-    showNotification(`Վ. ${a.name} $${sp.toLocaleString()}`, true);
+    showNotification(t('notif.item_sold').replace('{item}', t(a.name)).replace('{amount}', sp.toLocaleString()), true);
     spawnFloatMoney(sp, true); playTone('coin', .2);
     updateUI(); renderInventory();
 }

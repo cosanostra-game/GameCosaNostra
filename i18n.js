@@ -293,6 +293,10 @@ const RU = {
   'notif.bad_amount':   'Пожалуйста, введите корректную сумму или количество.',
   'notif.only_mafioso': 'Доступно только со звания Мафиози.',
   'notif.already_have':  'У вас уже есть этот предмет.',
+  'notif.item_bought':   'Куплено: {item}',
+  'notif.item_equipped': 'Экипировано: {item}',
+  'notif.item_unequipped':'Снято',
+  'notif.item_sold':     'Продано: {item} за ${amount}',
   'notif.arrested':      '🚔 Вы арестованы!',
   'notif.avatar_error':  'Ошибка при обновлении аватара',
   'notif.avatar_updated':'Аватар обновлён ✓',
@@ -400,6 +404,10 @@ const RU = {
   'inv.wear':           '🛡️ Надеть',
   'inv.already_owned':  '✅ Куплено',
   'inv.rank_required':  '🔒 Требуется: {rank}',
+  'inv.sell':           'Продать',
+  'inv.none':           '— Нет —',
+  'inv.empty_weapons':  'Оружия нет — купи во вкладке Магазин',
+  'inv.empty_armor':    'Брони нет — купи во вкладке Магазин',
 
   // ── Casino ───────────────────────────────────────────
   'casino.roulette':  'Рулетка',
@@ -1099,6 +1107,10 @@ const HY = {
   'notif.bad_amount':   'Խնդրում ենք մուտքագրել ճիշտ և վավեր գումար կամ քանակ:',
   'notif.only_mafioso': 'Այս խաղն հասանելի է միայն Մաֆիոզ և բարձր կոչում ունեցողներին:',
   'notif.already_have':  'Այս իրը դուք արդեն ունեք:',
+  'notif.item_bought':   'Գնված է՝ {item}',
+  'notif.item_equipped': '{item} կրում ես',
+  'notif.item_unequipped':'Հանվեց',
+  'notif.item_sold':     'Վաճառված է՝ {item} ${amount}-ով',
   'notif.arrested':      '🚔 Դուք ձերբակալված եք:',
   'notif.avatar_error':  'Սխալ ավատարը թարմացնելիս',
   'notif.avatar_updated':'Ավատարը թարմացվեց ✓',
@@ -1206,6 +1218,10 @@ const HY = {
   'inv.wear':           '🛡️ Հագնել',
   'inv.already_owned':  '✅ Գնված',
   'inv.rank_required':  '🔒 Պահանջվում է՝ {rank}',
+  'inv.sell':           'Վաճառել',
+  'inv.none':           '— Ոչ մեկը —',
+  'inv.empty_weapons':  'Զենք չկա — գնիր Խանութ ներդիրից',
+  'inv.empty_armor':    'Զրահ չկա — գնիր Խանութ ներդիրից',
 
   // ── Casino ───────────────────────────────────────────
   'casino.roulette':  'Ռուլետկա',
