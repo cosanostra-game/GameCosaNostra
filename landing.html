@@ -1654,8 +1654,8 @@ canvas {
     </div>
 </div>
 
-<!-- AUTH SCREEN — disabled, auth handled in landing.html -->
-<div id="auth-screen" style="display:none!important;">
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="display:none;">
     <div class="auth-card">
         <div class="auth-logo">
             <div class="pre-title">COSA <span>NOSTRA</span></div>
@@ -3208,6 +3208,7 @@ canvas {
     </div>
 </div>
 
+<script src="api.js"></script>
 <script src="i18n.js"></script>
 <script>
 // ==========================================
@@ -3219,11 +3220,8 @@ canvas {
 // ══════════════════════════════════════════
 //   API CONFIG & AUTH SYSTEM (Cloud-based)
 // ══════════════════════════════════════════
-// 🔧 ԱՅՍ URL-Ն ՓՈԽԵՔ ՁԵՐ SERVER URL-Ի ՎՐԱ
-// Render/Railway: 'https://cosa-nostra.onrender.com'
-// Local:          'http://localhost:5000'
-const API_BASE  = 'https://cosa-nostra.onrender.com'; // ← ԱՅՍ ՓՈԽԵՔ ՁԵՐ RENDER URL-Ի ՎՐԱ
-const TOKEN_KEY = 'cosaNostra_JWT';
+// 🔧 API_BASE, TOKEN_KEY, getToken/saveToken/clearToken are provided by
+// api.js (loaded above) — not redeclared here to avoid clashing with it.
 
 // ── In-memory current user cache ──────────────
 // { id, name, email, avatarColor, avatarImg, bio, createdAt }
@@ -3237,86 +3235,10 @@ const AVATAR_COLORS = [
     '#ff375f','#ac8e68','#636366','#1c1c1e'
 ];
 
-// ── Token helpers ──────────────────────────────
-function getToken()   { return localStorage.getItem(TOKEN_KEY); }
-function saveToken(t) { localStorage.setItem(TOKEN_KEY, t); }
-function clearToken() { localStorage.removeItem(TOKEN_KEY); }
-
-// ── Local account store (no external backend is configured) ──
-// Accounts, profile edits and cloud-save sync are all handled locally
-// in the browser (localStorage). Multiplayer-only features (friends,
-// families, leaderboard, live chat, transfers) require a real server
-// and are unavailable — call sites already degrade gracefully on error.
-const LOCAL_USERS_KEY = 'cosaNostra_localUsers';
-
-function _localUsers() {
-    try { return JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '{}'); } catch (e) { return {}; }
-}
-function _saveLocalUsers(users) { localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users)); }
-function _simpleHash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) { h = (h << 5) - h + str.charCodeAt(i); h |= 0; }
-    return String(h);
-}
-function _genLocalId() { return 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-function _publicUser(u) { const { _pw, ...pub } = u; return pub; }
-function _userByToken(token, users) {
-    const id = (token || '').replace('local_', '');
-    return Object.values(users).find(u => u.id === id) || null;
-}
-
-// ── API fetch wrapper ──────────────────────────
-// No external backend is configured for this game, so account/profile/
-// save data is stored locally. Everything else rejects instantly (no
-// network call, no delay) and is caught by the calling code.
-async function apiCall(endpoint, method = 'GET', body = null) {
-    const users = _localUsers();
-
-    if (endpoint === '/auth/register' && method === 'POST') {
-        const email = (body.email || '').toLowerCase();
-        if (users[email]) throw new Error(t('auth.err.emailTaken'));
-        const user = {
-            id: _genLocalId(), name: body.name, email,
-            avatarColor: body.avatarColor, avatarImg: null, bio: '',
-            createdAt: new Date().toISOString(), _pw: _simpleHash(body.password)
-        };
-        users[email] = user;
-        _saveLocalUsers(users);
-        return { token: 'local_' + user.id, user: _publicUser(user) };
-    }
-
-    if (endpoint === '/auth/login' && method === 'POST') {
-        const email = (body.email || '').toLowerCase();
-        const user = users[email];
-        if (!user || user._pw !== _simpleHash(body.password)) throw new Error(t('auth.err.invalidCreds'));
-        return { token: 'local_' + user.id, user: _publicUser(user) };
-    }
-
-    if (endpoint === '/auth/me' && method === 'GET') {
-        const user = _userByToken(getToken(), users);
-        if (!user) throw new Error('unauthorized');
-        return { user: _publicUser(user) };
-    }
-
-    if (endpoint === '/auth/profile' && method === 'PATCH') {
-        const user = _userByToken(getToken(), users);
-        if (!user) throw new Error('unauthorized');
-        Object.assign(user, body);
-        users[user.email] = user;
-        _saveLocalUsers(users);
-        return { user: _publicUser(user) };
-    }
-
-    if (endpoint === '/auth/account' && method === 'DELETE') {
-        const user = _userByToken(getToken(), users);
-        if (user) { delete users[user.email]; _saveLocalUsers(users); }
-        return { ok: true };
-    }
-
-    // Multiplayer/cloud-only endpoints (/families/*, /game/*, leaderboard, chat, etc.)
-    throw new Error('offline');
-}
-
+// ── Real backend API ───────────────────────────
+// apiCall(endpoint, method, body) is provided by api.js (loaded above),
+// which talks to the real server at API_BASE via apiRequest().
+const apiCall = apiRequest;
 
 // ── Family API stubs (apiCall-based) ──────────────────────────────────────
 async function apiGetFamilyInvites()             { try { return await apiCall('/families/invites'); }          catch(e) { return []; } }
@@ -6272,7 +6194,7 @@ setInterval(() => {
 // ==========================================
 //   SOCKET.IO — Real-time bancayin mutoqner
 // ==========================================
-let _socket = null;
+// _socket is declared by api.js (loaded above); reused here as-is.
 
 function initSocket() {
     // No external backend is configured for this deployment, so real-time
