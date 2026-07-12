@@ -3765,8 +3765,8 @@ class Item {
 //   OOP — WEAPON CLASS  (extends Item)
 // ==========================================
 class Weapon extends Item {
-    constructor({ id, name, price, desc, color, crimeBonus = 0, hpProtect = 0, reqRank = null }) {
-        super({ id, name, price, desc, color });
+    constructor({ id, name, nameKey, price, desc, descKey, color, crimeBonus = 0, hpProtect = 0, reqRank = null }) {
+        super({ id, name, nameKey, price, desc, descKey, color });
         this.crimeBonus = crimeBonus;
         this.hpProtect  = hpProtect;
         this.reqRank    = reqRank;
@@ -3779,8 +3779,8 @@ class Weapon extends Item {
 //   OOP — ARMOR CLASS  (extends Item)
 // ==========================================
 class Armor extends Item {
-    constructor({ id, name, price, desc, color, hpProtect = 0, reqRank = null }) {
-        super({ id, name, price, desc, color });
+    constructor({ id, name, nameKey, price, desc, descKey, color, hpProtect = 0, reqRank = null }) {
+        super({ id, name, nameKey, price, desc, descKey, color });
         this.hpProtect = hpProtect;
         this.reqRank   = reqRank;
     }
