@@ -4752,7 +4752,10 @@ function attemptAction(type, cost, min, max, chance) {
         player.stats.crimes++;
         player.stats.earnings += prize;
 
-        showNotification(`✅ Հաջողություն! +$${prize} (+${cost} XP)`, true);
+        updateQuestProgress('crime', 1);
+        updateQuestProgress('earn', prize);
+
+        showNotification(`✅ Հաջողություն! +${prize} (+${cost} XP)`, true);
         spawnFloatMoney(prize, true);
         playTone('coin', .25);
     } else {
@@ -4787,6 +4790,8 @@ function attemptCarTheft(type, cost, chance) {
         player.garage.push(new Car({ name: car.name, price, imgUrl: car.imgUrl }));
         player.exp += cost;
         player.stats.cars++;
+        updateQuestProgress('car', 1);
+        updateQuestProgress('earn', price);
         showNotification(`🚗 Գողացվել է ${car.name} (+${cost} XP)`, true);
         spawnFloatMoney(price, true);
         playTone('success', .2);
@@ -5614,7 +5619,7 @@ function gamble(chosen) {
     // Max bet cap to limit easy winnings
     const MAX_BET = 5000;
     if (amt > MAX_BET) return showNotification(`${t('notif.max_bet')} $${MAX_BET.toLocaleString()}`, false);
-    player.money -= amt; updateUI(); isSpinning=true;
+    player.money -= amt; updateUI(); isSpinning=true; updateQuestProgress('casino', 1);
     document.getElementById('btn-red').disabled=true;
     document.getElementById('btn-black').disabled=true;
     document.getElementById('roulette-result').innerHTML='';
@@ -5642,8 +5647,8 @@ function gamble(chosen) {
         document.getElementById('btn-black').disabled=false;
         if (isWin) {
             // Payout 1.9x instead of 2x — house edge
-            let win=Math.floor(amt*1.9); player.money+=win; player.stats.earnings+=win-amt;
-            showNotification(`🎉 +$${win}`, true);
+            let win=Math.floor(amt*1.9); player.money+=win; player.stats.earnings+=win-amt; updateQuestProgress('earn', win);
+            showNotification(`🎉 +${win}`, true);
             spawnFloatMoney(win, true);
             document.getElementById('roulette-result').innerHTML=`<span style="color:var(--ok)">+$${win} | ${wColor}</span>`;
         } else {
@@ -5665,7 +5670,7 @@ function spinSlots() {
     if (isSlotSpinning||player.inPrison) return;
     let amt=Math.floor(Number(document.getElementById('slotBetAmt').value));
     if (isNaN(amt)||!isFinite(amt)||amt<=0||player.money<amt) return showNotification(t('notif.wrong_amount'), false);
-    player.money-=amt; updateUI(); isSlotSpinning=true;
+    player.money-=amt; updateUI(); isSlotSpinning=true; updateQuestProgress('casino', 1);
     document.getElementById('btn-spin-slot').disabled=true;
     document.getElementById('slot-result').innerHTML='';
     let reels=[document.getElementById('reel1'),document.getElementById('reel2'),document.getElementById('reel3')];
@@ -5684,7 +5689,7 @@ function checkSlotWin(res, bet) {
     let w=0, r1=res[0],r2=res[1],r3=res[2];
     if (r1===r2&&r2===r3) { if(r1==='7️⃣')w=bet*15; else if(r1==='💎')w=bet*8; else if(r1==='🔔')w=bet*4; else w=bet*2; }
     else if (r1===r2||r2===r3||r1===r3) w=Math.floor(bet*1.2);
-    if (w>0) { player.money+=w; player.stats.earnings+=w-bet; showNotification(`🎰 +$${w}`, true); playTone('success',.4); spawnFloatMoney(w,true); document.getElementById('slot-result').innerHTML=`<span style="color:var(--ok)">+$${w}!</span>`; }
+    if (w>0) { player.money+=w; player.stats.earnings+=w-bet; updateQuestProgress('earn', w); showNotification(`🎰 +${w}`, true); playTone('success',.4); spawnFloatMoney(w,true); document.getElementById('slot-result').innerHTML=`<span style="color:var(--ok)">+$${w}!</span>`; }
     else { showNotification(t('notif.casino_sorry'), false); playTone('fail',.3); document.getElementById('slot-result').innerHTML=`<span style="color:var(--accent)">${t('notif.casino_sorry')}</span>`; }
     updateUI();
 }
@@ -5836,40 +5841,78 @@ function stashAction(type) {
     updateUI();
 }
 
+// ==========================================
+//   DAILY QUESTS SYSTEM (ՆՈՐ, ԹԱՐՄԱՑՎՈՂ)
+// ==========================================
+
+const QUEST_POOL = [
+    { type: 'crime',   descKey: 'quest.type.crime',   target: 5,    reward: 500 },
+    { type: 'crime',   descKey: 'quest.type.crime',   target: 10,   reward: 1200 },
+    { type: 'car',     descKey: 'quest.type.car',     target: 2,    reward: 600 },
+    { type: 'car',     descKey: 'quest.type.car',     target: 5,    reward: 1500 },
+    { type: 'earn',    descKey: 'quest.type.earn',    target: 5000, reward: 800 },
+    { type: 'earn',    descKey: 'quest.type.earn',    target: 10000,reward: 1800 },
+    { type: 'passive', descKey: 'quest.type.passive', target: 2000, reward: 400 },
+    { type: 'passive', descKey: 'quest.type.passive', target: 5000, reward: 900 },
+    { type: 'casino',  descKey: 'quest.type.casino',  target: 5,    reward: 300 }
+];
+
+function checkDailyQuests() {
+    if (!player) return;
+    const today = new Date().toDateString();
+    if (!player.quests || player.quests.length === 0 || player.questsDate !== today) {
+        generateQuests();
+        player.questsDate = today;
+        saveGame();
+    }
+}
+
 function generateQuests() {
-    player.quests = [
-        { id: 1, descKey: 'quest.1.desc', target: 3, current: 0, reward: 300 },
-        { id: 2, descKey: 'quest.2.desc', target: 1, current: 0, reward: 600 },
-        { id: 3, descKey: 'quest.3.desc', target: 1500, current: 0, reward: 250 }
-    ];
-    showNotification(t('notif.quests_refresh'), true);
+    let shuffled = [...QUEST_POOL].sort(() => 0.5 - Math.random());
+    player.quests = shuffled.slice(0, 3).map((q, idx) => ({
+        id: idx + 1,
+        type: q.type,
+        descKey: q.descKey,
+        target: q.target,
+        current: 0,
+        reward: q.reward
+    }));
+    if (typeof showNotification === 'function') {
+        showNotification(t('notif.quests_refresh'), true);
+    }
     renderQuests();
 }
 
 function renderQuests() {
     const el = document.getElementById('quest-list');
     if (!el) return;
-    if (!player.quests || player.quests.length === 0) generateQuests();
+    if (!player.quests || player.quests.length === 0) return;
 
     let newHtml = '';
     player.quests.forEach((q, idx) => {
         const isDone = q.current >= q.target;
         const isClaimed = q.current === -1;
         let btnHtml = '';
+
         if (isClaimed) {
             btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">✅ ${t('quest.done')}</button>`;
         } else if (isDone) {
-            btnHtml = `<button style="background:var(--ok);" onclick="claimQuest(${idx})">🎁 ${t('quest.claim')}${q.reward}</button>`;
+            let claimText = t('quest.claim').replace('{reward}', q.reward.toLocaleString());
+            btnHtml = `<button style="background:var(--ok);" onclick="claimQuest(${idx})">🎁 ${claimText}</button>`;
         } else {
             btnHtml = `<button disabled style="background:var(--bg); border:none; color:var(--text);">${q.current} / ${q.target}</button>`;
         }
+
+        let descText = t(q.descKey).replace('{target}', q.target.toLocaleString());
+
         newHtml += `
         <div class="card" style="animation:none;${isDone && !isClaimed ? 'border: 1px solid var(--ok);' : ''}">
-            <h3 style="color:${isClaimed ? 'var(--text)' : 'var(--text-l)'};">${q.descKey ? t(q.descKey) : q.desc}</h3>
-            <p style="color:var(--text);">${t('quest.reward')}: <span style="color:var(--ok); font-weight:bold;">$${q.reward}</span></p>
+            <h3 style="color:${isClaimed ? 'var(--text)' : 'var(--text-l)'};">${descText}</h3>
+            <p style="color:var(--text);">${t('quest.reward')}: <span style="color:var(--ok); font-weight:bold;">${q.reward.toLocaleString()}</span></p>
             ${btnHtml}
         </div>`;
     });
+
     if (el.innerHTML !== newHtml) el.innerHTML = newHtml;
 }
 
@@ -5879,11 +5922,12 @@ function claimQuest(idx) {
         player.money += q.reward;
         player.stats.earnings += q.reward;
         q.current = -1;
-        showNotification(`${t('quest.claimed')}${q.reward}`, true);
+        showNotification(`${t('quest.claimed')}${q.reward.toLocaleString()}`, true);
         spawnFloatMoney(q.reward, true);
         playTone('upgrade', .25);
         updateUI();
         renderQuests();
+        saveGame();
     }
 }
 
@@ -6077,16 +6121,20 @@ async function resetGame() {
 
 // Quest progress tracking hooks
 function updateQuestProgress(type, amount) {
-    if(!player.quests) return;
+    if (!player.quests) return;
+    let updated = false;
     player.quests.forEach(q => {
-        if (q.current === -1) return; 
-        if (type === 'crime' && q.id === 1) q.current += amount;
-        if (type === 'car' && q.id === 2) q.current += amount;
-        if (type === 'passive' && q.id === 3) q.current += amount;
-        if (q.current > q.target) q.current = q.target;
+        if (q.current === -1) return;
+        if (q.type === type && q.current < q.target) {
+            q.current += amount;
+            if (q.current > q.target) q.current = q.target;
+            updated = true;
+        }
     });
-    const pg = document.getElementById('page-quests');
-    if (pg && pg.classList.contains('active')) renderQuests();
+    if (updated) {
+        const pg = document.getElementById('page-quests');
+        if (pg && pg.classList.contains('active')) renderQuests();
+    }
 }
 
 // ==========================================
@@ -6182,11 +6230,7 @@ setInterval(() => {
         
         localStorage.setItem(getSaveKey(), JSON.stringify(player));
         updateUI();
-        if(player.stats.crimes > 0) updateQuestProgress('crime', player.stats.crimes);
-        if(player.stats.cars > 0) updateQuestProgress('car', player.stats.cars);
     }
-    
-    // Quest progress — only check in the 10-second batch below
 }, 1000);
 
 // ==========================================
@@ -6248,6 +6292,7 @@ function disconnectSocket() {
 document.addEventListener('DOMContentLoaded', () => {
     _initDomCache();
     loadGame(false); 
+    checkDailyQuests();
     renderCryptoPills();
     updateUI();
     drawChart();
