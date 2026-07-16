@@ -1452,6 +1452,39 @@ canvas { width: 100%; background: var(--bg); border-radius: 16px; margin-top: 16
 }
 
 
+/* ════════════════════════════════════════════════════════════════
+   CAR THEFT RESULT MODAL — glassmorphism + animations
+════════════════════════════════════════════════════════════════ */
+#car-theft-result-modal .modal-content {
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background: rgba(18, 18, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7), 0 0 0 0.5px rgba(255,255,255,0.04);
+}
+#car-theft-result-modal .modal-header { background: transparent !important; }
+#car-theft-result-modal .modal-body   { background: transparent !important; }
+#ct-btn-garage:hover {
+  background: rgba(52, 199, 89, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(52, 199, 89, 0.25);
+}
+#ct-btn-sell:hover {
+  background: rgba(255, 59, 48, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255, 59, 48, 0.25);
+}
+#ct-btn-garage:active, #ct-btn-sell:active { transform: scale(0.96); }
+#ct-car-image { transition: transform 0.5s ease; }
+#ct-car-image:hover { transform: scale(1.02); }
+@media (max-width: 600px) {
+  #car-theft-result-modal .modal-content {
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 92dvh;
+  }
+  #car-theft-result-modal .modal-body { padding: 16px 16px 24px !important; }
+}
+
 </style>
 
 <!-- MOBILE OPTIMIZATION PATCH -->
@@ -4780,36 +4813,125 @@ function attemptAction(type, cost, min, max, chance) {
 // ==========================================
 //   CAR THEFT
 // ==========================================
+// ==========================================
+//   CAR THEFT — with beautiful result modal
+// ==========================================
 function attemptCarTheft(type, cost, chance) {
-    if (player.inPrison) return;
+    if (player.inPrison) return showNotification(t('notif.in_prison'), false);
     if (player.hp <= 0) return showNotification(t('notif.unconscious'), false);
     if (player.garage.length >= player.garageLimit) return showNotification(t('notif.garage_full'), false);
     if (player.energy < cost) return showNotification(t('notif.no_energy'), false);
-    
+
     player.energy -= cost;
-    let isNight = player.dayTime < 6 || player.dayTime >= 18;
-    let finalChance = chance;
+    var isNight = player.dayTime < 6 || player.dayTime >= 18;
+    var finalChance = chance;
     if (isNight) finalChance += 0.10;
 
     if (Math.random() <= finalChance) {
-        let carList = type === 'cheap' ? cheapCars : expensiveCars;
-        let car = carList[Math.floor(Math.random() * carList.length)];
-        let price = Math.floor(car.basePrice * (0.8 + Math.random() * 0.4));
-        player.garage.push(new Car({ name: car.name, price, imgUrl: car.imgUrl }));
+        var carList = type === 'cheap' ? cheapCars : expensiveCars;
+        var car = carList[Math.floor(Math.random() * carList.length)];
+        var price = Math.floor(car.basePrice * (0.8 + Math.random() * 0.4));
+        var stolenCar = new Car({
+            name: car.name,
+            price: price,
+            imgUrl: car.imgUrl || 'https://loremflickr.com/400/240/car?lock=' + Date.now(),
+            condition: Math.floor(80 + Math.random() * 20),
+            isNew: false,
+            type: type === 'cheap' ? 'sedan' : 'sport'
+        });
+        showCarTheftResult(stolenCar);
         player.exp += cost;
         player.stats.cars++;
         updateQuestProgress('car', 1);
         updateQuestProgress('earn', price);
-        showNotification(`🚗 Գողացվել է ${car.name} (+${cost} XP)`, true);
-        spawnFloatMoney(price, true);
         playTone('success', .2);
-    } else { 
+        checkRank();
+        updateUI();
+    } else {
         player.hp = Math.max(0, player.hp - 10);
-        goToPrison(60); 
-        playTone('fail', .3); 
+        goToPrison(60);
+        playTone('fail', .3);
+        updateUI();
     }
-    checkRank(); updateUI(); renderGarage();
 }
+
+// ==========================================
+//   CAR THEFT RESULT MODAL
+// ==========================================
+var _pendingStolenCar = null;
+
+function showCarTheftResult(car) {
+    _pendingStolenCar = car;
+    var modal = document.getElementById('car-theft-result-modal');
+    if (!modal) return;
+
+    document.getElementById('ct-car-image').src = car.imgUrl || 'https://loremflickr.com/400/240/car?lock=' + Date.now();
+    document.getElementById('ct-car-name').textContent = car.name || '—';
+    document.getElementById('ct-car-price').textContent = car.price.toLocaleString();
+    document.getElementById('ct-car-condition').textContent = car.condition + '%';
+
+    var typeKey = car.type && car.type.toLowerCase();
+    var typeLabel = t('ct.type.other');
+    if (typeKey === 'sport') typeLabel = t('ct.type.sport');
+    else if (typeKey === 'sedan') typeLabel = t('ct.type.sedan');
+    else if (typeKey === 'suv') typeLabel = t('ct.type.suv');
+    document.getElementById('ct-car-type').textContent = typeLabel;
+    document.getElementById('ct-car-type-badge').textContent = typeLabel.toUpperCase();
+
+    var btnGarage = document.getElementById('ct-btn-garage');
+    var btnSell   = document.getElementById('ct-btn-sell');
+    var newGarage = btnGarage.cloneNode(true);
+    var newSell   = btnSell.cloneNode(true);
+    btnGarage.parentNode.replaceChild(newGarage, btnGarage);
+    btnSell.parentNode.replaceChild(newSell, btnSell);
+
+    newGarage.addEventListener('click', function() {
+        if (!_pendingStolenCar) return;
+        if (player.garage.length < player.garageLimit) {
+            player.garage.push(_pendingStolenCar);
+            showNotification(t('ct.garageMsg'), true);
+            spawnFloatMoney(_pendingStolenCar.price, true);
+            playTone('upgrade', .25);
+        } else {
+            showNotification(t('notif.garage_full'), false);
+        }
+        _pendingStolenCar = null;
+        closeCarTheftModal();
+        renderGarage();
+        updateUI();
+    });
+
+    newSell.addEventListener('click', function() {
+        if (!_pendingStolenCar) return;
+        var sellPrice = Math.floor(_pendingStolenCar.price * 0.7);
+        player.money += sellPrice;
+        player.stats.earnings += sellPrice;
+        showNotification(t('ct.soldMsg') + '$' + sellPrice.toLocaleString(), true);
+        spawnFloatMoney(sellPrice, true);
+        playTone('coin', .25);
+        _pendingStolenCar = null;
+        closeCarTheftModal();
+        updateUI();
+    });
+
+    modal.style.display = 'flex';
+    applyLangForModal();
+}
+
+function closeCarTheftModal() {
+    document.getElementById('car-theft-result-modal').style.display = 'none';
+    _pendingStolenCar = null;
+}
+
+function applyLangForModal() {
+    var modal = document.getElementById('car-theft-result-modal');
+    if (!modal) return;
+    document.querySelectorAll('#car-theft-result-modal [data-i18n]').forEach(function(el) {
+        var key = el.dataset.i18n;
+        if (key && t(key) !== undefined) el.textContent = t(key);
+    });
+}
+
 
 // ==========================================
 //   GARAGE

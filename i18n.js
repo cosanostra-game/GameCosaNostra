@@ -816,6 +816,20 @@ const RU = {
   'ui.hp_units':     'единиц здоровья',
   'bank.deposited':  'внесено в банк',
   'bank.withdrawn':  'снято из банка',
+  // ── Car Theft Modal ──────────────────────────
+  'ct.modal.title':    '🚗 Машина угнана',
+  'ct.carName':        'Название',
+  'ct.condition':      'Состояние',
+  'ct.type':           'Тип',
+  'ct.btnGarage':      '🚗 В гараж',
+  'ct.btnSell':        '💰 Продать сразу',
+  'ct.addedToGarageHint': 'Этот автомобиль добавлен в ваш гараж. Выберите действие:',
+  'ct.soldMsg':        'Машина продана за ',
+  'ct.garageMsg':      'Машина добавлена в гараж',
+  'ct.type.sport':     'Спорт',
+  'ct.type.sedan':     'Седан',
+  'ct.type.suv':       'Ամենագնաց',
+  'ct.type.other':     'Այլ',
 };
 
 const HY = {
@@ -1630,6 +1644,20 @@ const HY = {
   'ui.hp_units':     'առողջության միավորներ',
   'bank.deposited':  'մուտքագրված է բանկ',
   'bank.withdrawn':  'հանված է բանկից',
+  // ── Car Theft Modal ──────────────────────────
+  'ct.modal.title':    '🚗 Մեքենա է գողացվել',
+  'ct.carName':        'Անվանում',
+  'ct.condition':      'Վիճակ',
+  'ct.type':           'Տեսակ',
+  'ct.btnGarage':      '🚗 Տեղափոխել ավտոտնակ',
+  'ct.btnSell':        '💰 Վաճառել միանգամից',
+  'ct.addedToGarageHint': 'Այս մեքենան ավելացվել է ձեր ավտոտնակում։ Ընտրեք գործողություն՝',
+  'ct.soldMsg':        'Մեքենան վաճառվել է ',
+  'ct.garageMsg':      'Մեքենան ավելացվել է ավտոտնակում',
+  'ct.type.sport':     'Սպորտային',
+  'ct.type.sedan':     'Սեդան',
+  'ct.type.suv':       'Ամենագնաց',
+  'ct.type.other':     'Այլ',
 };
 
 // ═══════════════════════════════════════════════════════
@@ -1809,6 +1837,25 @@ function applyLang() {
       if (pageId === 'inventory' && typeof renderInventory === 'function') renderInventory();
     }
   });
+  // 12. Car theft modal static texts (if modal is open)
+  var ctModal = document.getElementById('car-theft-result-modal');
+  if (ctModal && ctModal.style.display !== 'none') {
+    document.querySelectorAll('#car-theft-result-modal [data-i18n]').forEach(function(el) {
+      var key = el.dataset.i18n;
+      if (key && t(key) !== undefined) el.textContent = t(key);
+    });
+    var typeEl = document.getElementById('ct-car-type');
+    if (typeEl && typeof _pendingStolenCar !== 'undefined' && _pendingStolenCar) {
+      var typeKey = _pendingStolenCar.type && _pendingStolenCar.type.toLowerCase();
+  'ct.type.other';     'Այլ';
+      if (typeKey === 'sport') typeLabel = t('ct.type.sport');
+      else if (typeKey === 'sedan') typeLabel = t('ct.type.sedan');
+  'ct.type.suv';       'Ամենագնաց',
+      typeEl.textContent = typeLabel;
+      var badge = document.getElementById('ct-car-type-badge');
+      if (badge) badge.textContent = typeLabel.toUpperCase();
+    }
+  }
 }
 
 const SELECTOR_MAP = {
