@@ -53,6 +53,92 @@
       .map-zoom-btn:hover { background:rgba(255,200,0,0.15); }
       .map-hud-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
       .map-hud-title { font-family:'Courier New',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,200,0,0.45); }
+/* ══════════════════════════════════════════════
+   CAR THEFT ANIMATED WINDOW
+══════════════════════════════════════════════ */
+.ct-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99999;
+    display: none; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.8s ease;
+}
+.ct-overlay.show {
+    display: flex; opacity: 1;
+}
+
+.ct-window {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 32px 28px;
+    max-width: 380px; width: 92%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(50px) scale(0.92);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+}
+.ct-overlay.show .ct-window {
+    transform: translateY(0) scale(1);
+}
+
+.ct-glow {
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 50% 0%, rgba(255,59,48,0.15), transparent 55%);
+    pointer-events: none; z-index: 0;
+}
+
+.ct-header {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    margin-bottom: 20px;
+}
+.ct-header i { font-size: 32px; color: var(--accent); animation: pulseGlow 2s infinite; }
+
+.ct-title {
+    font-size: 20px; font-weight: 800; color: var(--text-l);
+    letter-spacing: 2px; font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase; text-align: center;
+}
+
+.ct-image-wrapper {
+    position: relative; z-index: 1;
+    height: 190px; margin-bottom: 24px;
+    border-radius: 18px; overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.ct-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+.ct-info { position: relative; z-index: 1; margin-bottom: 28px; }
+.ct-car-name { font-size: 22px; font-weight: 800; color: var(--text-l); margin-bottom: 12px; text-align: center; }
+
+.ct-stats { display: flex; flex-direction: column; gap: 8px; }
+.ct-stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600; color: var(--text);
+    padding: 10px 14px; background: var(--bg);
+    border-radius: 12px; border: 1px solid var(--border);
+}
+.ct-stat-val { font-weight: 800; color: var(--text-l); font-size: 14px; }
+
+.ct-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; }
+.ct-btn {
+    width: 100%; padding: 16px; border-radius: 16px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: all 0.3s ease; border: none; letter-spacing: 0.5px;
+}
+.ct-btn.primary { background: var(--accent); color: #fff; box-shadow: 0 8px 24px rgba(255,59,48,0.3); }
+.ct-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255,59,48,0.4); }
+.ct-btn.secondary { background: var(--panel-solid); color: var(--text-l); border: 1px solid var(--border); box-shadow: var(--shadow); }
+.ct-btn.secondary:hover { background: var(--border); transform: translateY(-2px); }
+
     </style>
     <style>
         /* Fallback until Montserrat loads */
@@ -4839,7 +4925,32 @@ function attemptCarTheft(type, cost, chance) {
             isNew: false,
             type: type === 'cheap' ? 'sedan' : 'sport'
         });
-        showCarTheftResult(stolenCar);
+        triggerCarTheft(
+            {
+                name: stolenCar.name,
+                image: stolenCar.imgUrl,
+                speed: type === 'cheap' ? Math.floor(160 + Math.random() * 60) : Math.floor(240 + Math.random() * 80),
+                condition: stolenCar.condition,
+                price: stolenCar.price
+            },
+            localStorage.getItem('cnLang') || 'hy',
+            function() {
+                if (player.garage.length < player.garageLimit) {
+                    player.garage.push(stolenCar);
+                    showNotification(t('ct.garageMsg') || 'Ավելացվեց ավտոտնակ', true);
+                    spawnFloatMoney(stolenCar.price, true);
+                    playTone('upgrade', .25);
+                } else { showNotification(t('notif.garage_full'), false); }
+                renderGarage(); updateUI();
+            },
+            function() {
+                var sellPrice = Math.floor(stolenCar.price * 0.7);
+                player.money += sellPrice; player.stats.earnings += sellPrice;
+                showNotification((t('ct.soldMsg') || 'Վաճառվեց ') + '$' + sellPrice.toLocaleString(), true);
+                spawnFloatMoney(sellPrice, true);
+                playTone('coin', .25); updateUI();
+            }
+        );
         player.exp += cost;
         player.stats.cars++;
         updateQuestProgress('car', 1);
@@ -4855,83 +4966,85 @@ function attemptCarTheft(type, cost, chance) {
     }
 }
 
-// ==========================================
-//   CAR THEFT RESULT MODAL
-// ==========================================
-var _pendingStolenCar = null;
+// ══════════════════════════════════════════════
+//   CAR THEFT ANIMATED WINDOW — JS
+// ══════════════════════════════════════════════
+const ctTranslations = {
+    hy: {
+        title: "ՀԱՋՈՂ ԳՈՂՈՒԹՅՈՒՆ",
+        speed: "Արագություն",
+        condition: "Վիճակ",
+        value: "Արժեք",
+        btnGarage: "Տեղափոխել ավտոտնակ",
+        btnSell: "Վաճառել միանգամից"
+    },
+    ru: {
+        title: "УДАЧНЫЙ УГОН",
+        speed: "Скорость",
+        condition: "Состояние",
+        value: "Стоимость",
+        btnGarage: "Переместить в гараж",
+        btnSell: "Продать сразу"
+    }
+};
 
-function showCarTheftResult(car) {
-    _pendingStolenCar = car;
-    var modal = document.getElementById('car-theft-result-modal');
-    if (!modal) return;
+function triggerCarTheft(carData, currentLang, onGarageClick, onSellClick) {
+    const overlay = document.getElementById('car-theft-modal');
+    const t = ctTranslations[currentLang] || ctTranslations['hy'];
 
-    document.getElementById('ct-car-image').src = car.imgUrl || 'https://loremflickr.com/400/240/car?lock=' + Date.now();
-    document.getElementById('ct-car-name').textContent = car.name || '—';
-    document.getElementById('ct-car-price').textContent = car.price.toLocaleString();
-    document.getElementById('ct-car-condition').textContent = car.condition + '%';
+    document.getElementById('ct-title').innerText = t.title;
+    document.getElementById('ct-car-name').innerText = carData.name;
+    document.getElementById('ct-image').src = carData.image;
 
-    var typeKey = car.type && car.type.toLowerCase();
-    var typeLabel = t('ct.type.other');
-    if (typeKey === 'sport') typeLabel = t('ct.type.sport');
-    else if (typeKey === 'sedan') typeLabel = t('ct.type.sedan');
-    else if (typeKey === 'suv') typeLabel = t('ct.type.suv');
-    document.getElementById('ct-car-type').textContent = typeLabel;
-    document.getElementById('ct-car-type-badge').textContent = typeLabel.toUpperCase();
+    const statsContainer = document.getElementById('ct-stats-container');
+    statsContainer.innerHTML = `
+        <div class="ct-stat-row">
+            <span>${t.speed}</span>
+            <span class="ct-stat-val">${carData.speed} կմ/ժ</span>
+        </div>
+        <div class="ct-stat-row">
+            <span>${t.condition}</span>
+            <span class="ct-stat-val" style="color: var(--warn);">${carData.condition}%</span>
+        </div>
+        <div class="ct-stat-row">
+            <span>${t.value}</span>
+            <span class="ct-stat-val" style="color: var(--ok);">$${carData.price}</span>
+        </div>
+    `;
 
-    var btnGarage = document.getElementById('ct-btn-garage');
-    var btnSell   = document.getElementById('ct-btn-sell');
-    var newGarage = btnGarage.cloneNode(true);
-    var newSell   = btnSell.cloneNode(true);
-    btnGarage.parentNode.replaceChild(newGarage, btnGarage);
-    btnSell.parentNode.replaceChild(newSell, btnSell);
+    const btnGarage = document.getElementById('ct-btn-garage');
+    const btnSell = document.getElementById('ct-btn-sell');
+    btnGarage.innerText = t.btnGarage;
+    btnSell.innerText = t.btnSell;
 
-    newGarage.addEventListener('click', function() {
-        if (!_pendingStolenCar) return;
-        if (player.garage.length < player.garageLimit) {
-            player.garage.push(_pendingStolenCar);
-            showNotification(t('ct.garageMsg'), true);
-            spawnFloatMoney(_pendingStolenCar.price, true);
-            playTone('upgrade', .25);
-        } else {
-            showNotification(t('notif.garage_full'), false);
-        }
-        _pendingStolenCar = null;
+    const newBtnGarage = btnGarage.cloneNode(true);
+    const newBtnSell = btnSell.cloneNode(true);
+    btnGarage.parentNode.replaceChild(newBtnGarage, btnGarage);
+    btnSell.parentNode.replaceChild(newBtnSell, btnSell);
+
+    newBtnGarage.addEventListener('click', () => {
         closeCarTheftModal();
-        renderGarage();
-        updateUI();
+        if (onGarageClick) onGarageClick(carData);
     });
 
-    newSell.addEventListener('click', function() {
-        if (!_pendingStolenCar) return;
-        var sellPrice = Math.floor(_pendingStolenCar.price * 0.7);
-        player.money += sellPrice;
-        player.stats.earnings += sellPrice;
-        showNotification(t('ct.soldMsg') + '$' + sellPrice.toLocaleString(), true);
-        spawnFloatMoney(sellPrice, true);
-        playTone('coin', .25);
-        _pendingStolenCar = null;
+    newBtnSell.addEventListener('click', () => {
         closeCarTheftModal();
-        updateUI();
+        if (onSellClick) onSellClick(carData);
     });
 
-    modal.style.display = 'flex';
-    applyLangForModal();
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            overlay.classList.add('show');
+        });
+    });
 }
 
 function closeCarTheftModal() {
-    document.getElementById('car-theft-result-modal').style.display = 'none';
-    _pendingStolenCar = null;
+    const overlay = document.getElementById('car-theft-modal');
+    overlay.classList.remove('show');
+    setTimeout(() => { overlay.style.display = 'none'; }, 800);
 }
-
-function applyLangForModal() {
-    var modal = document.getElementById('car-theft-result-modal');
-    if (!modal) return;
-    document.querySelectorAll('#car-theft-result-modal [data-i18n]').forEach(function(el) {
-        var key = el.dataset.i18n;
-        if (key && t(key) !== undefined) el.textContent = t(key);
-    });
-}
-
 
 // ==========================================
 //   GARAGE
@@ -7998,5 +8111,27 @@ function playBubbleSound() {
     } catch(e) {}
 }
 </script>
+<!-- Գողացված մեքենայի պատուհան / Car Theft Modal -->
+<div id="car-theft-modal" class="ct-overlay">
+    <div class="ct-window">
+        <div class="ct-glow"></div>
+        <div class="ct-header">
+            <i class="material-icons">no_crash</i>
+            <h2 id="ct-title" class="ct-title">...</h2>
+        </div>
+        <div class="ct-image-wrapper">
+            <img id="ct-image" src="" alt="Stolen Car">
+        </div>
+        <div class="ct-info">
+            <h3 id="ct-car-name" class="ct-car-name">...</h3>
+            <div id="ct-stats-container" class="ct-stats"></div>
+        </div>
+        <div class="ct-actions">
+            <button id="ct-btn-garage" class="ct-btn primary">...</button>
+            <button id="ct-btn-sell" class="ct-btn secondary">...</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
