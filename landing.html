@@ -4958,26 +4958,6 @@ function updateUI() {
     // \u2550\u2550\u2550 ԱՎՏՈՄԱՏ ՊAHՊANUM \u2550\u2550\u2550
     autoSave();
 }
-
-    // Networth
-    const netWorth = player.getNetWorth();
-    _set('main-networth',   Math.floor(netWorth).toLocaleString());
-    _set('main-exp',        player.exp);
-    _set('main-next-exp',   nextExpVal || 'MAX');
-    _set('main-cars',       player.garage.length);
-    _set('main-cars-limit', player.garageLimit);
-    _set('main-estate',     player.realEstate.length);
-
-    // Prison — only update DOM if state actually changed
-    const prisonDiv   = _dom['prison-status']   || (_dom['prison-status']   = document.getElementById('prison-status'));
-    const inPrisonDiv = _dom['in-prison-ui']    || (_dom['in-prison-ui']    = document.getElementById('in-prison-ui'));
-    if (prisonDiv && inPrisonDiv && prisonDiv._inPrison !== player.inPrison) {
-        prisonDiv._inPrison = player.inPrison;
-        prisonDiv.style.display   = player.inPrison ? 'none'  : 'block';
-        inPrisonDiv.style.display = player.inPrison ? 'block' : 'none';
-        disableButtons(player.inPrison);
-    }
-
 // ==========================================
 //   RANK MODAL
 // ==========================================
