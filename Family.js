@@ -428,7 +428,10 @@ router.post('/war/attack', async (req, res) => {
       attackerFam.activeWar.defenderHP = Math.max(0, (attackerFam.activeWar.defenderHP || 0) - damage);
     }
 
-    attackerFam.activeWar.attacks.push({ attackerId: uid, attackerName: pd.name || req.user.name || 'Անանուն', side: isDefender ? 'defender' : 'attacker', damage, attackedAt: new Date() });
+    attackerFam.activeWar.attacks.push({ attackerId: uid, attackerName: pd.name || req.user.name || 'Անানун', side: isDefender ? 'defender' : 'attacker', damage, attackedAt: new Date() });
+    if (attackerFam.activeWar.attacks.length > 50) {
+        attackerFam.activeWar.attacks = attackerFam.activeWar.attacks.slice(-50);
+    }
     attackerFam.markModified('activeWar');
 
     const attackerHP = attackerFam.activeWar.attackerHP;

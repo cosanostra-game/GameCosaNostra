@@ -3743,8 +3743,10 @@ function authSuccess(user) {
     if (typeof player !== 'undefined') {
         player.name = user.name;
     }
-    // Load cloud save (async — UI updates when done)
-    loadGame(false);
+    // Load cloud save (async — UI updates when done; skip if player already loaded)
+    if (!player || !player.name) {
+        loadGame(false);
+    }
     initSocket();
     setTimeout(() => { if (typeof window._friendSocketInit === 'function') window._friendSocketInit(); }, 800); // Real-time socket connection
     setTimeout(() => { if (typeof window._chatSocketInit   === 'function') window._chatSocketInit();   }, 850); // Chat socket
@@ -3949,7 +3951,7 @@ function _runPreloaderInit() {
     }, 600);
 
     // Run auth check IMMEDIATELY in parallel — returning users skip the wait
-    const MIN_PRELOADER_MS = 900;
+    const MIN_PRELOADER_MS = 400;
     const authPromise = authCheckAutoLogin();
 
     function _hidePreloader(loggedIn) {
@@ -4700,7 +4702,7 @@ function autoSave() {
             apiCall('/game/save', 'POST', { playerData })
                 .catch(err => console.error('Ակнтарtayin пahпанман схал:', err));
         }
-    }, 10);
+    }, 500);
 }
 
 
@@ -6587,7 +6589,7 @@ async function loadGame(manual = false) {
 
             if (manual) showNotification('✅ Տvyalnerн бернвецин серверіц', true);
             updateFullUI();
-            startTransferPolling(5000);
+            startTransferPolling(10000);
             return;
         }
     } catch (e) {
@@ -6611,7 +6613,7 @@ async function loadGame(manual = false) {
         if (currentUser) player.name = currentUser.name;
     }
     updateFullUI();
-    startTransferPolling(5000);
+    startTransferPolling(10000);
 }
 
 
@@ -6806,7 +6808,6 @@ function disconnectSocket() {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     _initDomCache();
-    loadGame(false); 
     checkDailyQuests();
     renderCryptoPills();
     updateUI();
@@ -7155,55 +7156,54 @@ window._friendSocketInit = function() {
     _socket.on('friendProfileUpdated', (data) => {
         const uid = String(data.userId);
 
-        // 1. Patch _chatFriends cache
-        if (_chatFriends) {
-            const idx = _chatFriends.findIndex(f => String(f.userId) === uid);
-            if (idx !== -1) {
-                _chatFriends[idx] = Object.assign({}, _chatFriends[idx], {
-                    name:        data.name,
-                    avatarColor: data.avatarColor,
-                    avatarImg:   data.avatarImg
-                });
-            }
-        }
+        // 1. Update _chatFriends (map — adds if missing)
+        let found = false;
+        _chatFriends = (_chatFriends || []).map(f => {
+            if (String(f.userId) === uid) { found = true; return { ...f, ...data }; }
+            return f;
+        });
+        if (!found) _chatFriends.push({ userId: uid, ...data });
 
-        // 2. Patch _cachedFriendsData so friends page re-renders correctly
+        // 2. Update _cachedFriendsData
         if (_cachedFriendsData && _cachedFriendsData.friends) {
-            const idx = _cachedFriendsData.friends.findIndex(f => String(f.userId) === uid);
-            if (idx !== -1) {
-                _cachedFriendsData.friends[idx] = Object.assign({}, _cachedFriendsData.friends[idx], {
-                    name:        data.name,
-                    avatarColor: data.avatarColor,
-                    avatarImg:   data.avatarImg
-                });
-            }
+            _cachedFriendsData.friends = _cachedFriendsData.friends.map(f =>
+                String(f.userId) === uid ? { ...f, ...data } : f
+            );
         }
 
-        // 3. Re-render contacts list (messages section)
-        if (typeof renderChatContacts === 'function') renderChatContacts();
-
-        // 4. Re-render friends page if cached
-        if (typeof _applyFriendsData === 'function' && _cachedFriendsData) {
-            _applyFriendsData(_cachedFriendsData);
+        // 3. Re-render friends page only if active
+        const friendsPage = document.getElementById('page-friends');
+        if (friendsPage && friendsPage.classList.contains('active')) {
+            renderFriendsPage();
         }
 
-        // 5. Update active chat header in real-time
+        // 4. Re-render messages contacts only if page active
+        const messagesPage = document.getElementById('page-messages');
+        if (messagesPage && messagesPage.classList.contains('active')) {
+            if (typeof renderChatContacts === 'function') renderChatContacts();
+        }
+
+        // 5. Update active chat header
         if (_chatActiveFriendId === uid) {
-            const avatarEl = document.getElementById('chat-header-avatar');
-            if (avatarEl) {
-                const onlineDot = avatarEl.querySelector('.chat-online-dot');
-                avatarEl.style.background = data.avatarColor || '#ff3b30';
-                avatarEl.innerHTML = data.avatarImg
-                    ? `<img src="${escHtml(data.avatarImg)}" alt="">`
-                    : `<span>${(data.name || '?')[0].toUpperCase()}</span>`;
-                if (onlineDot) avatarEl.appendChild(onlineDot);
-            }
-            const nameEl = document.getElementById('chat-header-name');
-            if (nameEl) nameEl.textContent = data.name || '?';
-            _chatActiveFriendName = data.name || _chatActiveFriendName;
+            updateChatHeader(data);
         }
     });
 };
+
+function updateChatHeader(data) {
+    const avatarEl = document.getElementById('chat-header-avatar');
+    if (avatarEl) {
+        const onlineDot = avatarEl.querySelector('.chat-online-dot');
+        avatarEl.style.background = data.avatarColor || '#ff3b30';
+        avatarEl.innerHTML = data.avatarImg
+            ? `<img src="${escHtml(data.avatarImg)}" alt="">`
+            : `<span>${(data.name || '?')[0].toUpperCase()}</span>`;
+        if (onlineDot) avatarEl.appendChild(onlineDot);
+    }
+    const nameEl = document.getElementById('chat-header-name');
+    if (nameEl) nameEl.textContent = data.name || '?';
+    if (typeof _chatActiveFriendName !== 'undefined') _chatActiveFriendName = data.name || _chatActiveFriendName;
+}
 
 // auto-load handled by auth system
 

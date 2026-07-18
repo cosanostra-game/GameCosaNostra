@@ -124,26 +124,32 @@ router.patch('/profile', protect, async (req, res) => {
       const userSockets = req.app.get('userSockets');
 
       // Write avatarImg/avatarColor into GameSave so all game routes read from one place
-      const save = await GameSave.findOne({ user: req.user._id });
-      if (save) {
+      let save = await GameSave.findOne({ user: req.user._id });
+      if (!save) {
+        save = new GameSave({
+          user:       req.user._id,
+          playerData: { avatarImg: user.avatarImg || null, avatarColor: user.avatarColor || '#ff3b30' },
+        });
+        await save.save();
+      } else {
         if (!save.playerData) save.playerData = {};
         save.playerData.avatarImg   = user.avatarImg   || null;
         save.playerData.avatarColor = user.avatarColor || '#ff3b30';
         save.markModified('playerData');
         await save.save();
+      }
 
-        // Notify online friends instantly about name/avatar change
-        if (io && userSockets && save.friends && save.friends.length > 0) {
-          const payload = {
-            userId:      String(req.user._id),
-            name:        user.name,
-            avatarColor: user.avatarColor || '#ff3b30',
-            avatarImg:   user.avatarImg   || null,
-          };
-          for (const f of save.friends) {
-            const sid = userSockets.get(String(f.userId));
-            if (sid) io.to(sid).emit('friendProfileUpdated', payload);
-          }
+      // Notify online friends instantly about name/avatar change
+      if (io && userSockets && save.friends && save.friends.length > 0) {
+        const payload = {
+          userId:      String(req.user._id),
+          name:        user.name,
+          avatarColor: user.avatarColor || '#ff3b30',
+          avatarImg:   user.avatarImg   || null,
+        };
+        for (const f of save.friends) {
+          const sid = userSockets.get(String(f.userId));
+          if (sid) io.to(sid).emit('friendProfileUpdated', payload);
         }
       }
     } catch (_e) { /* non-critical */ }

@@ -64,6 +64,9 @@ const gameSaveSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+gameSaveSchema.index({ 'playerData.bankAccount': 1 });
+gameSaveSchema.index({ 'playerData.name': 1 });
+
 gameSaveSchema.pre('save', function (next) {
   this.savedAt = new Date();
   next();

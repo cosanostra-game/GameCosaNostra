@@ -54,7 +54,7 @@ app.use(
 );
 
 // ─── Body Parser ──────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Request Logger (dev only) ────────────────────────────────────

@@ -116,8 +116,11 @@ function initSocket() {
   if (_socket && _socket.connected) return;
 
   _socket = io(API_BASE, {
-    auth:       { token },
-    transports: ['websocket', 'polling'],
+    auth:                { token },
+    transports:          ['websocket', 'polling'],
+    reconnection:        true,
+    reconnectionAttempts: 10,
+    reconnectionDelay:   1000,
   });
 
   _socket.on('familyInvite', (data) => {
