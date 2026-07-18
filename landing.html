@@ -3536,16 +3536,7 @@ const AVATAR_COLORS = [
 // which talks to the real server at API_BASE via apiRequest().
 const apiCall = apiRequest;
 
-// ── Family API stubs (apiCall-based) ──────────────────────────────────────
-async function apiGetFamilyInvites()             { try { return await apiCall('/families/invites'); }          catch(e) { return []; } }
-async function apiGetMyFamily()                   { try { return await apiCall('/families/mine'); }             catch(e) { return null; } }
-async function apiCreateFamily(name, color)       { return apiCall('/families', 'POST', { name, color }); }
-async function apiInviteToFamily(accountId)       { return apiCall('/families/invite', 'POST', { accountId }); }
-async function apiRespondFamilyInvite(id, action) { return apiCall('/families/invites/' + id + '/respond', 'POST', { action }); }
-async function apiFamilyUpgradePower()            { return apiCall('/families/upgrade/power', 'POST'); }
-async function apiFamilyRecruit()                 { return apiCall('/families/upgrade/recruit', 'POST'); }
-async function apiLeaveFamily()                   { return apiCall('/families/leave', 'POST'); }
-async function apiKickFamilyMember(userId)        { return apiCall('/families/kick', 'POST', { userId }); }
+
 
 // ── Backward-compat shims ──────────────────────
 // Old code used getUsers()[email] — now returns from currentUser cache
@@ -4215,6 +4206,7 @@ class Player extends Entity {
         // ── Game state ─────────────────────────────────────────
         this.inPrison              = data.inPrison              ?? false;
         this.prisonTime            = data.prisonTime            ?? 0;
+        this.prisonReleaseAt       = data.prisonReleaseAt       ?? null;
         this.dayTime               = data.dayTime               ?? 12;
         this.bizSlots              = data.bizSlots              ?? 5;
         this.garageLimit           = data.garageLimit           ?? 10;
@@ -4316,9 +4308,22 @@ class Player extends Entity {
 
     // ── Prison ───────────────────────────────────────────────
     sendToPrison(seconds) {
-        this.inPrison   = true;
+        this.inPrison = true;
         this.prisonTime = seconds;
+        this.prisonReleaseAt = Date.now() + seconds * 1000;
         return this;
+    }
+
+    getRemainingPrisonTime() {
+        if (!this.inPrison) return 0;
+        if (this.prisonReleaseAt) {
+            return Math.max(0, Math.floor((this.prisonReleaseAt - Date.now()) / 1000));
+        }
+        return Math.max(0, this.prisonTime);
+    }
+
+    isPrisonExpired() {
+        return this.inPrison && this.getRemainingPrisonTime() <= 0;
     }
 
     // ── Net worth ────────────────────────────────────────────
@@ -4353,6 +4358,7 @@ class Player extends Entity {
             reputation:        this.reputation,
             inPrison:          this.inPrison,
             prisonTime:        this.prisonTime,
+            prisonReleaseAt:   this.prisonReleaseAt,
             dayTime:           this.dayTime,
             bizSlots:          this.bizSlots,
             garageLimit:       this.garageLimit,
@@ -4369,7 +4375,18 @@ class Player extends Entity {
         };
     }
 
-    static fromJSON(data) { return new Player(data); }
+    static fromJSON(data) {
+        const p = new Player(data);
+        if (data.prisonReleaseAt) {
+            p.prisonReleaseAt = data.prisonReleaseAt;
+            if (p.inPrison && p.getRemainingPrisonTime() <= 0) {
+                p.inPrison = false;
+                p.prisonReleaseAt = null;
+                p.prisonTime = 0;
+            }
+        }
+        return p;
+    }
 }
 
 // ==========================================
@@ -4666,27 +4683,24 @@ function autoSave() {
     if (!player) return;
     
     const currentState = JSON.stringify(player.toJSON ? player.toJSON() : player);
-    if (currentState === _lastSavedStateStr) return; // Փոփոխություն չկա
+    if (currentState === _lastSavedStateStr) return;
     _lastSavedStateStr = currentState;
 
     const token = getToken();
 
-    // Հյուրերի դեպքում (չգրանցված) պահում ենք բրաուզերում
     if (!token) {
         localStorage.setItem(getSaveKey(), currentState);
         return;
     }
 
-    // Գրանցվածների դեպքում ակնթարթորեն ուղարկում ենք սերվեր
     clearTimeout(_saveTimeout);
     _saveTimeout = setTimeout(() => {
         if (typeof apiCall === 'function') {
-            apiCall('/game/save', 'POST', { playerData: JSON.parse(currentState) })
-                .catch(err => console.error('Ակնթարթային պահпанման սխալ:', err));
-        } else if (typeof saveGame === 'function') {
-            saveGame();
+            const playerData = JSON.parse(currentState);
+            apiCall('/game/save', 'POST', { playerData })
+                .catch(err => console.error('Ակнтарtayin пahпанман схал:', err));
         }
-    }, 10); // 10ms հետաձгум՝ կրկнаки кandерից хусафелу hамар
+    }, 10);
 }
 
 
@@ -4869,15 +4883,11 @@ function _setW(el, val) {
     if (el && el._prevW !== val) { el._prevW = val; el.style.width = val; }
 }
 
-// Cached button list for disableButtons
-let _disableBtnCache = null;
 function disableButtons(dis) {
-    if (!_disableBtnCache) {
-        _disableBtnCache = Array.from(document.querySelectorAll(
-            'button:not(.icon-btn):not(.theme-btn):not(.sub-tabs button):not(.crypto-pill):not(.close-btn):not(.log-close):not(.sidebar-toggle)'
-        ));
-    }
-    _disableBtnCache.forEach(b => {
+    const buttons = document.querySelectorAll(
+        'button:not(.icon-btn):not(.theme-btn):not(.sub-tabs button):not(.crypto-pill):not(.close-btn):not(.log-close):not(.sidebar-toggle)'
+    );
+    buttons.forEach(b => {
         if (!['bribe-btn','escape-btn'].includes(b.id)) b.disabled = dis;
     });
 }
@@ -5473,27 +5483,44 @@ function bankLoanAction(type) {
 // ==========================================
 //   PRISON
 // ==========================================
-function goToPrison(t) {
-    // Delegates to Player.sendToPrison()
-    player.sendToPrison(t);
+function goToPrison(seconds) {
+    player.inPrison = true;
+    player.prisonTime = seconds;
+    player.prisonReleaseAt = Date.now() + seconds * 1000;
     showNotification(t('notif.arrested'), false);
     playTone('fail', .3);
     updateUI();
 }
 function payBribe() {
-    if (player.money>=1000) { player.money-=1000; player.inPrison=false; player.prisonTime=0; showNotification(t('notif.bribe_ok'), true); playTone('upgrade',.25); updateUI(); }
-    else showNotification(t('notif.no_1000'), false);
+    if (player.money >= 1000) {
+        player.money -= 1000;
+        player.inPrison = false;
+        player.prisonTime = 0;
+        player.prisonReleaseAt = null;
+        showNotification(t('notif.bribe_ok'), true);
+        playTone('upgrade', .25);
+        updateUI();
+    } else {
+        showNotification(t('notif.no_1000'), false);
+    }
 }
 function prisonEscape() {
     if (player.money < 2500) return showNotification(t('notif.no_2500'), false);
     player.money -= 2500;
     if (Math.random() < 0.5) {
-        player.inPrison=false; player.prisonTime=0;
-        showNotification(t('notif.escape_ok'), true); playTone('upgrade',.3); updateUI();
+        player.inPrison = false;
+        player.prisonTime = 0;
+        player.prisonReleaseAt = null;
+        showNotification(t('notif.escape_ok'), true);
+        playTone('upgrade', .3);
+        updateUI();
     } else {
-        player.prisonTime += 180;
-        player.hp = Math.max(0, player.hp - 30);
-        showNotification(t('notif.escape_fail'), false); playTone('fail',.3); updateUI();
+        player.prisonTime += 120;
+        if (player.prisonReleaseAt) player.prisonReleaseAt += 120 * 1000;
+        player.hp = Math.max(1, player.hp - 15);
+        showNotification(t('notif.escape_fail'), false);
+        playTone('fail', .3);
+        updateUI();
     }
 }
 
@@ -5771,22 +5798,30 @@ async function _renderFamilyInvites(mySection, canCreate) {
 }
 
 async function createMyFamilyAPI() {
-    const name  = (document.getElementById('familyNameInput')||{}).value;
-    const color = (document.getElementById('familyColorInput')||{value:'#ff3b30'}).value;
+    const name = (document.getElementById('familyNameInput') || {}).value;
+    const color = (document.getElementById('familyColorInput') || { value: '#ff3b30' }).value;
     if (!name || !name.trim()) return showNotification(t('fam.nameErr'), false);
+
     const btn = document.querySelector('#my-family-section button');
     if (btn) { btn.disabled = true; btn.textContent = t('fam.create.creating'); }
-    if (player.money < 250000) return showNotification(t('notif.no_money'), false);
+
+    const cost = 250000;
+    if ((player.money || 0) < cost) {
+        if (btn) { btn.disabled = false; btn.textContent = t('fam.create.btn'); }
+        return showNotification(`Անhրаzhешт е $${cost.toLocaleString()}`, false);
+    }
+
     try {
         await apiCreateFamily(name.trim(), color);
         showNotification(t('notif.fam_created') + ' ' + name.trim(), true);
         playTone && playTone('upgrade', .35);
-        spawnFloatMoney && spawnFloatMoney(250000, false);
-        player.money -= 250000;
+        spawnFloatMoney && spawnFloatMoney(cost, false);
+        player.money = (player.money || 0) - cost;
         updateUI();
         renderFamilies();
-    } catch(err) {
+    } catch (err) {
         showNotification('✕ ' + err.message, false);
+    } finally {
         if (btn) { btn.disabled = false; btn.textContent = t('fam.create.btn'); }
     }
 }
@@ -6660,13 +6695,20 @@ setInterval(() => {
         triggerRandomEvent();
     }
 
-    if (player.inPrison && player.prisonTime>0) {
-        player.prisonTime--;
-        let m=Math.floor(player.prisonTime/60).toString().padStart(2,'0');
-        let s=(player.prisonTime%60).toString().padStart(2,'0');
-        const tEl = _dom['p-timer'] || (_dom['p-timer'] = document.getElementById('p-timer'));
-        if (tEl) tEl.innerText=`${m}:${s}`;
-        if (player.prisonTime<=0) { player.inPrison=false; showNotification(t('notif.freed'), true); updateUI(); }
+    if (player.inPrison) {
+        const remaining = player.getRemainingPrisonTime();
+        if (remaining <= 0) {
+            player.inPrison = false;
+            player.prisonReleaseAt = null;
+            player.prisonTime = 0;
+            showNotification(t('notif.freed'), true);
+            updateUI();
+        } else {
+            let m = Math.floor(remaining / 60).toString().padStart(2, '0');
+            let s = (remaining % 60).toString().padStart(2, '0');
+            const tEl = _dom['p-timer'] || (_dom['p-timer'] = document.getElementById('p-timer'));
+            if (tEl) tEl.innerText = `${m}:${s}`;
+        }
     } else if (!player.inPrison && player.energy < player.maxEnergy) {
         player.energy += 0.5;
         // Only update energy display + bar — NOT full updateUI (much faster)
