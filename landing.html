@@ -3740,13 +3740,8 @@ function authSuccess(user) {
     window._myUserId = user.id || user._id || ''; // ← family boss check-ի համար
 
     document.getElementById('auth-screen').classList.remove('show');
-    if (typeof player !== 'undefined') {
-        player.name = user.name;
-    }
-    // Load cloud save (async — UI updates when done; skip if player already loaded)
-    if (!player || !player.name) {
-        loadGame(false);
-    }
+    // Load cloud save from server — always run on auth so server data is authoritative
+    loadGame(false);
     initSocket();
     setTimeout(() => { if (typeof window._friendSocketInit === 'function') window._friendSocketInit(); }, 800); // Real-time socket connection
     setTimeout(() => { if (typeof window._chatSocketInit   === 'function') window._chatSocketInit();   }, 850); // Chat socket
@@ -6745,7 +6740,7 @@ setInterval(() => {
             playTone('coin',.08);
         }
         
-        localStorage.setItem(getSaveKey(), JSON.stringify(player));
+        autoSave(); // debounced — skips if state unchanged
         updateUI();
     }
 }, 1000);
@@ -6757,45 +6752,7 @@ setInterval(() => {
 // ==========================================
 // _socket is declared by api.js (loaded above); reused here as-is.
 
-function initSocket() {
-    // No external backend is configured for this deployment, so real-time
-    // socket features (bank transfer pushes, live chat) are disabled.
-    return;
-    // eslint-disable-next-line no-unreachable
-    const token = getToken();
-    if (!token) return;
-    if (_socket && _socket.connected) return;
-
-    const SOCKET_URL = 'https://cosa-nostra.onrender.com'; // ← server URL
-    _socket = io(SOCKET_URL, {
-        auth: { token },
-        transports: ['websocket', 'polling'],
-    });
-
-    _socket.on('connect', () => {
-        console.log('🔌 Socket connected:', _socket.id);
-    });
-
-    _socket.on('connect_error', (err) => {
-        console.warn('Socket connect error:', err.message);
-    });
-
-    _socket.on('bankTransfer', (data) => {
-        // data = { fromName, fromAccount, amount, newBalance }
-
-        // 1. Player bank balance - anmijapec tharmatsnely
-        if (typeof player !== 'undefined') {
-            player.bank = data.newBalance;
-            if (typeof updateUI === 'function') updateUI();
-        }
-
-        // 2. Tsanucum
-        const msg = `🏦 Bancayin mutoq  +$${Number(data.amount).toLocaleString()}  ←  ${data.fromName} (${data.fromAccount})`;
-        if (typeof showNotification === 'function') {
-            showNotification(msg, true);
-        }
-    });
-}
+// initSocket() is defined in api.js — do not redefine here
 
 function disconnectSocket() {
     if (_socket) {
@@ -6808,7 +6765,7 @@ function disconnectSocket() {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     _initDomCache();
-    loadGame(false);
+    if (!getToken()) loadGame(false); // Guest mode only; logged-in users load via authSuccess
     checkDailyQuests();
     renderCryptoPills();
     updateUI();
@@ -6912,11 +6869,15 @@ function escHtml(s) {
 }
 
 let _cachedFriendsData = null; // cache → instant render on repeat visits
+let _cachedFriendsAt   = 0;    // timestamp of last successful fetch
+const FRIENDS_TTL = 30000;     // 30s — skip re-fetch if cache is fresh
 
 async function renderFriendsPage() {
     // ── Instant render from cache ────────────────────────────────
     if (_cachedFriendsData) {
         _applyFriendsData(_cachedFriendsData);
+        // If cache is fresh (< 30s), skip re-fetch entirely
+        if (Date.now() - _cachedFriendsAt < FRIENDS_TTL) return;
     } else {
         document.getElementById('friends-list-container').innerHTML =
             '<div class="friends-empty" style="opacity:.5;">' + t('friends.loading') + '</div>';
@@ -6925,6 +6886,7 @@ async function renderFriendsPage() {
     try {
         const data = await apiCall('/game/friend-requests');
         _cachedFriendsData = data;
+        _cachedFriendsAt   = Date.now();
         _applyFriendsData(data);
     } catch (err) {
         if (!_cachedFriendsData) {
@@ -7146,11 +7108,13 @@ window._friendSocketInit = function() {
     });
     _socket.on('friendAccepted', (data) => {
         showNotification('✅ ' + (data.byName || '?') + ' -y yndunec dzez ynker!', true);
+        // Invalidate caches so the new friend loads fresh
+        _cachedFriendsAt = 0;
+        _chatContactsAt  = 0;
         if (document.getElementById('page-friends') && document.getElementById('page-friends').classList.contains('active')) {
             renderFriendsPage();
         }
-        // Reload contacts so new friend appears with avatar
-        loadChatContacts();
+        loadChatContacts(true);
     });
 
     // ── Real-time profile update: friend changed name/avatar ──────
@@ -7208,11 +7172,8 @@ function updateChatHeader(data) {
 
 // auto-load handled by auth system
 
-// Auto-save every 30 seconds to cloud (local save happens in ticker every 10s)
+// Profile UI refresh every 30 seconds (saves handled by autoSave)
 setInterval(() => {
-    if (typeof saveGame === 'function' && (currentUser || currentUserEmail)) {
-        saveGame();
-    }
     if (typeof updateProfilePage === 'function') updateProfilePage();
 }, 30000);
 
@@ -7252,11 +7213,19 @@ async function initMessagesPage() {
 }
 
 // ── Load friends as contacts ──────────────────────────────────────
-async function loadChatContacts() {
+let _chatContactsAt = 0; // last fetch timestamp
+async function loadChatContacts(force = false) {
+    // Use cached friends if fresh (< 30s) and not forced
+    if (!force && _chatFriends.length && (Date.now() - _chatContactsAt < FRIENDS_TTL)) {
+        renderChatContacts();
+        return;
+    }
     try {
         const data = await apiCall('/game/friend-requests');
         _chatFriends = data.friends || [];
+        _chatContactsAt = Date.now();
         if (!_cachedFriendsData) _cachedFriendsData = data; // share cache
+        if (_cachedFriendsAt === 0) _cachedFriendsAt = Date.now();
         renderChatContacts();
     } catch (err) {
         console.warn('loadChatContacts error:', err.message);
