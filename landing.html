@@ -2752,12 +2752,6 @@ canvas {
         </div>
         <div class="cards-grid">
             <div class="card" style="text-align:center;">
-                <i class="material-icons" style="font-size:36px;color:var(--ok);margin-bottom:16px;">save</i>
-                <h3 style="justify-content:center;" data-i18n="set.save">Պահպանել Խաղը</h3>
-                <p data-i18n="set.saveDesc">Պահպանեք ձեր առաջընթացը բրաուզերում:</p>
-                <button style="background:var(--ok);margin-top:10px;" onclick="saveGame()" data-i18n="btn.save">Պահպանել</button>
-            </div>
-            <div class="card" style="text-align:center;">
                 <i class="material-icons" style="font-size:36px;color:#0a84ff;margin-bottom:16px;">download</i>
                 <h3 style="justify-content:center;" data-i18n="set.load">Վերականգնել Խաղը</h3>
                 <p data-i18n="set.loadDesc">Բեռնել վերջին պահպանված վիճակը:</p>
@@ -4663,6 +4657,25 @@ function getDefaultPlayerState() {
 
 // Global player instance — now a typed Player class
 let player = new Player({});
+
+// ─── Ավտոմատ պահպանում ───────────────────────────────────────────
+let _lastSavedState = null;
+
+function autoSave() {
+    // Debounce 500ms – խնայում է հաճախակի կանչերը
+    clearTimeout(window._autoSaveTimer);
+    window._autoSaveTimer = setTimeout(() => {
+        if (!player) return;
+        const currentState = JSON.stringify(player.toJSON ? player.toJSON() : player);
+        if (currentState !== _lastSavedState) {
+            _lastSavedState = currentState;
+            if (typeof saveGame === 'function') {
+                saveGame(); // Պահպանում է localStorage + սերվեր
+            }
+        }
+    }, 500);
+}
+
 cryptosData.forEach(c => player.cryptoBalances[c.id] = 0.0);
 
 const ranks = [
@@ -4862,52 +4875,89 @@ function disableButtons(dis) {
 //   UI UPDATE
 // ==========================================
 function updateUI() {
-    _set('moneyDisplay',    player.money.toLocaleString());
-    _set('energyDisplay',   Math.floor(player.energy));
-    _set('hpDisplay',       Math.floor(player.hp));
+    if (!player) return; // Պաշտպանություն, եթե player-ը դեռ բեռնված չէ
+
+    _set('moneyDisplay',    (player.money || 0).toLocaleString());
+    _set('energyDisplay',   Math.floor(player.energy || 0));
+    _set('hpDisplay',       Math.floor(player.hp || 0));
     _set('rankDisplay',     getRankName(player.rank));
-    _set('bankTopDisplay',  player.bank.toLocaleString());
-    _set('bankPageDisplay', player.bank.toLocaleString());
-    _set('bankLoanDisplay', player.loan.toLocaleString());
-    _set('personalBankAccShow', player.bankAccount);
-    _set('my-biz-count',    player.businesses.length);
-    _set('biz-slots-display', `${player.businesses.length} / ${player.bizSlots}`);
+    _set('bankTopDisplay',  (player.bank || 0).toLocaleString());
+    _set('bankPageDisplay', (player.bank || 0).toLocaleString());
+    _set('bankLoanDisplay', (player.loan || 0).toLocaleString());
+    _set('personalBankAccShow', player.bankAccount || '');
+    _set('my-biz-count',    (player.businesses || []).length);
+    _set('biz-slots-display', `${(player.businesses || []).length} / ${player.bizSlots || 0}`);
     _set('sidebar-rank-val', getRankName(player.rank));
-    _set('main-welcome-rank', '⭐ ' + getRankName(player.rank));
-    _set('stashDisplay',    player.stash.toLocaleString());
+    _set('main-welcome-rank', '\u2b50 ' + getRankName(player.rank));
+    _set('stashDisplay',    (player.stash || 0).toLocaleString());
 
     const dirtyEl = _dom['dirtyMoneyDisplay'] || (_dom['dirtyMoneyDisplay'] = document.getElementById('dirtyMoneyDisplay'));
-    const dirtyVal = '$' + (player.dirtyMoney||0).toLocaleString();
+    const dirtyVal = '$' + (player.dirtyMoney || 0).toLocaleString();
     if (dirtyEl && dirtyEl._pv !== dirtyVal) { dirtyEl._pv = dirtyVal; dirtyEl.innerText = dirtyVal; }
 
-    _set('hp-hosp',          Math.floor(player.hp));
-    _set('max-hp-display',   player.maxHp);
-    _set('max-energy-display', player.maxEnergy);
-    _set('rep-level',        player.reputation);
-    _set('stat-crimes',      player.stats.crimes);
-    _set('stat-cars',        player.stats.cars);
-    _set('stat-earnings',    `$${player.stats.earnings.toLocaleString()}`);
-    _set('stat-time', `${Math.floor(player.stats.minutes)} ${t('stats.timeUnit')}`);
+    _set('hp-hosp',          Math.floor(player.hp || 0));
+    _set('max-hp-display',   player.maxHp || 100);
+    _set('max-energy-display', player.maxEnergy || 100);
+    _set('rep-level',        player.reputation || 0);
+    
+    if (player.stats) {
+        _set('stat-crimes',      player.stats.crimes || 0);
+        _set('stat-cars',        player.stats.cars || 0);
+        _set('stat-earnings',    `$${(player.stats.earnings || 0).toLocaleString()}`);
+        _set('stat-time', `${Math.floor(player.stats.minutes || 0)} ${typeof t === 'function' ? t('stats.timeUnit') : ''}`);
+    }
 
     // HP / Energy bars
-    _setW(_dom['hp-bar'],     Math.min(100, (player.hp / player.maxHp) * 100) + '%');
-    _setW(_dom['energy-bar'], Math.min(100, (player.energy / player.maxEnergy) * 100) + '%');
+    const maxHp = player.maxHp || 100;
+    const maxEnergy = player.maxEnergy || 100;
+    _setW(_dom['hp-bar'],     Math.min(100, ((player.hp || 0) / maxHp) * 100) + '%');
+    _setW(_dom['energy-bar'], Math.min(100, ((player.energy || 0) / maxEnergy) * 100) + '%');
 
     // XP
-    const _nextRank = player.getNextRankInfo();
+    const _nextRank = typeof player.getNextRankInfo === 'function' ? player.getNextRankInfo() : null;
     const nextExpVal = _nextRank ? _nextRank.exp : null;
-    _setW(_dom['sidebar-xp-bar'], player.getXpPercent() + '%');
-    _set('sidebar-xp-text', `${player.exp} / ${nextExpVal || 'MAX'}`);
+    const xpPercent = typeof player.getXpPercent === 'function' ? player.getXpPercent() : 0;
+    _setW(_dom['sidebar-xp-bar'], xpPercent + '%');
+    _set('sidebar-xp-text', `${player.exp || 0} / ${nextExpVal || 'MAX'}`);
 
     // Crypto
-    const activeCoin = cryptosData.find(c => c.id === activeCryptoId);
-    _set('player-crypto-amount', player.cryptoBalances[activeCryptoId].toFixed(4));
-    _set('trade-coin-label', activeCryptoId);
-    const titleEl = _dom['active-crypto-title'] || (_dom['active-crypto-title'] = document.getElementById('active-crypto-title'));
-    if (titleEl && activeCoin) {
-        const tv = `<i class="material-icons" style="color:${activeCoin.color};">${activeCoin.icon}</i> ${activeCoin.name} (${activeCryptoId})`;
-        if (titleEl._pv !== tv) { titleEl._pv = tv; titleEl.innerHTML = tv; }
+    if (typeof activeCryptoId !== 'undefined' && typeof cryptosData !== 'undefined') {
+        const activeCoin = cryptosData.find(c => c.id === activeCryptoId);
+        const cryptoBal = (player.cryptoBalances && player.cryptoBalances[activeCryptoId]) ? player.cryptoBalances[activeCryptoId] : 0;
+        _set('player-crypto-amount', cryptoBal.toFixed(4));
+        _set('trade-coin-label', activeCryptoId);
+        
+        const titleEl = _dom['active-crypto-title'] || (_dom['active-crypto-title'] = document.getElementById('active-crypto-title'));
+        if (titleEl && activeCoin) {
+            const tv = `<i class="material-icons" style="color:${activeCoin.color};">${activeCoin.icon}</i> ${activeCoin.name} (${activeCryptoId})`;
+            if (titleEl._pv !== tv) { titleEl._pv = tv; titleEl.innerHTML = tv; }
+        }
     }
+
+    // Networth
+    const netWorth = typeof player.getNetWorth === 'function' ? player.getNetWorth() : 0;
+    _set('main-networth',   Math.floor(netWorth).toLocaleString());
+    _set('main-exp',        player.exp || 0);
+    _set('main-next-exp',   nextExpVal || 'MAX');
+    _set('main-cars',       (player.garage || []).length);
+    _set('main-cars-limit', player.garageLimit || 0);
+    _set('main-estate',     (player.realEstate || []).length);
+
+    // Prison
+    const prisonDiv   = _dom['prison-status']   || (_dom['prison-status']   = document.getElementById('prison-status'));
+    const inPrisonDiv = _dom['in-prison-ui']    || (_dom['in-prison-ui']    = document.getElementById('in-prison-ui'));
+    if (prisonDiv && inPrisonDiv && prisonDiv._inPrison !== player.inPrison) {
+        prisonDiv._inPrison = player.inPrison;
+        prisonDiv.style.display   = player.inPrison ? 'none'  : 'block';
+        inPrisonDiv.style.display = player.inPrison ? 'block' : 'none';
+        if (typeof disableButtons === 'function') {
+            disableButtons(player.inPrison);
+        }
+    }
+
+    // \u2550\u2550\u2550 ԱՎՏՈՄԱՏ ՊAHՊANUM \u2550\u2550\u2550
+    autoSave();
+}
 
     // Networth
     const netWorth = player.getNetWorth();
@@ -4927,7 +4977,6 @@ function updateUI() {
         inPrisonDiv.style.display = player.inPrison ? 'block' : 'none';
         disableButtons(player.inPrison);
     }
-}
 
 // ==========================================
 //   RANK MODAL
