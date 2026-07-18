@@ -4659,22 +4659,36 @@ function getDefaultPlayerState() {
 let player = new Player({});
 
 // ─── Ավտոմատ պահպանում ───────────────────────────────────────────
-let _lastSavedState = null;
+let _lastSavedStateStr = null;
+let _saveTimeout = null;
 
 function autoSave() {
-    // Debounce 500ms – խնայում է հաճախակի կանչերը
-    clearTimeout(window._autoSaveTimer);
-    window._autoSaveTimer = setTimeout(() => {
-        if (!player) return;
-        const currentState = JSON.stringify(player.toJSON ? player.toJSON() : player);
-        if (currentState !== _lastSavedState) {
-            _lastSavedState = currentState;
-            if (typeof saveGame === 'function') {
-                saveGame(); // Պահպանում է localStorage + սերվեր
-            }
+    if (!player) return;
+    
+    const currentState = JSON.stringify(player.toJSON ? player.toJSON() : player);
+    if (currentState === _lastSavedStateStr) return; // Փոփոխություն չկա, չենք ծանրաբեռնում սերվերը
+    _lastSavedStateStr = currentState;
+
+    const token = getToken();
+
+    // Հյուրերի դեպքում (չգրանցված) պահում ենք բրաուզերում
+    if (!token) {
+        localStorage.setItem(getSaveKey(), currentState);
+        return;
+    }
+
+    // Գրանցվածների դեպքում ԱԿՆԹԱՐԹՈՐԵՆ ուղարկում ենք սերվեր
+    clearTimeout(_saveTimeout);
+    _saveTimeout = setTimeout(() => {
+        if (typeof apiCall === 'function') {
+            apiCall('/game/save', 'POST', { playerData: JSON.parse(currentState) })
+                .catch(err => console.error('Ակնթարթային պահпанման սխալ:', err));
+        } else if (typeof saveGame === 'function') {
+            saveGame();
         }
-    }, 500);
+    }, 10); // 10 միливայрկяанн ապahовум է, որ խаղацողը чи hасцни тhарմацнел эджy
 }
+
 
 cryptosData.forEach(c => player.cryptoBalances[c.id] = 0.0);
 
@@ -6510,32 +6524,62 @@ function saveGame() {
 }
 
 // loadGame — INSTANT: localStorage first, cloud sync in background
+// loadGame — STRICT SERVER AUTHORITATIVE
 async function loadGame(manual = false) {
-    player = getDefaultPlayerState();
-    cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
+    const token = getToken();
 
-    if (currentUser) {
-        player.name = currentUser.name;
+    // 1. Հյուրի ռеժиm (Чгрлансвad) - кардум е мияйн localStorage-ից
+    if (!token) {
+        player = getDefaultPlayerState();
+        const saved = localStorage.getItem(getSaveKey());
+        if (saved) {
+            try {
+                let parsed = JSON.parse(saved);
+                player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
+            } catch (e) { console.error('Guest save load error', e); }
+        }
+        cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
+        if (currentUser) player.name = currentUser.name;
+        player.checkRank();
+        updateFullUI();
+        return;
     }
 
-    // ── Step 1: Load localStorage IMMEDIATELY (zero delay) ──────
-    const saved = localStorage.getItem(getSaveKey());
-    if (saved) {
-        try {
-            let parsed = JSON.parse(saved);
-            player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...parsed });
+    // 2. ԳРАНСЦВАД ОҒТАТЕР - МИЯЙН СЕРВЕРԻՑ
+    localStorage.removeItem(getSaveKey());
+
+    if (manual) showNotification('🔄 Берднум ем серверից...', true);
+
+    try {
+        const res = await apiCall('/game/save', 'GET');
+        
+        if (res && res.playerData) {
+            player = Player.fromJSON({ ...getDefaultPlayerState().toJSON(), ...res.playerData });
             cryptosData.forEach(c => { if (player.cryptoBalances[c.id] === undefined) player.cryptoBalances[c.id] = 0.0; });
             if (currentUser) player.name = currentUser.name;
             player.checkRank();
-        } catch (e) { console.error('Save load error', e); }
-    }
-    updateFullUI();
 
-    // ── Step 2: Sync with cloud in background (non-blocking) ────
-    if (getToken()) {
-        _syncCloudSave(manual);
+            if (res.pendingTransfers && res.pendingTransfers.length > 0) {
+                res.pendingTransfers.forEach((t, i) => {
+                    setTimeout(() => _applyIncomingTransfer(t), 800 + i * 2500);
+                });
+                apiCall('/game/transfers/clear', 'POST').catch(() => {});
+            }
+
+            if (manual) showNotification('✅ Тваялнерн берднвецин серверից', true);
+        } else {
+            player = getDefaultPlayerState();
+            if (currentUser) player.name = currentUser.name;
+        }
+    } catch (e) {
+        console.error('Server load failed:', e);
+        if (manual) showNotification('⚠️ Сервери hет капи хнdiр։ Норогец эджy։', false);
     }
+
+    updateFullUI();
+    if (typeof startTransferPolling === 'function') startTransferPolling(5000);
 }
+
 
 // Background cloud sync — won't block game start
 async function _syncCloudSave(manual = false) {
@@ -8402,6 +8446,26 @@ function closeLevelUp() {
         overlay.style.display = 'none';
     }, 600);
 }
+
+// ԷՋЪ АRАQ ФАКЛЕЛУ КАМ ТHАРMАЦНЕЛУ ДЕПQUM ПAHПANUM (Fallback)
+window.addEventListener('beforeunload', () => {
+    const token = getToken();
+    if (token && player) {
+        const currentStateStr = JSON.stringify(player.toJSON ? player.toJSON() : player);
+        if (currentStateStr !== _lastSavedStateStr) {
+            const apiBase = (typeof API_URL !== 'undefined') ? API_URL : ''; 
+            fetch(apiBase + '/game/save', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ playerData: player.toJSON ? player.toJSON() : player }),
+                keepalive: true
+            }).catch(() => {});
+        }
+    }
+});
 
 </script>
 <div id="levelup-overlay" class="lu-overlay">
