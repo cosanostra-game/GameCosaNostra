@@ -2043,6 +2043,218 @@ canvas {
   }
 }
 </style>
+
+<!-- Exact visual redesign supplied by the user -->
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   NEW iOS-STYLE LAYOUT — based on the provided reference image
+   ═══════════════════════════════════════════════════════════════════ */
+
+body {
+  background: #0a0a0f;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Keep the original game pages in the file, but render this supplied main layout. */
+#page-main {
+  padding: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  background: transparent !important;
+  animation: none !important;
+}
+#page-main > *:not(.ios-app) {
+  display: none !important;
+}
+
+.ios-app {
+  width: 100%;
+  max-width: 1200px;
+  height: 90vh;
+  max-height: 800px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ios-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ios-user { display: flex; flex-direction: column; }
+.ios-user .name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.ios-user .handle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+.ios-nav-tabs {
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 10px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ios-nav-tabs .tab {
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: 0.2s;
+  background: transparent;
+  border: none;
+}
+.ios-nav-tabs .tab.active,
+.ios-nav-tabs .tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.device-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: 0.2s;
+  min-height: 80px;
+  justify-content: center;
+}
+.device-card:hover {
+  background: rgba(255, 255, 255, 0.11);
+  transform: translateY(-2px);
+}
+.device-card .icon { font-size: 26px; color: rgba(255, 255, 255, 0.6); }
+.device-card .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+.device-card .sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+.device-card .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 4px;
+}
+.device-card .value.green { color: #34c759; }
+.device-card .value.blue { color: #0a84ff; }
+.device-card .value.orange { color: #ff9500; }
+.device-card .value.red { color: #ff3b30; }
+.device-card .value.purple { color: #af52de; }
+.device-card .value.yellow { color: #ffd60a; }
+
+.ios-status-bar {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.ios-status-bar .left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.ios-status-bar .temp {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+.ios-status-bar .temp small {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+}
+.ios-status-bar .mode {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+.ios-status-bar .stats {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.ios-status-bar .stats span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.device-grid::-webkit-scrollbar { width: 4px; }
+.device-grid::-webkit-scrollbar-track { background: transparent; }
+.device-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .ios-app { padding: 20px; border-radius: 32px; height: 95vh; max-height: none; }
+  .device-grid { grid-template-columns: repeat(2, 1fr); }
+  .ios-nav-tabs { gap: 8px; }
+  .ios-nav-tabs .tab { padding: 6px 12px; font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .ios-app { padding: 14px; border-radius: 24px; }
+  .device-grid { grid-template-columns: 1fr; }
+  .ios-topbar { flex-direction: column; align-items: stretch; }
+  .ios-nav-tabs { justify-content: center; }
+  .ios-status-bar { flex-direction: column; align-items: stretch; }
+  .ios-status-bar .left { flex-wrap: wrap; }
+}
+</style>
 </head>
 <body data-theme="dark">
 
@@ -2327,113 +2539,89 @@ canvas {
     </header>
 
     <section id="page-main" class="page active">
-        <h1 style="display:none;"><i class="material-icons">home</i> <span data-i18n="page.main">Գլխավոր կայան</span></h1>
-
-        <div class="main-welcome-banner ios-card" style="padding:16px 20px;margin-bottom:20px;">
-            <div class="main-page-avatar" id="main-page-avatar-el" onclick="switchTab('profile', this)" title="Պրոֆիլ">
-                <span id="main-page-avatar-initials">Ա</span>
-                <img id="main-page-avatar-img" src="" style="display:none;" alt="">
-            </div>
-            <div class="main-welcome-info">
-                <div class="main-welcome-greeting" data-i18n="profile.welcome">Բարի գալուստ</div>
-                <div class="main-welcome-name" id="main-welcome-name">Խաղացող</div>
-                <div class="main-welcome-rank" id="main-welcome-rank">⭐ Դատարկապորտ</div>
-            </div>
-            <div style="margin-left:auto;font-size:12px;color:var(--text);opacity:.65;">
-                <span data-i18n="profile.level">Մակարդակ</span>
-                <span id="main-level-display" style="font-weight:800;color:var(--text-l);font-size:18px;">1</span>
-            </div>
+      <div class="ios-app">
+        <div class="ios-topbar">
+          <div class="ios-user">
+            <div class="name" id="ios-user-name">Խաղացող</div>
+            <div class="handle" id="ios-user-handle">@player</div>
+          </div>
+          <div class="ios-nav-tabs">
+            <button class="tab active" onclick="switchTab('main',this)">Գլխավոր</button>
+            <button class="tab" onclick="switchTab('bank',this)">Բանկ</button>
+            <button class="tab" onclick="switchTab('garage',this)">Ավտոտնակ</button>
+            <button class="tab" onclick="switchTab('business',this)">Բիզնես</button>
+          </div>
         </div>
 
-        <div class="quick-actions-ios">
-            <div class="quick-btn" onclick="quickCrime('pocket')"><i class="material-icons" style="color:#ff3b30;">back_hand</i><span data-i18n="quick.pocket">Գրպանահատություն</span></div>
-            <div class="quick-btn" onclick="quickCrime('shop')"><i class="material-icons" style="color:#ff9500;">storefront</i><span data-i18n="quick.shop">Թալանել Խանութ</span></div>
-            <div class="quick-btn" onclick="switchTab('casino', document.querySelector('[onclick*=casino]'))"><i class="material-icons" style="color:#ffcc00;">casino</i><span data-i18n="menu.casino">Կազինո</span></div>
-            <div class="quick-btn" onclick="switchTab('crypto', document.querySelector('[onclick*=crypto]'))"><i class="material-icons" style="color:#ff9500;">currency_bitcoin</i><span data-i18n="menu.crypto">Կրիպտո</span></div>
+        <div class="device-grid">
+          <div class="device-card">
+            <div class="icon">💰</div>
+            <div class="title">Կանխիկ</div>
+            <div class="sub">Ձեր դրամապանակ</div>
+            <div class="value green">$<span id="ios-money">0</span></div>
+          </div>
+          <div class="device-card">
+            <div class="icon">🏦</div>
+            <div class="title">Բանկ</div>
+            <div class="sub">Հաշվի մնացորդ</div>
+            <div class="value blue">$<span id="ios-bank">0</span></div>
+          </div>
+          <div class="device-card">
+            <div class="icon">❤️</div>
+            <div class="title">Առողջություն</div>
+            <div class="sub">HP</div>
+            <div class="value red"><span id="ios-hp">100</span>%</div>
+          </div>
+          <div class="device-card">
+            <div class="icon">⚡</div>
+            <div class="title">Էներգիա</div>
+            <div class="sub">Էներգիայի մակարդակ</div>
+            <div class="value orange"><span id="ios-energy">100</span>%</div>
+          </div>
+          <div class="device-card">
+            <div class="icon">⭐</div>
+            <div class="title">Կոչում</div>
+            <div class="sub">Ձեր կարգավիճակ</div>
+            <div class="value purple" id="ios-rank">Դատարկապորտ</div>
+          </div>
+          <div class="device-card">
+            <div class="icon">📊</div>
+            <div class="title">Փորձ (XP)</div>
+            <div class="sub">Առաջընթաց</div>
+            <div class="value yellow"><span id="ios-xp">0</span> XP</div>
+          </div>
+          <div class="device-card">
+            <div class="icon">🚗</div>
+            <div class="title">Ավտոտնակ</div>
+            <div class="sub">Մեքենաներ</div>
+            <div class="value blue"><span id="ios-garage">0</span> / <span id="ios-garage-limit">10</span></div>
+          </div>
+          <div class="device-card">
+            <div class="icon">🏠</div>
+            <div class="title">Անշարժ գույք</div>
+            <div class="sub">Ձեր գույքը</div>
+            <div class="value orange"><span id="ios-estate">0</span> օբյ.</div>
+          </div>
+          <div class="device-card">
+            <div class="icon">💼</div>
+            <div class="title">Բիզնես</div>
+            <div class="sub">Ակտիվ բիզնեսներ</div>
+            <div class="value purple"><span id="ios-business">0</span> / <span id="ios-business-slots">5</span></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="ios-card full-width">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;">
-                        <i class="material-icons" style="font-size:16px;vertical-align:middle;color:#ffd60a;">star</i>
-                        <span data-i18n="sidebar.rank">Կոչում</span>
-                    </span>
-                    <span style="font-size:14px;font-weight:800;color:#ffd60a;" id="main-rank-display">Դատարկապորտ</span>
-                </div>
-                <div class="ios-progress">
-                    <div class="labels"><span data-i18n="rank.progress">Առաջընթաց</span><span id="main-xp-text">0 / 300 XP</span></div>
-                    <div class="track"><div class="fill yellow" id="main-xp-bar" style="width:0%;"></div></div>
-                </div>
-                <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
-                    <div class="ios-stat" style="flex:1;"><span class="label" data-i18n="stats.networth">Կարողություն</span><span class="value green">$<span id="main-networth">0</span></span></div>
-                    <div class="ios-stat" style="flex:1;"><span class="label" data-i18n="stats.crimes">Հանցագործ.</span><span class="value blue" id="main-crimes-display">0</span></div>
-                </div>
-            </div>
-
-            <div class="ios-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:var(--accent);">favorite</i> <span data-i18n="topbar.hp">Առողջություն</span></span>
-                    <span style="font-weight:800;color:var(--accent);" id="main-hp-display">100</span>
-                </div>
-                <div class="ios-progress"><div class="track"><div class="fill red" id="main-hp-bar" style="width:100%;"></div></div></div>
-                <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:#ff9500;">bolt</i> <span data-i18n="topbar.energy">Էներգիա</span></span>
-                    <span style="font-weight:800;color:#ff9500;" id="main-energy-display">100</span>
-                </div>
-                <div class="ios-progress"><div class="track"><div class="fill orange" id="main-energy-bar" style="width:100%;"></div></div></div>
-            </div>
-
-            <div class="ios-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:var(--ok);">account_balance</i> <span data-i18n="menu.bank">Բանկ</span></span>
-                    <span style="font-weight:800;color:var(--ok);">$<span id="main-bank-display">0</span></span>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                    <span style="font-size:12px;color:var(--text);opacity:.65;"><i class="material-icons" style="font-size:14px;color:#af52de;">inventory_2</i> <span data-i18n="menu.stash">Թաքստոց</span></span>
-                    <span style="font-weight:700;color:#af52de;">$<span id="main-stash-display">0</span></span>
-                </div>
-                <div style="margin-top:8px;display:flex;gap:8px;">
-                    <button style="flex:1;padding:8px;font-size:12px;background:#0a84ff;border-radius:12px;" onclick="switchTab('bank',null)" data-i18n="menu.bank">Բանկ</button>
-                    <button style="flex:1;padding:8px;font-size:12px;background:#af52de;border-radius:12px;" onclick="switchTab('stash',null)" data-i18n="menu.stash">Թաքստոց</button>
-                </div>
-            </div>
-
-            <div class="ios-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:#0a84ff;">directions_car</i> <span data-i18n="menu.garage">Ավտոտնակ</span></span>
-                    <span style="font-weight:800;color:#0a84ff;"><span id="main-cars">0</span> / <span id="main-cars-limit">10</span></span>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                    <span style="font-size:12px;color:var(--text);opacity:.65;"><i class="material-icons" style="font-size:14px;color:#ff9500;">business</i> <span data-i18n="menu.estate">Անշ. Գույք</span></span>
-                    <span style="font-weight:700;color:#ff9500;"><span id="main-estate">0</span> <span data-i18n="main.estate.unit">օբյ.</span></span>
-                </div>
-                <div style="margin-top:8px;display:flex;gap:8px;">
-                    <button style="flex:1;padding:8px;font-size:12px;background:#0a84ff;border-radius:12px;" onclick="switchTab('garage',null)" data-i18n="menu.garage">Ավտոտնակ</button>
-                    <button style="flex:1;padding:8px;font-size:12px;background:#ff9500;border-radius:12px;" onclick="switchTab('estate',null)" data-i18n="menu.estate">Գույք</button>
-                </div>
-            </div>
-
-            <div class="ios-card full-width">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:#af52de;">work</i> <span data-i18n="menu.business">Բիզնես</span></span>
-                    <span style="font-weight:800;color:#af52de;"><span id="main-biz-count">0</span> / <span id="main-biz-slots-display">5</span></span>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-size:12px;color:var(--text);opacity:.65;"><i class="material-icons" style="font-size:14px;color:var(--accent);">volunteer_activism</i> <span data-i18n="biz.dirtyMoney">Կեղտ Փող</span></span>
-                    <span style="font-weight:700;color:var(--accent);">$<span id="main-dirty-money">0</span></span>
-                </div>
-                <button style="margin-top:10px;padding:10px;font-size:13px;background:#af52de;border-radius:14px;" onclick="switchTab('business',null)" data-i18n="menu.business">Կառավարել Բիզնեսը</button>
-            </div>
+        <div class="ios-status-bar">
+          <div class="left">
+            <div class="temp"><span id="ios-level">1</span><small> / 7</small></div>
+            <div class="mode"><span id="ios-rank-name">Դատարկապորտ</span></div>
+          </div>
+          <div class="stats">
+            <span>⏱ <span id="ios-time">0</span> ր</span>
+            <span>🎯 <span id="ios-crimes">0</span></span>
+            <span>🏆 <span id="ios-networth">$0</span></span>
+          </div>
         </div>
-
-        <div class="ios-card" style="margin-top:16px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:13px;font-weight:700;color:var(--text);opacity:.72;text-transform:uppercase;letter-spacing:.5px;"><i class="material-icons" style="font-size:16px;color:#0a84ff;">show_chart</i> <span data-i18n="stats.crimes">Հանցագործությունների վիճակագրություն</span></span>
-                <span style="font-size:12px;color:var(--text);opacity:.5;">30 օր</span>
-            </div>
-            <div class="ios-graph"><canvas id="main-crime-chart" width="600" height="150"></canvas></div>
-        </div>
+      </div>
     </section>
 
     <section id="page-crimes" class="page">
@@ -5099,6 +5287,10 @@ function _initDomCache() {
         'main-energy-display','main-bank-display','main-stash-display','main-dirty-money',
         'main-biz-count','main-biz-slots-display',
         'main-xp-bar','main-xp-text','main-hp-bar','main-energy-bar',
+        'ios-user-name','ios-user-handle','ios-money','ios-bank','ios-hp',
+        'ios-energy','ios-rank','ios-xp','ios-garage','ios-garage-limit',
+        'ios-estate','ios-business','ios-business-slots','ios-level',
+        'ios-rank-name','ios-time','ios-crimes','ios-networth',
         'prison-status','in-prison-ui','daily-bonus-btn','daily-btn-label','log-list',
         'notification','topbar-cycle-time','cycle-time-page','cycle-type-page','cycle-bar',
         'crypto-current-price','p-timer'
@@ -5146,6 +5338,28 @@ function updateUI() {
     _set('sidebar-rank-val', getRankName(player.rank));
     _set('main-welcome-rank', '\u2b50 ' + getRankName(player.rank));
     _set('stashDisplay',    (player.stash || 0).toLocaleString());
+
+    // ── Supplied iOS layout values ─────────────────────────────────
+    _set('ios-user-name', player.name || 'Խաղացող');
+    _set('ios-user-handle', currentUserEmail ? currentUserEmail.split('@')[0] : 'player');
+    _set('ios-money', (player.money || 0).toLocaleString());
+    _set('ios-bank', (player.bank || 0).toLocaleString());
+    _set('ios-hp', Math.floor(player.hp || 0));
+    _set('ios-energy', Math.floor(player.energy || 0));
+    _set('ios-rank', getRankName(player.rank));
+    _set('ios-xp', player.exp || 0);
+    _set('ios-garage', (player.garage || []).length);
+    _set('ios-garage-limit', player.garageLimit || 10);
+    _set('ios-estate', (player.realEstate || []).length);
+    _set('ios-business', (player.businesses || []).length);
+    _set('ios-business-slots', player.bizSlots || 5);
+    _set('ios-level', player.level || 1);
+    _set('ios-rank-name', getRankName(player.rank));
+    _set('ios-time', player.stats ? Math.floor(player.stats.minutes || 0) : 0);
+    _set('ios-crimes', player.stats ? player.stats.crimes || 0 : 0);
+    _set('ios-networth', '$' + Math.floor(
+        typeof player.getNetWorth === 'function' ? player.getNetWorth() : 0
+    ).toLocaleString());
 
     const dirtyEl = _dom['dirtyMoneyDisplay'] || (_dom['dirtyMoneyDisplay'] = document.getElementById('dirtyMoneyDisplay'));
     const dirtyVal = '$' + (player.dirtyMoney || 0).toLocaleString();
