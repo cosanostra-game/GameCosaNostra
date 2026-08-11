@@ -386,6 +386,10 @@ const RU = {
   'main.quickActions':'⚡ Быстрые Действия',
   'quick.pocket':     'Карманник',
   'quick.shop':       'Ограбить Магазин',
+  'levelup.title':    'НОВЫЙ УРОВЕНЬ!',
+  'levelup.sub':      'Вы достигли нового уровня',
+  'levelup.unlocked': 'Новые возможности:',
+  'levelup.btn':      'ПРОДОЛЖИТЬ',
 
   // ── Inventory ────────────────────────────────────────
   'inv.shopTab':        '🛒 Магазин',
@@ -1214,6 +1218,10 @@ const HY = {
   'main.quickActions':'⚡ Արագ Գործողություններ',
   'quick.pocket':     'Գրպանահատություն',
   'quick.shop':       'Թալանել Խանութ',
+  'levelup.title':    'ՆՈՐ ՄԱԿԱՐԴԱԿ',
+  'levelup.sub':      'Դուք հասաք նոր մակարդակի',
+  'levelup.unlocked': 'Նոր հնարավորություններ՝',
+  'levelup.btn':      'ՇԱՐՈՒՆԱԿԵԼ',
 
   // ── Inventory ────────────────────────────────────────
   'inv.shopTab':        '🛒 Խանութ',
