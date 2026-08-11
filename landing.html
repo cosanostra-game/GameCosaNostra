@@ -322,122 +322,6 @@
     to { transform: scale(1.3); opacity: 0.8; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   iOS DASHBOARD — glass cards, progress, quick actions and graph
-   ═══════════════════════════════════════════════════════════════════ */
-.ios-card {
-    background: var(--panel-solid);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-    padding: 20px 24px;
-    transition: transform .25s ease, box-shadow .25s ease;
-    animation: cardEntrance .5s ease both;
-}
-.ios-card:hover { transform: translateY(-3px); }
-.ios-stat {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 80px;
-}
-.ios-stat .label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: var(--text);
-    opacity: .72;
-}
-.ios-stat .value {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text-l);
-    line-height: 1.2;
-}
-.ios-stat .value.green { color: var(--ok); }
-.ios-stat .value.blue { color: #0a84ff; }
-.ios-stat .value.orange { color: #ff9500; }
-.ios-stat .value.purple { color: #af52de; }
-.ios-stat .value.red { color: var(--accent); }
-.ios-progress { display: flex; flex-direction: column; gap: 7px; }
-.ios-progress .track {
-    height: 7px;
-    background: var(--border);
-    border-radius: 7px;
-    overflow: hidden;
-}
-.ios-progress .fill {
-    height: 100%;
-    border-radius: 7px;
-    transition: width .8s cubic-bezier(.16,1,.3,1);
-}
-.ios-progress .fill.yellow { background: #ffd60a; }
-.ios-progress .fill.red { background: var(--accent); }
-.ios-progress .fill.orange { background: #ff9500; }
-.ios-progress .labels {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text);
-}
-.ios-graph {
-    background: var(--bg);
-    border-radius: 16px;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-}
-.ios-graph canvas { margin-top: 0; border: 0; background: transparent; }
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 20px;
-}
-.dashboard-grid .full-width { grid-column: 1 / -1; }
-.quick-actions-ios {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 16px 0;
-}
-.quick-actions-ios .quick-btn {
-    min-width: 0;
-    padding: 14px 6px;
-    border-radius: 16px;
-    background: var(--panel-solid);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-l);
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform .2s, background .2s;
-    text-align: center;
-}
-.quick-actions-ios .quick-btn:hover { transform: translateY(-2px); background: var(--border); }
-.quick-actions-ios .quick-btn:active { transform: scale(.95); }
-@media (max-width: 600px) {
-    .dashboard-grid { grid-template-columns: 1fr; gap: 12px; }
-    .dashboard-grid .full-width { grid-column: auto; }
-    .quick-actions-ios { grid-template-columns: repeat(2, 1fr); }
-    .ios-stat .value { font-size: 18px; }
-    .ios-card { padding: 16px 18px; }
-}
-
     </style>
     <style>
         /* Fallback until Montserrat loads */
@@ -2043,218 +1927,6 @@ canvas {
   }
 }
 </style>
-
-<!-- Exact visual redesign supplied by the user -->
-<style>
-/* ═══════════════════════════════════════════════════════════════════
-   NEW iOS-STYLE LAYOUT — based on the provided reference image
-   ═══════════════════════════════════════════════════════════════════ */
-
-body {
-  background: #0a0a0f;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Keep the original game pages in the file, but render this supplied main layout. */
-#page-main {
-  padding: 0 !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  background: transparent !important;
-  animation: none !important;
-}
-#page-main > *:not(.ios-app) {
-  display: none !important;
-}
-
-.ios-app {
-  width: 100%;
-  max-width: 1200px;
-  height: 90vh;
-  max-height: 800px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-radius: 48px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  padding: 28px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  overflow: hidden;
-  position: relative;
-}
-
-.ios-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.ios-user { display: flex; flex-direction: column; }
-.ios-user .name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-}
-.ios-user .handle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
-}
-.ios-nav-tabs {
-  display: flex;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 6px 10px;
-  border-radius: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-.ios-nav-tabs .tab {
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  transition: 0.2s;
-  background: transparent;
-  border: none;
-}
-.ios-nav-tabs .tab.active,
-.ios-nav-tabs .tab:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-}
-
-.device-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-.device-card {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 24px;
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: 0.2s;
-  min-height: 80px;
-  justify-content: center;
-}
-.device-card:hover {
-  background: rgba(255, 255, 255, 0.11);
-  transform: translateY(-2px);
-}
-.device-card .icon { font-size: 26px; color: rgba(255, 255, 255, 0.6); }
-.device-card .title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: -0.2px;
-}
-.device-card .sub {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
-}
-.device-card .value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  margin-top: 4px;
-}
-.device-card .value.green { color: #34c759; }
-.device-card .value.blue { color: #0a84ff; }
-.device-card .value.orange { color: #ff9500; }
-.device-card .value.red { color: #ff3b30; }
-.device-card .value.purple { color: #af52de; }
-.device-card .value.yellow { color: #ffd60a; }
-
-.ios-status-bar {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 24px;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 4px;
-}
-.ios-status-bar .left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.ios-status-bar .temp {
-  font-size: 28px;
-  font-weight: 700;
-  color: #fff;
-}
-.ios-status-bar .temp small {
-  font-size: 16px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-}
-.ios-status-bar .mode {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-}
-.ios-status-bar .stats {
-  display: flex;
-  gap: 18px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-}
-.ios-status-bar .stats span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.device-grid::-webkit-scrollbar { width: 4px; }
-.device-grid::-webkit-scrollbar-track { background: transparent; }
-.device-grid::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-@media (max-width: 900px) {
-  .ios-app { padding: 20px; border-radius: 32px; height: 95vh; max-height: none; }
-  .device-grid { grid-template-columns: repeat(2, 1fr); }
-  .ios-nav-tabs { gap: 8px; }
-  .ios-nav-tabs .tab { padding: 6px 12px; font-size: 12px; }
-}
-@media (max-width: 600px) {
-  .ios-app { padding: 14px; border-radius: 24px; }
-  .device-grid { grid-template-columns: 1fr; }
-  .ios-topbar { flex-direction: column; align-items: stretch; }
-  .ios-nav-tabs { justify-content: center; }
-  .ios-status-bar { flex-direction: column; align-items: stretch; }
-  .ios-status-bar .left { flex-wrap: wrap; }
-}
-</style>
 </head>
 <body data-theme="dark">
 
@@ -2539,89 +2211,58 @@ body {
     </header>
 
     <section id="page-main" class="page active">
-      <div class="ios-app">
-        <div class="ios-topbar">
-          <div class="ios-user">
-            <div class="name" id="ios-user-name">Խաղացող</div>
-            <div class="handle" id="ios-user-handle">@player</div>
-          </div>
-          <div class="ios-nav-tabs">
-            <button class="tab active" onclick="switchTab('main',this)">Գլխավոր</button>
-            <button class="tab" onclick="switchTab('bank',this)">Բանկ</button>
-            <button class="tab" onclick="switchTab('garage',this)">Ավտոտնակ</button>
-            <button class="tab" onclick="switchTab('business',this)">Բիզնես</button>
-          </div>
+        <h1><i class="material-icons">home</i> <span data-i18n="page.main">Գլխավոր կայան</span></h1>
+
+        <!-- Player Welcome Banner -->
+        <div class="main-welcome-banner">
+            <div class="main-page-avatar" id="main-page-avatar-el" onclick="switchTab('profile', this)" title="Պրոֆիլ">
+                <span id="main-page-avatar-initials">Ա</span>
+                <img id="main-page-avatar-img" src="" style="display:none;" alt="">
+            </div>
+            <div class="main-welcome-info">
+                <div class="main-welcome-greeting" data-i18n="profile.welcome">Բարի գալուստ</div>
+                <div class="main-welcome-name" id="main-welcome-name">Խաղացող</div>
+                <div class="main-welcome-rank" id="main-welcome-rank">⭐ Դատարկապորտ</div>
+            </div>
         </div>
 
-        <div class="device-grid">
-          <div class="device-card">
-            <div class="icon">💰</div>
-            <div class="title">Կանխիկ</div>
-            <div class="sub">Ձեր դրամապանակ</div>
-            <div class="value green">$<span id="ios-money">0</span></div>
-          </div>
-          <div class="device-card">
-            <div class="icon">🏦</div>
-            <div class="title">Բանկ</div>
-            <div class="sub">Հաշվի մնացորդ</div>
-            <div class="value blue">$<span id="ios-bank">0</span></div>
-          </div>
-          <div class="device-card">
-            <div class="icon">❤️</div>
-            <div class="title">Առողջություն</div>
-            <div class="sub">HP</div>
-            <div class="value red"><span id="ios-hp">100</span>%</div>
-          </div>
-          <div class="device-card">
-            <div class="icon">⚡</div>
-            <div class="title">Էներգիա</div>
-            <div class="sub">Էներգիայի մակարդակ</div>
-            <div class="value orange"><span id="ios-energy">100</span>%</div>
-          </div>
-          <div class="device-card">
-            <div class="icon">⭐</div>
-            <div class="title">Կոչում</div>
-            <div class="sub">Ձեր կարգավիճակ</div>
-            <div class="value purple" id="ios-rank">Դատարկապորտ</div>
-          </div>
-          <div class="device-card">
-            <div class="icon">📊</div>
-            <div class="title">Փորձ (XP)</div>
-            <div class="sub">Առաջընթաց</div>
-            <div class="value yellow"><span id="ios-xp">0</span> XP</div>
-          </div>
-          <div class="device-card">
-            <div class="icon">🚗</div>
-            <div class="title">Ավտոտնակ</div>
-            <div class="sub">Մեքենաներ</div>
-            <div class="value blue"><span id="ios-garage">0</span> / <span id="ios-garage-limit">10</span></div>
-          </div>
-          <div class="device-card">
-            <div class="icon">🏠</div>
-            <div class="title">Անշարժ գույք</div>
-            <div class="sub">Ձեր գույքը</div>
-            <div class="value orange"><span id="ios-estate">0</span> օբյ.</div>
-          </div>
-          <div class="device-card">
-            <div class="icon">💼</div>
-            <div class="title">Բիզնես</div>
-            <div class="sub">Ակտիվ բիզնեսներ</div>
-            <div class="value purple"><span id="ios-business">0</span> / <span id="ios-business-slots">5</span></div>
-          </div>
+        <div class="form-box" style="max-width:420px; text-align:center; margin:0 auto 30px;">
+            <p style="color:var(--text); margin-bottom:10px; font-size:14px; text-transform:uppercase; font-weight:600;" data-i18n="main.bankLabel">Անձնական Բանկային Հաշիվ</p>
+            <h2 id="personalBankAccShow" style="color:var(--text-l); font-size:32px; letter-spacing:2px;">AM000000</h2>
         </div>
 
-        <div class="ios-status-bar">
-          <div class="left">
-            <div class="temp"><span id="ios-level">1</span><small> / 7</small></div>
-            <div class="mode"><span id="ios-rank-name">Դատարկապորտ</span></div>
-          </div>
-          <div class="stats">
-            <span>⏱ <span id="ios-time">0</span> ր</span>
-            <span>🎯 <span id="ios-crimes">0</span></span>
-            <span>🏆 <span id="ios-networth">$0</span></span>
-          </div>
+        <div style="margin-bottom:30px;">
+            <p style="color:var(--text); font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:16px;" data-i18n="main.quickActions">⚡ Արագ Գործողություններ</p>
+            <div class="quick-actions">
+                <div class="quick-btn" onclick="quickCrime('pocket')"><i class="material-icons" style="color:#ff3b30;">back_hand</i><span data-i18n="quick.pocket">Գրպանահատ.</span></div>
+                <div class="quick-btn" onclick="quickCrime('shop')"><i class="material-icons" style="color:#ff9500;">storefront</i><span data-i18n="quick.shop">Թալանել Խանութ</span></div>
+                <div class="quick-btn" onclick="switchTab('casino', document.querySelector('[onclick*=casino]'))"><i class="material-icons" style="color:#ffcc00;">casino</i><span data-i18n="menu.casino">Կազինո</span></div>
+                <div class="quick-btn" onclick="switchTab('crypto', document.querySelector('[onclick*=crypto]'))"><i class="material-icons" style="color:#ff9500;">currency_bitcoin</i><span data-i18n="menu.crypto">Կրիպտո</span></div>
+            </div>
         </div>
-      </div>
+
+        <div class="cards-grid">
+            <div class="card" style="text-align:center;">
+                <i class="material-icons" style="font-size:36px;color:var(--ok);margin-bottom:16px;">show_chart</i>
+                <h3 style="justify-content:center;" data-i18n="stats.crimes">Ընդ. Կարողություն</h3>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;">$<span id="main-networth">0</span></p>
+            </div>
+            <div class="card" style="text-align:center;cursor:pointer;" onclick="openRankModal()">
+                <i class="material-icons" style="font-size:36px;color:var(--warn);margin-bottom:16px;">star</i>
+                <h3 style="justify-content:center;" data-i18n="stats.cars">Հեղինակություն</h3>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-exp">0</span> / <span id="main-next-exp">300</span> XP</p>
+            </div>
+            <div class="card" style="text-align:center;">
+                <i class="material-icons" style="font-size:36px;color:#0a84ff;margin-bottom:16px;">directions_car</i>
+                <h3 style="justify-content:center;" data-i18n="stats.earnings">Ավտոպարկ</h3>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-cars">0</span> / <span id="main-cars-limit">10</span></p>
+            </div>
+            <div class="card" style="text-align:center;">
+                <i class="material-icons" style="font-size:36px;color:#af52de;margin-bottom:16px;">business</i>
+                <h3 style="justify-content:center;" data-i18n="stats.time">Անշ. Գույք</h3>
+                <p style="font-size:28px;color:var(--text-l);font-weight:800;"><span id="main-estate">0</span> <span data-i18n="main.estate.unit">օբյ.</span></p>
+            </div>
+        </div>
     </section>
 
     <section id="page-crimes" class="page">
@@ -4614,12 +4255,6 @@ class Player extends Entity {
         if (newRank !== this.rank) {
             this.rank = newRank;
             showNotification(`${t('notif.new_rank')}: ${this.rank}`, true);
-            const newLevel = Math.max(1, ranks.findIndex(r => r.name === newRank) + 1);
-            const unlockedItems = [`${t('notif.new_rank')} ${getRankName(newRank)}`];
-            if (newLevel >= 4) unlockedItems.push(`🔓 ${t('fam.create.title')}`);
-            if (newLevel >= 5) unlockedItems.push(`🔓 ${t('weapon.thomson.name')}`);
-            if (newLevel >= 6) unlockedItems.push(`🔓 ${t('weapon.ak47.name')}`);
-            triggerLevelUp(newLevel, unlockedItems, getLang());
         }
         return this;
     }
@@ -5213,63 +4848,6 @@ function quickCrime(type) {
 }
 
 // ==========================================
-//   MAIN PAGE CRIME CHART
-// ==========================================
-let _crimeHistory = [];
-function updateCrimeChart() {
-    const canvas = document.getElementById('main-crime-chart');
-    if (!canvas || typeof canvas.getContext !== 'function') return;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    if (!_crimeHistory.length) _crimeHistory = Array(30).fill(0);
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.strokeStyle = 'rgba(255,255,255,.08)';
-    ctx.lineWidth = 1;
-    for (let y = 0; y <= height; y += height / 3) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-    }
-
-    const max = Math.max(1, ..._crimeHistory);
-    const points = _crimeHistory.map((value, index) => ({
-        x: _crimeHistory.length === 1 ? width : (index / (_crimeHistory.length - 1)) * width,
-        y: height - (value / max) * (height - 18) - 9
-    }));
-    const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, 'rgba(10,132,255,.36)');
-    gradient.addColorStop(1, 'rgba(10,132,255,.02)');
-
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, height);
-    points.forEach(point => ctx.lineTo(point.x, point.y));
-    ctx.lineTo(points[points.length - 1].x, height);
-    ctx.closePath();
-    ctx.fillStyle = gradient;
-    ctx.fill();
-
-    ctx.beginPath();
-    points.forEach((point, index) => index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y));
-    ctx.strokeStyle = '#0a84ff';
-    ctx.lineWidth = 3;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    ctx.shadowColor = '#0a84ff';
-    ctx.shadowBlur = 8;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    const latest = _crimeHistory[_crimeHistory.length - 1] || 0;
-    ctx.fillStyle = 'rgba(255,255,255,.68)';
-    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${latest} ${typeof t === 'function' ? t('stats.crimes') : ''}`, width - 8, 17);
-}
-
-// ==========================================
 //   DOM CACHE — filled once on DOMContentLoaded
 // ==========================================
 const _dom = {};
@@ -5283,14 +4861,6 @@ function _initDomCache() {
         'hp-bar','energy-bar','sidebar-xp-bar','sidebar-xp-text',
         'player-crypto-amount','trade-coin-label','active-crypto-title',
         'main-networth','main-exp','main-next-exp','main-cars','main-cars-limit','main-estate',
-        'main-level-display','main-rank-display','main-crimes-display','main-hp-display',
-        'main-energy-display','main-bank-display','main-stash-display','main-dirty-money',
-        'main-biz-count','main-biz-slots-display',
-        'main-xp-bar','main-xp-text','main-hp-bar','main-energy-bar',
-        'ios-user-name','ios-user-handle','ios-money','ios-bank','ios-hp',
-        'ios-energy','ios-rank','ios-xp','ios-garage','ios-garage-limit',
-        'ios-estate','ios-business','ios-business-slots','ios-level',
-        'ios-rank-name','ios-time','ios-crimes','ios-networth',
         'prison-status','in-prison-ui','daily-bonus-btn','daily-btn-label','log-list',
         'notification','topbar-cycle-time','cycle-time-page','cycle-type-page','cycle-bar',
         'crypto-current-price','p-timer'
@@ -5338,28 +4908,6 @@ function updateUI() {
     _set('sidebar-rank-val', getRankName(player.rank));
     _set('main-welcome-rank', '\u2b50 ' + getRankName(player.rank));
     _set('stashDisplay',    (player.stash || 0).toLocaleString());
-
-    // ── Supplied iOS layout values ─────────────────────────────────
-    _set('ios-user-name', player.name || 'Խաղացող');
-    _set('ios-user-handle', currentUserEmail ? currentUserEmail.split('@')[0] : 'player');
-    _set('ios-money', (player.money || 0).toLocaleString());
-    _set('ios-bank', (player.bank || 0).toLocaleString());
-    _set('ios-hp', Math.floor(player.hp || 0));
-    _set('ios-energy', Math.floor(player.energy || 0));
-    _set('ios-rank', getRankName(player.rank));
-    _set('ios-xp', player.exp || 0);
-    _set('ios-garage', (player.garage || []).length);
-    _set('ios-garage-limit', player.garageLimit || 10);
-    _set('ios-estate', (player.realEstate || []).length);
-    _set('ios-business', (player.businesses || []).length);
-    _set('ios-business-slots', player.bizSlots || 5);
-    _set('ios-level', player.level || 1);
-    _set('ios-rank-name', getRankName(player.rank));
-    _set('ios-time', player.stats ? Math.floor(player.stats.minutes || 0) : 0);
-    _set('ios-crimes', player.stats ? player.stats.crimes || 0 : 0);
-    _set('ios-networth', '$' + Math.floor(
-        typeof player.getNetWorth === 'function' ? player.getNetWorth() : 0
-    ).toLocaleString());
 
     const dirtyEl = _dom['dirtyMoneyDisplay'] || (_dom['dirtyMoneyDisplay'] = document.getElementById('dirtyMoneyDisplay'));
     const dirtyVal = '$' + (player.dirtyMoney || 0).toLocaleString();
@@ -5412,25 +4960,6 @@ function updateUI() {
     _set('main-cars',       (player.garage || []).length);
     _set('main-cars-limit', player.garageLimit || 0);
     _set('main-estate',     (player.realEstate || []).length);
-    _set('main-level-display', player.level || Math.max(1, ranks.findIndex(r => r.name === player.rank) + 1));
-    _set('main-rank-display', getRankName(player.rank));
-    _set('main-crimes-display', player.stats ? player.stats.crimes || 0 : 0);
-    _set('main-hp-display', Math.floor(player.hp || 0));
-    _set('main-energy-display', Math.floor(player.energy || 0));
-    _set('main-bank-display', (player.bank || 0).toLocaleString());
-    _set('main-stash-display', (player.stash || 0).toLocaleString());
-    _set('main-dirty-money', (player.dirtyMoney || 0).toLocaleString());
-    _set('main-biz-count', (player.businesses || []).length);
-    _set('main-biz-slots-display', player.bizSlots || 0);
-    _setW(_dom['main-xp-bar'], xpPercent + '%');
-    _set('main-xp-text', `${player.exp || 0} / ${nextExpVal || 'MAX'} XP`);
-    _setW(_dom['main-hp-bar'], Math.min(100, ((player.hp || 0) / maxHp) * 100) + '%');
-    _setW(_dom['main-energy-bar'], Math.min(100, ((player.energy || 0) / maxEnergy) * 100) + '%');
-    if (player.stats) {
-        _crimeHistory.push(player.stats.crimes || 0);
-        if (_crimeHistory.length > 30) _crimeHistory.shift();
-    }
-    updateCrimeChart();
 
     // Prison
     const prisonDiv   = _dom['prison-status']   || (_dom['prison-status']   = document.getElementById('prison-status'));
@@ -5478,18 +5007,17 @@ function closeRankModal() { document.getElementById('rank-modal').style.display 
 //   SWITCH TAB
 // ==========================================
 let notifTimeout = null;
-function showNotification(msg, ok = true, targetPage = null) {
-    showIosBanner({
-        from: 'system',
-        fromName: ok ? 'Cosa Nostra' : 'Cosa Nostra',
-        text: msg,
-        avatarColor: ok ? '#34c759' : '#ff3b30',
-        avatarIcon: ok ? '✓' : '✕',
-        targetPage,
-        isSystem: true
-    });
-    addActivity(msg, ok);
+function showNotification(msg, ok = true) {
+    const n = document.getElementById('notification');
+    n.querySelector('span').innerText = msg;
+    n.querySelector('i').className = 'material-icons';
+    n.querySelector('i').innerText = ok ? 'check_circle' : 'cancel';
+    n.querySelector('i').style.color = ok ? 'var(--ok)' : 'var(--accent)';
+    n.classList.add('show');
     if (ok) playTone('success',.18); else playTone('fail',.18);
+    clearTimeout(notifTimeout);
+    notifTimeout = setTimeout(() => n.classList.remove('show'), 2800);
+    addActivity(msg, ok);
 }
 
 // ==========================================
@@ -5956,7 +5484,7 @@ function goToPrison(seconds) {
     player.inPrison = true;
     player.prisonTime = seconds;
     player.prisonReleaseAt = Date.now() + seconds * 1000;
-    showNotification(t('notif.arrested'), false, 'prison');
+    showNotification(t('notif.arrested'), false);
     playTone('fail', .3);
     updateUI();
 }
@@ -8648,7 +8176,6 @@ console.log('[MobileOptPatch] Applied ✓');
 // ══════════════════════════════════════════════════════════════════
 var _iosBannerTimeout  = null;
 var _iosBannerFriendId = null;
-var _iosBannerTargetPage = null;
 
 // Unlock audio on first user gesture — required by mobile browsers
 (function() {
@@ -8719,35 +8246,6 @@ function _showSystemNotif(fromId, fromName, text, avatarImg) {
 }
 
 function showIosBanner(data) {
-    if (data && data.isSystem) {
-        var systemAvatar = document.getElementById('ios-banner-avatar');
-        if (systemAvatar) {
-            systemAvatar.style.background = data.avatarColor || '#ff3b30';
-            systemAvatar.innerHTML = '<span style="font-size:20px;">' + (data.avatarIcon || 'i') + '</span>';
-        }
-        var systemName = document.getElementById('ios-banner-name');
-        var systemText = document.getElementById('ios-banner-text');
-        var systemApp = document.getElementById('ios-banner-app-name');
-        if (systemName) systemName.textContent = data.fromName || 'Cosa Nostra';
-        if (systemText) systemText.textContent = data.text || '';
-        if (systemApp) systemApp.textContent = 'Cosa Nostra';
-        _iosBannerFriendId = null;
-        _iosBannerTargetPage = data.targetPage || null;
-        var systemBanner = document.getElementById('ios-msg-banner');
-        if (systemBanner) systemBanner.classList.add('show');
-        var systemAudio = document.getElementById('ios-notif-sound');
-        if (systemAudio) {
-            systemAudio.currentTime = 0;
-            systemAudio.volume = 0.85;
-            systemAudio.play().catch(function(){});
-        }
-        clearTimeout(_iosBannerTimeout);
-        _iosBannerTimeout = setTimeout(function() {
-            if (systemBanner) systemBanner.classList.remove('show');
-        }, 4500);
-        return;
-    }
-    _iosBannerTargetPage = null;
     var fromId   = String(data.from);
     var fromName = data.fromName || '?';
     var text     = (data.text || '').substring(0, 80);
@@ -8815,12 +8313,6 @@ function _iosBannerClick() {
     if (banner) banner.classList.remove('show');
     clearTimeout(_iosBannerTimeout);
 
-    if (_iosBannerTargetPage) {
-        var target = _iosBannerTargetPage;
-        _iosBannerTargetPage = null;
-        if (typeof switchTab === 'function') switchTab(target);
-        return;
-    }
     if (!_iosBannerFriendId) return;
 
     var fid    = _iosBannerFriendId;
